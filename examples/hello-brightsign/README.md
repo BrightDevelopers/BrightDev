@@ -1,0 +1,2 @@
+# Hello Brightsign
+This example demonstrates how to use the BrightSign API to register a new BrightSign player and deploy content to it. It covers the essential steps to get you started with BrightSign device management within 10 minutes.
