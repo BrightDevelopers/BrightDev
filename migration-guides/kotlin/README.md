@@ -26,6 +26,8 @@ When migrating your Kotlin-based Android application to the BrightSign platform,
 
 > **For specialized scenarios** (multi-platform code sharing, CPU-intensive operations, offline-first apps), see [Advanced Migration Approaches](#advanced-migration-approaches).
 
+> If you have already made your decision about the migration method to use, you can jump directly to the [AI-assisted migration with brightdeveloper MCP](#ai-assisted-migration-with-brightdeveloper-mcp) section.
+
 ---
 
 # Method 1: Kotlin to JavaScript Transpilation
@@ -1025,4 +1027,173 @@ See [Advanced Migration Approaches](#advanced-migration-approaches) for:
 
 ---
 
-**Questions or need help?** Refer to [CLAUDE.md](CLAUDE.md) for AI automation patterns and detailed transformation rules.
+# AI-Assisted Migration with BrightDeveloper MCP
+
+The BrightDeveloper MCP server can automate your Kotlin to JavaScript migration using the instructions and patterns defined in this guide and [CLAUDE.md](CLAUDE.md). Below are ready-to-use prompts for both migration methods.
+
+> Note that you can always edit or customize these prompts further based on your specific project needs.
+
+## Prerequisites
+
+Before using these prompts:
+- ✅ Ensure the [BrightDeveloper MCP server](https://github.com/BrightDevelopers/technical-documentation/blob/main/MCP-SERVER-HOWTO.md) is connected
+- ✅ Have your Kotlin project accessible in the workspace
+- ✅ Review the migration method that best fits your needs (see [Quick Decision Guide](#quick-decision-guide) above)
+
+---
+
+## Method 1: Transpilation Prompt
+
+**Use this for rapid prototyping (1-2 weeks timeline)**
+
+```
+First, read and analyze the migration guide at migration-guides/kotlin/README.md and the automation patterns at migration-guides/kotlin/CLAUDE.md.
+
+I need you to migrate my Kotlin Android application to JavaScript for BrightSign using Method 1 (Transpilation).
+
+Project Details:
+- Project Path: {YOUR_PROJECT_PATH}
+- Main Package: {YOUR_PACKAGE_NAME}
+- Target BrightSign Model: {e.g., XT1144, XD1034, or "any"}
+- Team Expertise: {e.g., "Strong Kotlin, Limited JavaScript"}
+
+Android APIs Used (check all that apply):
+- [ ] SharedPreferences for data storage
+- [ ] Room Database
+- [ ] Retrofit/OkHttp for networking
+- [ ] MediaPlayer for video/audio
+- [ ] Background Services
+- [ ] Device sensors (camera, GPS, etc.)
+- [ ] Other: {SPECIFY}
+
+Specific Requirements:
+- UI Screens: {NUMBER} activities/fragments
+- Backend Integration: {YES/NO - specify API details if yes}
+- Offline Support: {YES/NO}
+- Custom Features: {LIST_ANY_SPECIAL_FEATURES}
+
+Migration Tasks:
+1. Analyze my Kotlin codebase and create a feature inventory
+2. Set up Kotlin/JS multiplatform build configuration
+3. Extract and configure business logic for transpilation
+4. Identify all Android-specific APIs and create expect/actual abstractions
+5. Generate transpiled JavaScript modules
+6. Create HTML/CSS UI layer to replace Android Activities/Fragments
+7. Set up webpack configuration with BrightSign API mocks for local development
+8. Create package.json with webpack dependencies and build scripts
+9. Create autorun.brs launcher file for BrightSign deployment with nodejs_enabled and inspector_server configuration
+10. Provide deployment instructions and testing checklist
+
+Follow all patterns from CLAUDE.md for code transformation, particularly:
+- Remove Android Parcelable, replace with @Serializable
+- Replace SharedPreferences with localStorage abstraction
+- Convert Coroutines to async/await where needed
+- Mock Android Context and system services
+
+Output a complete working prototype ready for BrightSign deployment.
+```
+
+---
+
+## Method 2: Fresh Rebuild Prompt ⭐
+
+**Use this for production deployment (4-6 weeks timeline) - RECOMMENDED**
+
+```
+First, read and analyze the migration guide at migration-guides/kotlin/README.md and the automation patterns at migration-guides/kotlin/CLAUDE.md.
+
+I need you to migrate my Kotlin Android application to JavaScript/Node.js for BrightSign using Method 2 (Fresh Rebuild).
+
+Project Details:
+- Project Path: {YOUR_PROJECT_PATH}
+- Main Package: {YOUR_PACKAGE_NAME}
+- Target BrightSign Model: {e.g., XT1144, XD1034, or "any"}
+- Team Expertise: {e.g., "Moderate JavaScript/Node.js"}
+
+Current Application Architecture:
+- Number of UI Screens: {NUMBER}
+- Data Layer: {e.g., "SharedPreferences + Retrofit API calls"}
+- Business Logic Complexity: {LOW/MEDIUM/HIGH}
+- Background Services: {YES/NO - describe if yes}
+
+Android APIs to Replace:
+- [ ] SharedPreferences → localStorage/IndexedDB
+- [ ] Room Database → IndexedDB
+- [ ] Retrofit/OkHttp → fetch() API
+- [ ] Android MediaPlayer → HTML5 video/BrightSign videooutput
+- [ ] Toast notifications → Custom UI notifications
+- [ ] File I/O → Node.js fs module
+- [ ] Other: {SPECIFY}
+
+BrightSign Platform Features Needed:
+- [ ] Device information (model, serial number, OS version)
+- [ ] Network configuration
+- [ ] Video playback control
+- [ ] Screenshot capture
+- [ ] Serial port communication
+- [ ] Custom hardware integration
+- [ ] Other: {SPECIFY}
+
+Backend Requirements:
+- Node.js Server: {YES/NO}
+- API Endpoints: {LIST_REQUIRED_ENDPOINTS}
+- Database: {NONE/IndexedDB/Remote Database}
+
+Migration Tasks:
+1. Analyze my Kotlin application and create a comprehensive feature inventory
+2. Set up BrightSign development environment (Node.js project structure)
+3. Configure webpack with BrightSign API externals and development mocks
+4. For each Android Activity/Fragment, create equivalent HTML/CSS/JavaScript UI
+5. Rebuild data layer using localStorage/IndexedDB (replace SharedPreferences/Room)
+6. Rebuild networking layer using fetch() API (replace Retrofit/OkHttp)
+7. Create BrightSignPlatform abstraction class for device APIs with async initialization
+8. Implement Node.js backend if needed (Express server)
+9. Create package.json with all required dependencies (webpack, loaders, plugins)
+10. Create autorun.brs launcher file with nodejs_enabled: true, inspector_server port 2999, and proper URL configuration
+11. Generate deployment package with all assets (dist/ folder + autorun.brs)
+12. Provide testing checklist and debugging instructions
+
+Code Quality Requirements:
+- Use modern ES6+ JavaScript syntax
+- Implement proper error handling
+- Add console logging for debugging
+- Follow BrightSign best practices from CLAUDE.md
+- Create modular, maintainable code structure
+
+Follow all transformation patterns from CLAUDE.md, including:
+- Platform abstraction for BrightSign APIs with async initialization
+- localStorage wrapper for data persistence
+- Custom notification system for Toast replacements
+- Proper webpack externals configuration
+
+Output a production-ready BrightSign application with complete documentation.
+```
+
+---
+
+## Customization Guide
+
+**Replace the following placeholders in your chosen prompt:**
+
+| Placeholder | Example | Description |
+|------------|---------|-------------|
+| `{YOUR_PROJECT_PATH}` | `c:\Users\dev\MyKotlinApp` | Absolute path to your Kotlin project |
+| `{YOUR_PACKAGE_NAME}` | `com.example.myapp` | Your Android app's main package name |
+| `{YOUR_BRIGHTSIGN_MODEL}` | `XT1144` or `any` | Target BrightSign player model |
+| `{NUMBER}` | `5` | Count of activities, screens, or endpoints |
+| `{LIST_ANY_SPECIAL_FEATURES}` | `Barcode scanning, QR code generation` | Specific features needing attention |
+| `{SPECIFY}` | Descriptive details | Additional context for your project |
+
+**Checkbox Instructions:**
+- Mark `[x]` for applicable items
+- Leave `[ ]` for non-applicable items
+
+---
+
+## Tips for Best Results
+
+1. **Be Specific**: Provide accurate counts and detailed feature lists
+2. **Include Dependencies**: Mention all third-party libraries you use
+3. **Describe Custom Features**: Any unique functionality needs explicit mention
+4. **State Constraints**: Network limitations, hardware requirements, performance needs
+5. **Iterative Refinement**: Start with core features, add complexity incrementally
