@@ -189,7 +189,8 @@ Build a new application from scratch using native web technologies. This provide
 
 **⏱️ Timeline**: 4-6 weeks  
 **🎯 Best for**: Production deployments  
-**✅ BrightSign Recommended**
+**✅ BrightSign Recommended**  
+**📦 Target Platform**: Node.js v18.18.2 (BrightSign OS)
 
 ## Why BrightSign Recommends This Method
 
@@ -271,17 +272,13 @@ module.exports = (env, argv) => {
     
     return {
         mode: argv.mode || 'development',
+        target: 'node18.18', // BrightSign OS runs Node v18.18.2
         entry: './src/ui/index.js',
         output: {
             filename: 'bundle.js',
             path: path.resolve(__dirname, 'dist'),
             clean: true,
-            library: {
-                type: isDevelopment ? 'var' : 'module'
-            }
-        },
-        experiments: {
-            outputModule: !isDevelopment
+            libraryTarget: 'umd'
         },
         module: {
             rules: [
@@ -294,12 +291,12 @@ module.exports = (env, argv) => {
         
         // Mark BrightSign APIs as external - they're provided by the player runtime
         externals: isDevelopment ? {} : {
-            '@brightsign/deviceinfo': '@brightsign/deviceinfo',
-            '@brightsign/videooutput': '@brightsign/videooutput',
-            '@brightsign/networkconfiguration': '@brightsign/networkconfiguration',
-            '@brightsign/screenshot': '@brightsign/screenshot',
-            '@brightsign/registry': '@brightsign/registry',
-            '@brightsign/serialport': '@brightsign/serialport'
+            '@brightsign/deviceinfo': 'commonjs @brightsign/deviceinfo',
+            '@brightsign/videooutput': 'commonjs @brightsign/videooutput',
+            '@brightsign/networkconfiguration': 'commonjs @brightsign/networkconfiguration',
+            '@brightsign/screenshot': 'commonjs @brightsign/screenshot',
+            '@brightsign/registry': 'commonjs @brightsign/registry',
+            '@brightsign/serialport': 'commonjs @brightsign/serialport'
         },
         
         resolve: {
@@ -333,7 +330,7 @@ module.exports = (env, argv) => {
 
 ```javascript
 // src/mocks/deviceinfo.js
-export class DeviceInfo {
+class DeviceInfo {
     constructor() {
         this.model = 'XT1144';
         this.osVersion = '9.0.189';
@@ -369,12 +366,12 @@ export class DeviceInfo {
     }
 }
 
-export default DeviceInfo;
+module.exports = DeviceInfo; // CommonJS export for Node v18.18.2
 ```
 
 ```javascript
 // src/mocks/networkconfiguration.js
-export class NetworkConfiguration {
+class NetworkConfiguration {
     constructor(ifName = 'eth0') {
         this.interfaceName = ifName;
     }
@@ -396,7 +393,7 @@ export class NetworkConfiguration {
     }
 }
 
-export default NetworkConfiguration;
+module.exports = NetworkConfiguration; // CommonJS export for Node v18.18.2
 ```
 
 **Update package.json scripts:**
@@ -413,19 +410,18 @@ export default NetworkConfiguration;
 
 ```javascript
 // src/ui/platform.js - Platform abstraction layer
-export class BrightSignPlatform {
+class BrightSignPlatform {
     constructor() {
         this.deviceInfo = null;
         this.initialized = false;
-        this.initPromise = this.initialize();
+        this.initialize(); // Synchronous initialization for Node v18.18.2
     }
     
-    async initialize() {
+    initialize() {
         try {
-            // Dynamic import works with webpack externals (production)
-            // and aliases (development)
-            const { default: DeviceInfoClass } = await import('@brightsign/deviceinfo');
-            this.deviceInfo = new DeviceInfoClass();
+            // Use require() for CommonJS compatibility (Node v18.18.2)
+            const DeviceInfo = require('@brightsign/deviceinfo');
+            this.deviceInfo = new DeviceInfo();
             this.initialized = true;
         } catch (error) {
             console.warn('BrightSign deviceinfo not available, using fallback');
@@ -434,18 +430,11 @@ export class BrightSignPlatform {
                 osVersion: 'UNKNOWN',
                 serialNumber: 'UNKNOWN'
             };
+            this.initialized = true;
         }
     }
     
-    async ensureInitialized() {
-        if (!this.initialized) {
-            await this.initPromise;
-        }
-    }
-    
-    async getDeviceInfo() {
-        await this.ensureInitialized();
-        
+    getDeviceInfo() {
         return {
             model: this.deviceInfo.model,
             osVersion: this.deviceInfo.osVersion,
@@ -461,16 +450,18 @@ export class BrightSignPlatform {
 # Run locally with mocks (webpack resolves @brightsign/* to mocks)
 npm run dev
 
-# Build for BrightSign player (webpack externalizes @brightsign/* as ES modules)
+# Build for BrightSign player (webpack externalizes @brightsign/* as CommonJS externals)
 npm run build
 ```
 
 **Important Notes:**
 
-- **Dynamic Imports**: Use `import()` instead of `require()` for BrightSign APIs to ensure compatibility with webpack externals
-- **Async Initialization**: Initialize BrightSign APIs asynchronously and use `await ensureInitialized()` before accessing them
-- **ES Module Output**: Production builds use ES module format (`experiments.outputModule`) for proper external module handling
-- **Mock Classes**: Development mocks should export classes matching the real BrightSign API structure
+- **Node v18.18.2 Target**: BrightSign players run Node.js v18.18.2 - configure webpack with `target: 'node18.18'`
+- **CommonJS Modules**: Always use `require()` for BrightSign APIs (not ES modules `import`)
+- **Synchronous Initialization**: BrightSign APIs are initialized synchronously in the constructor using try/catch
+- **UMD Output**: Webpack builds use UMD library target for universal compatibility
+- **CommonJS Externals**: Use `'commonjs @brightsign/*'` format in webpack externals
+- **Mock Modules**: Development mocks must use `module.exports` to match CommonJS pattern
 
 ### 4. Rebuild UI with HTML/CSS/JavaScript
 
@@ -625,42 +616,30 @@ End Sub
 
 ```javascript
 // utils/platform.js
-export class BrightSignPlatform {
+class BrightSignPlatform {
     constructor() {
         this.deviceInfo = null;
         this.networkConfig = null;
         this.initialized = false;
-        this.initPromise = this.initialize();
+        this.initialize(); // Synchronous initialization
     }
     
-    async initialize() {
+    initialize() {
         try {
-            // Dynamic imports for BrightSign APIs
-            const [
-                { default: DeviceInfoClass },
-                { default: NetworkConfigClass }
-            ] = await Promise.all([
-                import('@brightsign/deviceinfo'),
-                import('@brightsign/networkconfiguration')
-            ]);
+            // Use require() for CommonJS compatibility (Node v18.18.2)
+            const DeviceInfo = require('@brightsign/deviceinfo');
+            const NetworkConfiguration = require('@brightsign/networkconfiguration');
             
-            this.deviceInfo = new DeviceInfoClass();
-            this.networkConfig = new NetworkConfigClass('eth0');
+            this.deviceInfo = new DeviceInfo();
+            this.networkConfig = new NetworkConfiguration('eth0');
             this.initialized = true;
         } catch (error) {
             console.warn('BrightSign APIs not available, using fallbacks');
+            this.initialized = true;
         }
     }
     
-    async ensureInitialized() {
-        if (!this.initialized) {
-            await this.initPromise;
-        }
-    }
-    
-    async getDeviceInfo() {
-        await this.ensureInitialized();
-        
+    getDeviceInfo() {
         if (this.deviceInfo) {
             return {
                 model: this.deviceInfo.model,
@@ -671,13 +650,11 @@ export class BrightSignPlatform {
         return { model: 'MOCK', osVersion: 'MOCK', serial: 'MOCK' };
     }
     
-    async savePreference(key, value) {
-        await this.ensureInitialized();
+    savePreference(key, value) {
         localStorage.setItem(key, JSON.stringify(value));
     }
     
-    async getPreference(key, defaultValue = null) {
-        await this.ensureInitialized();
+    getPreference(key, defaultValue = null) {
         const value = localStorage.getItem(key);
         return value ? JSON.parse(value) : defaultValue;
     }
@@ -693,7 +670,7 @@ export class BrightSignPlatform {
     }
 }
 
-export default new BrightSignPlatform();
+module.exports = new BrightSignPlatform(); // Export singleton for CommonJS
 ```
 
 ---
@@ -730,8 +707,8 @@ export default new BrightSignPlatform();
 
 | Android | BrightSign |
 |---------|-----------|
-| `Build.MODEL` | `const { default: DeviceInfo } = await import('@brightsign/deviceinfo'); new DeviceInfo().model` |
-| `MediaPlayer` | HTML5 `<video>` or `@brightsign/videooutput` |
+| `Build.MODEL` | `const DeviceInfo = require('@brightsign/deviceinfo'); new DeviceInfo().model` (CommonJS for Node v18.18.2) |
+| `MediaPlayer` | HTML5 `<video>` or `const VideoOutput = require('@brightsign/videooutput')` |
 | File I/O | Node.js `fs` module |
 
 ## Async Operations

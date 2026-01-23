@@ -291,17 +291,19 @@
       "methods": {
         "savePreference": {
           "implementation": "localStorage.setItem(key, JSON.stringify(value))",
-          "async": true
+          "async": false,
+          "note": "Synchronous for Node v18.18.2 CommonJS compatibility"
         },
         "getPreference": {
           "implementation": "JSON.parse(localStorage.getItem(key))",
-          "async": true
+          "async": false,
+          "note": "Synchronous for Node v18.18.2 CommonJS compatibility"
         }
       }
     },
-    "async_initialization": {
-      "pattern": "await this.ensureInitialized()",
-      "note": "All platform methods must wait for async initialization"
+    "synchronous_initialization": {
+      "pattern": "this.initialize(); // Called in constructor",
+      "note": "Initialize synchronously using require() for CommonJS modules"
     },
     "add_placeholder": "AI_PLACEHOLDER: Verify localStorage availability on BrightSign"
   }
@@ -1199,28 +1201,29 @@
       }
     },
     "setup_brightsign_environment": {
-      "install_nodejs": "node --version >= 14.0.0",
-      "create_project_structure": { (optional)",
+      "node_version_requirement": "18.18.2 (BrightSign OS standard, configurable)",
+      "verify_nodejs": "node --version >= 18.0.0",
+      "create_project_structure": {
+        "src/ui/": "HTML/CSS/JS UI components",
+        "src/backend/": "Node.js server code (optional)",
         "src/utils/": "Helper functions",
-        "src/mocks/": "BrightSign API mocks for development",
+        "src/mocks/": "BrightSign API mocks for local development (CommonJS)",
         "assets/": "Images, videos, fonts"
       },
       "initialize_npm": ["npm init -y", "npm install express"],
       "setup_webpack": {
         "install": "npm install --save-dev webpack webpack-cli webpack-dev-server html-webpack-plugin css-loader style-loader",
-        "configure": "Create webpack.config.js with ES module output and externals for production"
+        "configure": "Create webpack.config.js with target: 'node18.18', libraryTarget: 'umd', and CommonJS externals for production"
       }
     },
     "create_platform_abstraction": {
-      "pattern": "async_initialization",
+      "pattern": "synchronous_initialization",
       "implementation": {
-        "constructor": "Initialize with async initPromise",
-        "ensureInitialized": "await this.initPromise before API access",
-        "dynamic_imports": "Use import() for @brightsign/* modules",
+        "constructor": "Initialize with synchronous this.initialize() call",
+        "initialize": "Use require() for @brightsign/* modules in try/catch",
+        "usage": "Direct method calls, no async/await needed",
         "fallback": "Graceful degradation when APIs unavailable"
       }
-      },
-      "initialize_npm": ["npm init -y", "npm install express @brightsign/deviceinfo"]
     }
   }
 }
@@ -1259,38 +1262,39 @@
 ```json
 {
   "brightsign_integration_patterns": {
-    "async_initialization": {
-      "description": "All BrightSign APIs must be initialized asynchronously using dynamic imports",
+    "node_version_target": "18.18.2 (BrightSign OS standard)",
+    "module_system": "CommonJS (require/module.exports)",
+    "synchronous_initialization": {
+      "description": "BrightSign APIs are initialized synchronously using require() for Node v18.18.2 CommonJS compatibility",
       "pattern": {
-        "constructor": "this.initPromise = this.initialize()",
-        "initialize": "async initialize() { const { default: API } = await import('@brightsign/...'); }",
-        "ensureInitialized": "async ensureInitialized() { if (!this.initialized) await this.initPromise; }",
-        "usage": "await this.ensureInitialized(); // Call before any API access"
+        "constructor": "this.initialize(); // Synchronous initialization",
+        "initialize": "initialize() { try { const API = require('@brightsign/...'); this.api = new API(); } catch(e) { /* fallback */ } }",
+        "usage": "this.api.method(); // Direct usage, no await needed"
       },
-      "reason": "Webpack externals require dynamic imports for proper module resolution"
+      "reason": "Node v18.18.2 on BrightSign uses CommonJS - require() is synchronous and standard"
     },
     "webpack_configuration": {
+      "target": "node18.18 (configurable for specific Node version)",
       "development": {
         "externals": "Empty object {}",
         "resolve.alias": "Map @brightsign/* to local mock files",
-        "library.type": "var"
+        "libraryTarget": "umd"
       },
       "production": {
-        "externals": "Map @brightsign/* to module names",
+        "externals": "Use 'commonjs @brightsign/*' format for all BrightSign APIs",
         "resolve.alias": "Empty object {}",
-        "library.type": "module",
-        "experiments.outputModule": "true"
+        "libraryTarget": "umd"
       },
-      "reason": "ES module output required for proper external module handling in production"
+      "reason": "UMD library target with CommonJS externals required for Node v18.18.2 compatibility"
     },
     "mock_structure": {
-      "export_pattern": "export class MockAPI { ... }; export default MockAPI;",
+      "export_pattern": "class MockAPI { ... }; module.exports = MockAPI;",
       "match_real_api": "Mock methods and properties must match actual BrightSign API structure",
-      "async_methods": "Keep async/await patterns consistent with real APIs"
+      "sync_methods": "Use synchronous methods for consistency with CommonJS pattern"
     },
     "error_handling": {
-      "graceful_degradation": "try/catch around API imports with fallback implementations",
-      "initialization_check": "Always call ensureInitialized() before API access",
+      "graceful_degradation": "try/catch around require() calls with fallback implementations",
+      "initialization_check": "Check this.initialized flag before API access",
       "console_warnings": "Log when APIs unavailable for debugging"
     }
   }
@@ -1304,23 +1308,29 @@
 ```json
 {
   "critical_patterns": {
-    "do_not_use_require": {
-      "wrong": "const deviceInfo = require('@brightsign/deviceinfo');",
-      "correct": "const { default: DeviceInfo } = await import('@brightsign/deviceinfo');",
-      "reason": "Webpack externals don't work with CommonJS require()"
+    "use_require_not_import": {
+      "correct": "const DeviceInfo = require('@brightsign/deviceinfo');",
+      "wrong": "const { default: DeviceInfo } = await import('@brightsign/deviceinfo');",
+      "reason": "BrightSign Node v18.18.2 uses CommonJS - require() is the standard approach"
     },
-    "always_async_init": {
-      "pattern": "All platform service methods must be async and call ensureInitialized()",
-      "example": "async getUserPreference(key) { await this.ensureInitialized(); ... }"
+    "synchronous_init": {
+      "pattern": "Initialize BrightSign APIs synchronously in constructor with try/catch",
+      "example": "constructor() { this.initialize(); } initialize() { try { this.api = require('@brightsign/api'); } catch(e) { /* fallback */ } }"
     },
-    "mock_as_classes": {
-      "wrong": "module.exports = { method: () => {} };",
-      "correct": "export class API { method() {} }; export default API;",
-      "reason": "Must match real API class structure"
+    "mock_as_commonjs": {
+      "correct": "class API { method() {} }; module.exports = API;",
+      "wrong": "export class API { method() {} }; export default API;",
+      "reason": "Must use CommonJS exports to match Node v18.18.2 module system"
     },
-    "es_module_output": {
-      "required_for": "Production builds to handle external modules correctly",
-      "config": "experiments: { outputModule: !isDevelopment }"
+    "umd_library_target": {
+      "required_for": "Universal module definition for broad compatibility",
+      "webpack_config": "output: { libraryTarget: 'umd' }",
+      "reason": "UMD works in both browser and Node.js environments"
+    },
+    "commonjs_externals": {
+      "correct": "externals: { '@brightsign/deviceinfo': 'commonjs @brightsign/deviceinfo' }",
+      "wrong": "externals: { '@brightsign/deviceinfo': '@brightsign/deviceinfo' }",
+      "reason": "Must specify 'commonjs' prefix for proper require() handling in webpack externals"
     }
   }
 }
@@ -1380,86 +1390,6 @@
         "AI_AUTO: Apply API mapping replacements"
       ],
       "action": "Informational only"
-    }
-  }
-}
-```
-
----
-
-## Key Technical Patterns for BrightSign Integration
-
-```json
-{
-  "brightsign_integration_patterns": {
-    "async_initialization": {
-      "description": "All BrightSign APIs must be initialized asynchronously using dynamic imports",
-      "pattern": {
-        "constructor": "this.initPromise = this.initialize()",
-        "initialize": "async initialize() { const { default: API } = await import('@brightsign/...'); }",
-        "ensureInitialized": "async ensureInitialized() { if (!this.initialized) await this.initPromise; }",
-        "usage": "await this.ensureInitialized(); // Call before any API access"
-      },
-      "reason": "Webpack externals require dynamic imports for proper ES module resolution"
-    },
-    "webpack_configuration": {
-      "development": {
-        "externals": "Empty object {}",
-        "resolve_alias": "Map @brightsign/* to local mock files in src/mocks/",
-        "library_type": "var",
-        "output_module": "false"
-      },
-      "production": {
-        "externals": "Map @brightsign/* module names as externals",
-        "resolve_alias": "Empty object {}",
-        "library_type": "module",
-        "experiments_outputModule": "true"
-      },
-      "reason": "ES module output required for proper external module handling in production builds"
-    },
-    "mock_structure": {
-      "export_pattern": "export class MockAPI { ... }; export default MockAPI;",
-      "match_real_api": "Mock methods and properties must match actual BrightSign API structure exactly",
-      "async_methods": "Keep async/await patterns consistent with real APIs",
-      "es_module": "Always use ES module exports, never CommonJS module.exports"
-    },
-    "error_handling": {
-      "graceful_degradation": "try/catch around API imports with fallback implementations",
-      "initialization_check": "Always call ensureInitialized() before any API access",
-      "console_warnings": "Log when APIs unavailable for debugging purposes"
-    }
-  }
-}
-```
-
-### Critical Migration Rules
-
-```json
-{
-  "critical_patterns": {
-    "do_not_use_require": {
-      "wrong": "const deviceInfo = require('@brightsign/deviceinfo');",
-      "correct": "const { default: DeviceInfo } = await import('@brightsign/deviceinfo');",
-      "reason": "Webpack externals don't work with CommonJS require() - must use dynamic import()"
-    },
-    "always_async_init": {
-      "pattern": "All platform service methods must be async and call ensureInitialized()",
-      "example": "async getUserPreference(key) { await this.ensureInitialized(); return this.storage.getItem(key); }"
-    },
-    "mock_as_classes": {
-      "wrong": "module.exports = { method: () => {} };",
-      "correct": "export class API { method() {} }; export default API;",
-      "reason": "Must match real API class structure for proper instantiation"
-    },
-    "es_module_output": {
-      "required_for": "Production builds to handle external modules correctly",
-      "webpack_config": "experiments: { outputModule: !isDevelopment }",
-      "library_type": "isDevelopment ? 'var' : 'module'"
-    },
-    "dynamic_imports_not_static": {
-      "wrong": "import DeviceInfo from '@brightsign/deviceinfo';",
-      "correct": "const { default: DeviceInfo } = await import('@brightsign/deviceinfo');",
-      "reason": "Static imports resolved at build time won't work with webpack externals/aliases"
     }
   }
 }
