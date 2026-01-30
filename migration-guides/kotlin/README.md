@@ -1,6 +1,8 @@
 # Kotlin Migration Guide
 
-> **🤖 AI-First Migration**: This guide is designed for AI-assisted migration. Instead of manually executing steps, you'll work with AI agents (like Claude via the BrightDeveloper MCP) to automate the entire migration process. For machine-readable patterns and automation schemas, see [CLAUDE.md](CLAUDE.md)
+**🤖 AI-First Migration**: This guide is designed for AI-assisted migration. Instead of manually executing steps, you'll work with AI agents (like Claude via the BrightDeveloper MCP) to automate the entire migration process. For machine-readable patterns and automation schemas, see [CLAUDE.md](CLAUDE.md).
+
+If you have not set up the BrightDeveloper MCP Server yet, follow the instructions in the [Installing the MCP server](https://github.com/BrightDevelopers/BrightDev/blob/main/README.md#install-the-brightsign-mcp-server) section of the main BrightDev README file.
 
 > Note that not everything generated using AI agents and the BrightDeveloper MCP may be perfect on the first try. You may need to iterate with the AI, provide additional context, or make manual adjustments as needed.
 
@@ -120,7 +122,7 @@ Provide results in a structured format with specific file paths and line numbers
 ```
 Set up a BrightSign development environment for my Kotlin migration:
 
-1. Verify Node.js is installed (v14+) and show the version
+1. Verify Node.js is installed (v18.18.2) and show the version
 2. Create a new BrightSign project with this structure:
    - src/ui/ for HTML/CSS/JavaScript
    - src/backend/ for Node.js server code
