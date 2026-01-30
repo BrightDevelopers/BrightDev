@@ -108,6 +108,57 @@ For detailed development environment setup, debugging tools, and logging configu
 
 ---
 
+## FAQ
+
+### Should I use BrightScript or JavaScript?
+
+- Use **BrightScript** for: Simple media playback, GPIO control, legacy compatibility
+- Use **HTML/JavaScript/Node.js** for: Complex UIs, web content, API integrations, modern web frameworks
+
+See [Player APIs: BrightScript and JavaScript](https://docs.brightsign.biz/developers/player-apis-brightscript-and-javascript) for details.
+
+### How do I find my player's IP address?
+
+1. **No storage boot** - Boot the player without any storage device; it displays its IP on screen
+2. **DHCP server** - Check your router's DHCP client list
+3. **Local DWS** - If enabled, browse to `brightsign-<SERIAL_NUMBER>.local`
+4. **Serial/SSH** - Run `ifconfig` command
+5. **BSN.cloud** - View in BrightAuthor:Connected or the BSN.cloud web interface
+
+See [Find a Player's IP Address](https://docs.brightsign.biz/how-tos/find-a-players-ip-address) for details.
+
+### How do I enable the Local Diagnostic Web Server (DWS)?
+
+1. **Via BrightAuthor:Connected** - Enable in your BSN.cloud setup
+2. **Via BrightScript/JavaScript** - Enable programmatically in your application
+3. **Via Serial Shell**:
+    ```
+    registry write networking http_server 80
+    registry flush
+    reboot
+    ```
+
+See [DWS Local Access](https://docs.brightsign.biz/advanced/dws-local-access) for details.
+
+### How do I factory reset my player?
+
+1. **SVC + RST Buttons** - Press & hold both buttons together during boot
+2. **Via Local DWS** - Control → "Factory Reset"
+3. **Via Serial Shell** - `factoryreset confirm`
+
+**Warning:** This erases all content, settings, and user data.
+
+See [Factory Reset a Player](https://docs.brightsign.biz/how-tos/factory-reset-a-player) for details.
+
+### My player is stuck in a reboot loop. How do I recover?
+
+1. **Replace SD card** - Insert a new SD card with recovery content (or no content)
+2. **Serial shell recovery** - Connect via serial, press SVC key after "Starting BrightSign application..." message to access the shell
+
+See [Stop a Continuously Rebooting Player](https://docs.brightsign.biz/how-tos/stop-a-continuously-rebooting-player) for details.
+
+---
+
 ## Community & Support
 
 - **[BrightSign Documentation](https://docs.brightsign.biz)** — Official BrightSign API and platform documentation
