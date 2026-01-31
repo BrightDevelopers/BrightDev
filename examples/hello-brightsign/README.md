@@ -14,7 +14,7 @@ Let's go.
 
 1. A BSN.cloud account - [Sign up free at bsn.cloud](https://bsn.cloud)
 2. A BSN network - Created when you sign up
-3. A BrightSign player - Powered on, connected to a screen, registered to your network
+3. A BrightSign player - Powered on, connected to a screen, registered to your network. If you don't have one, you can [order a BrightSign player here](https://store.brightsign.biz/), or if you haven't set it up yet, follow the [Player Setup video](https://vimeo.com/948903290?fl=pl&fe=ti).
 
 **Got all three? Start your timer.**
 
