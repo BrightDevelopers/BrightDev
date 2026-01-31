@@ -156,9 +156,9 @@ See [Stop a Continuously Rebooting Player](https://docs.brightsign.biz/how-tos/s
 
 ## Community & Support
 
-- **[BrightSign Documentation](https://docs.brightsign.biz)** — Official BrightSign API and platform documentation
-- **[Contributing](CONTRIBUTING.md)** — Found a bug? Have an example?
-- **[BrightSign Support Community](https://support.brightsign.biz/hc/en-us/community/topics)** — Hardware, BSN.cloud, and developer support
+- **[BrightSign Documentation](https://docs.brightsign.biz)** - Official BrightSign API and platform documentation
+- **[Contributing](CONTRIBUTING.md)** - Found a bug? Have an example?
+- **[BrightSign Support Community](https://support.brightsign.biz/hc/en-us/community/topics)** - Hardware, BSN.cloud, and developer support
 
 
 <div align="center">

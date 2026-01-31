@@ -85,7 +85,7 @@ Generate a complete, working program that displays "Hello BrightSign" on my play
 
 Add your credentials to the generated `.env` file then run the generated code. Watch your player reboot. The "Hello BrightSign" image appears.
 
-That's it. You just deployed directly to a BrightSign player. Here's mine (please forgive my key to Erebor and split keyboard 😅
+That's it. You just deployed directly to a BrightSign player. Here's mine (please forgive my key to Erebor and split keyboard 😅)
 
 
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/pb1sx90e7wijvecz5zmm.jpg)
@@ -94,7 +94,7 @@ That's it. You just deployed directly to a BrightSign player. Here's mine (pleas
 ## What's Next
 
 - **[BrightDev Repo](https://github.com/BrightDevelopers/BrightDev)** - More examples
-- **[GitHub Discussions](https://github.com/BrightDevelopers/discussions)** - Questions, ideas and bug reports
+- **[GitHub Issues](https://github.com/BrightDevelopers/issues)** - Questions, ideas and bug reports
 
 ---
 

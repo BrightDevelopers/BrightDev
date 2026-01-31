@@ -1,8 +1,6 @@
 # Examples
 
-Working examples to help you get started with BrightSign development.
-
----
+Working examples to help you get started with BrightSign developm
 
 ## Available Examples
 
@@ -15,16 +13,9 @@ Your first BrightSign deployment. Upload content to a player in under 15 minutes
 - Content upload via API
 - Basic device management
 
----
-
 ## Related Resources
-
-**Want production-ready SDK?**
-→ [gopurple SDK](https://github.com/BrightDevelopers/gopurple)
 
 **Building on-player apps?**
 → [Dev Cookbook](https://github.com/brightsign/dev-cookbook)
-
----
 
 [← Back to BrightDev](../README.md)
