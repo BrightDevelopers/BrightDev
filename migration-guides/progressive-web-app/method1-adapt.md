@@ -10,10 +10,9 @@
 Progressive Web Apps are modern web applications with PWA-specific features like service workers, web manifests, and offline capabilities. Migration to BrightSign is a straightforward **adaptation process**:
 
 1. Build production version of PWA
-2. Remove PWA-specific features (service worker, manifest, notifications)
-3. Optimize for signage displays
-4. Set up Node.js server (if SPA with client-side routing)
-5. Deploy to BrightSign
+2. Adapt and optimize for BrightSign (remove PWA features, optimize display)
+3. Set up Node.js server (if SPA with client-side routing)
+4. Deploy to BrightSign
 
 **No transpilation needed** - you're working with web content throughout.
 
@@ -24,7 +23,11 @@ Progressive Web Apps are modern web applications with PWA-specific features like
 ### AI Prompt: Analyze PWA Structure
 
 ```
-Analyze my Progressive Web App and provide detailed assessment:
+Analyze my Progressive Web App and provide detailed assessment.
+
+Refer to CLAUDE.md for PWA analysis patterns and automation schemas if needed.
+
+Tasks:
 
 1. **Identify Framework and Build Setup**:
    - Detect framework: React, Vue, Angular, or vanilla JavaScript
@@ -120,7 +123,11 @@ Recommendations:
 ### AI Prompt: Build Production PWA
 
 ```
-Build production version of my PWA:
+Build production version of my PWA.
+
+Consult CLAUDE.md for build automation patterns if needed.
+
+Tasks:
 
 1. **Check Build Configuration**:
    - Verify package.json build script
@@ -183,12 +190,22 @@ npx serve -s dist     # For Vite/Vue
 
 ---
 
-## Step 3: Remove PWA Features
+## Step 3: Adapt and Optimize for BrightSign
 
-### AI Prompt: Remove All PWA-Specific Code
+### AI Prompt: Remove PWA Features and Optimize Display
 
 ```
-Remove all PWA features from my built application:
+Adapt and optimize my PWA for BrightSign deployment.
+
+Review CLAUDE.md for PWA removal and display optimization patterns.
+
+Display Configuration:
+- Width: 1920px (or 3840px for 4K)
+- Height: 1080px (or 2160px for 4K)
+- Orientation: Landscape
+- Viewing Distance: 3-10 feet
+
+Tasks:
 
 1. **Remove Service Worker Registration**:
    - Find all serviceWorker.register() calls
@@ -223,6 +240,45 @@ Remove all PWA features from my built application:
    - Remove PWA-related build steps
    - Configure externals for @brightsign/* APIs
    - Ensure all other dependencies are bundled
+
+6. **Update Viewport**:
+   - Change viewport to fixed display size
+   - Remove device-width scaling
+   - Set to landscape orientation
+
+7. **Adjust Font Sizes**:
+   - Increase base font size (16px → 24px+)
+   - Scale all text for viewing distance
+   - Update heading sizes proportionally
+   - Ensure readability from distance
+
+8. **Optimize Layout**:
+   - Remove responsive breakpoints
+   - Set fixed container widths
+   - Adjust padding/margins for large display
+   - Update grid/flexbox layouts for fixed size
+
+9. **Remove Mobile-Specific CSS**:
+   - Remove max-width media queries
+   - Remove mobile-first breakpoints
+   - Remove touch-specific styles
+   - Remove mobile navigation patterns
+
+10. **Update JavaScript**:
+   - Remove touch event handlers
+   - Remove gesture libraries (Hammer.js, etc.)
+   - Remove mobile detection code
+   - Remove orientation change handlers
+   - Remove viewport resize handlers
+
+11. **Add Signage Features**:
+   - Add idle/screensaver timeout
+   - Add auto-refresh timer (for 24/7 reliability)
+   - Add connection status monitoring
+   - Add error recovery mechanisms
+   - Add enhanced logging for debugging
+   - Add memory leak prevention
+   - Implement periodic cleanup
 
 Show all changes made with before/after code examples.
 ```
@@ -323,65 +379,9 @@ function InstallPrompt() {
 // Component removed - not applicable for BrightSign
 ```
 
----
+### Display and Signage Optimizations
 
-## Step 4: Optimize for Signage Displays
-
-### AI Prompt: Optimize for Large Displays
-
-```
-Optimize my PWA for BrightSign signage displays:
-
-Display Configuration:
-- Width: 1920px (or 3840px for 4K)
-- Height: 1080px (or 2160px for 4K)
-- Orientation: Landscape
-- Viewing Distance: 3-10 feet
-
-Tasks:
-
-1. **Update Viewport**:
-   - Change viewport to fixed display size
-   - Remove device-width scaling
-   - Set to landscape orientation
-
-2. **Adjust Font Sizes**:
-   - Increase base font size (16px → 24px+)
-   - Scale all text for viewing distance
-   - Update heading sizes proportionally
-   - Ensure readability from distance
-
-3. **Optimize Layout**:
-   - Remove responsive breakpoints
-   - Set fixed container widths
-   - Adjust padding/margins for large display
-   - Update grid/flexbox layouts for fixed size
-
-4. **Remove Mobile-Specific CSS**:
-   - Remove max-width media queries
-   - Remove mobile-first breakpoints
-   - Remove touch-specific styles
-   - Remove mobile navigation patterns
-
-5. **Update JavaScript**:
-   - Remove touch event handlers
-   - Remove gesture libraries (Hammer.js, etc.)
-   - Remove mobile detection code
-   - Remove orientation change handlers
-   - Remove viewport resize handlers
-
-6. **Add Signage Features**:
-   - Add idle/screensaver timeout
-   - Add auto-refresh timer (if needed)
-   - Add connection status indicator
-   - Add error recovery mechanisms
-
-Show all optimizations with before/after code.
-```
-
-### Example Optimizations
-
-**1. Viewport Update**
+**4. Viewport Update**
 
 **Before:**
 ```html
@@ -393,7 +393,7 @@ Show all optimizations with before/after code.
 <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
 ```
 
-**2. Font Size Optimization**
+**5. Font Size Optimization**
 
 **Before (styles.css):**
 ```css
@@ -440,7 +440,7 @@ h2 {
 }
 ```
 
-**3. Remove Responsive Breakpoints**
+**6. Remove Responsive Breakpoints**
 
 **Before:**
 ```css
@@ -483,7 +483,7 @@ h2 {
 }
 ```
 
-**4. Remove Touch Events**
+**7. Remove Touch Events**
 
 **Before:**
 ```javascript
@@ -536,7 +536,7 @@ function nextSlide() {
 }
 ```
 
-**5. Add Screensaver/Idle Handler**
+**8. Add Screensaver/Idle Handler**
 
 ```javascript
 // Add idle detection for screensaver
@@ -568,14 +568,91 @@ document.addEventListener('keypress', resetIdleTimer);
 resetIdleTimer();
 ```
 
+**9. Add Connection Status Monitoring**
+
+```javascript
+// Monitor network connection status
+let isOnline = navigator.onLine;
+
+function updateConnectionStatus() {
+    const wasOnline = isOnline;
+    isOnline = navigator.onLine;
+    
+    if (isOnline !== wasOnline) {
+        if (isOnline) {
+            console.log('Connection restored');
+            showNotification('Online', 'success');
+        } else {
+            console.log('Connection lost');
+            showNotification('Offline', 'warning');
+        }
+    }
+}
+
+window.addEventListener('online', updateConnectionStatus);
+window.addEventListener('offline', updateConnectionStatus);
+
+// Periodic connection check
+setInterval(updateConnectionStatus, 30000); // Every 30 seconds
+```
+
+**10. Add Auto-Refresh for 24/7 Operation**
+
+```javascript
+// Auto-refresh every 24 hours for reliability
+const AUTO_REFRESH_INTERVAL = 86400000; // 24 hours
+
+setTimeout(() => {
+    console.log('Auto-refresh triggered (24-hour cycle)');
+    window.location.reload();
+}, AUTO_REFRESH_INTERVAL);
+
+console.log(`Auto-refresh scheduled in ${AUTO_REFRESH_INTERVAL / 3600000} hours`);
+```
+
+**11. Add Memory Cleanup**
+
+```javascript
+// Periodic memory cleanup for 24/7 operation
+const CLEANUP_INTERVAL = 3600000; // 1 hour
+
+setInterval(() => {
+    console.log('Performing memory cleanup');
+    
+    // Clear old cached data
+    if (window.dataCache && window.dataCache.size > 1000) {
+        window.dataCache.clear();
+    }
+    
+    // Clear old log entries
+    if (window.logs && window.logs.length > 100) {
+        window.logs = window.logs.slice(-100);
+    }
+    
+    // Force garbage collection if available
+    if (window.gc) {
+        try {
+            window.gc();
+            console.log('Forced garbage collection');
+        } catch (e) {
+            console.log('Garbage collection not available');
+        }
+    }
+}, CLEANUP_INTERVAL);
+```
+
 ---
 
-## Step 5: Set Up Node.js Server (for SPAs)
+## Step 4: Set Up Node.js Server (for SPAs)
 
 ### AI Prompt: Create Node.js Server for SPA Routing
 
 ```
-Set up Node.js Express server for my React/Vue/Angular SPA:
+Set up Node.js Express server for my React/Vue/Angular SPA.
+
+Consult CLAUDE.md for SPA routing server patterns if needed.
+
+Tasks:
 
 1. **Create Express Server**:
    - Install express dependency
@@ -688,12 +765,14 @@ npm start
 
 ---
 
-## Step 6: Create BrightSign Deployment
+## Step 5: Create BrightSign Deployment
 
 ### AI Prompt: Generate BrightSign Deployment Files
 
 ```
-Create BrightSign deployment configuration:
+Create BrightSign deployment configuration.
+
+Refer to CLAUDE.md for BrightSign deployment patterns and autorun.brs templates.
 
 Application Type: {{SPA_OR_STATIC}}
 Display: {{WIDTH}}x{{HEIGHT}}
@@ -801,9 +880,11 @@ Sub Main()
     ' Launch Chromium with local file
     htmlRect = CreateObject("roRectangle", 0, 0, displayWidth, displayHeight)
     htmlConfig = {
-        url: "file:///sd:/index.html",
-        port: msgPort,
+        url: "file:///sd:/index.html"
+        port: msgPort
         inspector_server: { port: 2999 }
+        javascript_enabled: true
+        nodejs_enabled: true
     }
     
     html = CreateObject("roHtmlWidget", htmlRect, htmlConfig)
@@ -830,7 +911,7 @@ End Sub
 
 ---
 
-## Step 7: Package for Deployment
+## Step 6: Package for Deployment
 
 ### SD Card Structure
 
@@ -1034,6 +1115,85 @@ body {
     margin: 0;
     padding: 0;
 }
+```
+
+---
+
+## Common Migration Challenges
+
+These AI prompts help you overcome common PWA-specific challenges during migration:
+
+### Challenge 1: Complex Service Worker
+
+**Scenario**: Your PWA has a complex service worker with multiple caching strategies, offline support, and background sync.
+
+**AI Prompt:**
+```
+My PWA has a complex service worker with multiple caching strategies.
+
+Review the service worker migration patterns in CLAUDE.md, then help me:
+1. Analyze what the service worker does
+2. Determine which features are needed on BrightSign
+3. Replace caching with localStorage/IndexedDB
+4. Remove unnecessary offline features
+5. Provide simplified data persistence code
+
+Show migration strategy for my service worker.
+```
+
+### Challenge 2: SPA Client-Side Routing
+
+**Scenario**: Your PWA is a React/Vue/Angular SPA with client-side routing that needs to work on BrightSign.
+
+**AI Prompt:**
+```
+My PWA is a React/Vue/Angular SPA with client-side routing.
+
+Consult the SPA routing patterns in CLAUDE.md, then help me:
+1. Set up Node.js server for routing
+2. Configure server to handle all routes
+3. Create autorun.brs to launch server and Chromium
+4. Test all routes work correctly
+5. Optimize for BrightSign environment
+
+Provide complete server setup and deployment code.
+```
+
+### Challenge 3: Push Notifications
+
+**Scenario**: Your PWA uses push notifications for user engagement, which need to be replaced with on-screen notifications.
+
+**AI Prompt:**
+```
+My PWA uses push notifications.
+
+Review the notification handling patterns in CLAUDE.md, then help me:
+1. Identify what notifications are used for
+2. Design alternative on-screen notification system
+3. Create custom notification UI
+4. Implement notification logic without Web Notification API
+5. Test notification display
+
+Provide alternative notification implementation.
+```
+
+### Challenge 4: Mobile-First Responsive Design
+
+**Scenario**: Your PWA is mobile-first with many responsive breakpoints that need to be adapted for fixed signage displays.
+
+**AI Prompt:**
+```
+My PWA is mobile-first with many responsive breakpoints.
+
+Refer to the display optimization patterns in CLAUDE.md, then help me:
+1. Identify target signage display resolution
+2. Remove mobile breakpoints
+3. Adjust layout for fixed large display
+4. Update font sizes for viewing distance
+5. Remove mobile-specific interactions
+6. Test on target display size
+
+Provide optimized CSS for signage displays.
 ```
 
 ---
