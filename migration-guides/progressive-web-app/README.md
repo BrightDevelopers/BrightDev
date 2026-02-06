@@ -8,175 +8,74 @@ If you have not set up the BrightDeveloper MCP Server yet, follow the instructio
 
 ## Overview
 
-Progressive Web Apps (PWAs) are web applications that use modern web capabilities to deliver app-like experiences. Since PWAs are **already web-based** with HTML/CSS/JavaScript, migration to BrightSign is straightforward - you adapt the existing web content for BrightSign's embedded environment.
+Since PWAs are **already web-based** with HTML/CSS/JavaScript, migration to BrightSign is straightforward. You'll adapt existing web content for BrightSign's embedded Chromium environment, removing PWA-specific features that don't apply to digital signage.
 
-**Migration Strategy**: Adapt PWA for BrightSign's embedded platform, remove browser-specific features
+**Migration Strategy**: Remove PWA features → Optimize for signage displays → Deploy to BrightSign
 
-**⏱️ Timeline**: 1-2 weeks  
-**✅ Complexity**: LOW - Your content is already HTML/CSS/JS
-
----
-
-## What is a Progressive Web App?
-
-### Architecture
-```
-Progressive Web App
-├── Web Application (HTML/CSS/JS)
-├── Service Worker (offline support)
-├── Web App Manifest (installability)
-└── Modern Web APIs
-    ├── Push Notifications
-    ├── Background Sync
-    ├── Cache API
-    └── IndexedDB
-```
-
-### Common Patterns
-
-**1. Single Page Application (SPA)**
-- React, Vue, Angular, or vanilla JavaScript
-- Client-side routing
-- Dynamic content loading
-- State management
-
-**2. Offline-First PWA**
-- Service worker for caching
-- Background sync capabilities
-- Offline data storage (IndexedDB, Cache API)
-- Progressive enhancement
-
-**3. Installable Web App**
-- Web app manifest
-- Add to home screen functionality
-- Standalone display mode
-- App-like navigation
+**⚡ Key Factors**: Routing complexity (SPAs need Node.js), service worker usage, display optimizations  
+**📊 Complexity**: Typically LOW to MEDIUM - see assessment criteria [below](#complexity-assessment)
 
 ---
 
 ## Migration Approach
 
-Since PWAs are already web-based, there's essentially **one migration path**:
+**[Adapt PWA for BrightSign →](method1-adapt.md)**
 
-**[Adapt PWA for BrightSign](method1-adapt.md)** - Remove PWA-specific features, adapt for embedded environment (1-2 weeks)
+Since PWAs are already web-based, there's **one migration path**: adapt existing content for BrightSign's embedded environment. No transpilation needed.
 
-No transpilation needed - you're adapting existing web content for BrightSign's Chromium environment.
+**What you'll do:**
+1. Build production version of your PWA
+2. Remove PWA-specific features (service worker, manifest, notifications)
+3. Optimize display and fonts for signage viewing distance
+4. Set up Node.js server (if SPA with client-side routing)
+5. Create BrightSign deployment files
 
 ---
 
 ## Quick Assessment
 
-### What Transfers Directly ✅
+### Core Web Content ✅
+HTML, CSS, JavaScript, business logic, fetch/XHR, localStorage, IndexedDB, Web Workers - all work as-is on BrightSign's Chromium 120.
 
-- **HTML pages** - Use as-is
-- **CSS styles** - Use as-is (adjust for signage displays)
-- **JavaScript logic** - Most works as-is
-- **Business logic** - No changes needed
-- **API calls** - fetch/XHR work identically
-- **Modern ES6+ JavaScript** - Fully supported (Chromium 120)
-- **localStorage** - Works identically
-- **IndexedDB** - Works identically
-- **Web workers** - Supported
-- **CSS Grid/Flexbox** - Fully supported
+### PWA Features to Remove ⚠️
+Service workers, web manifest, push notifications, background sync, install prompts, geolocation - not applicable for digital signage.
 
-### What Needs Adaptation ⚠️
+### Signage Optimizations 🎯
+- **Large displays**: Update viewport and layout for 1920x1080 or 4K
+- **Viewing distance**: Increase font sizes for readability (24px+ base)
+- **SPA routing**: Add Node.js Express server for client-side routes
+- **24/7 operation**: Add auto-refresh, idle detection, memory cleanup
 
-| PWA Feature | BrightSign Equivalent |
-|-------------|----------------------|
-| Service Worker | Remove or adapt (always-online signage) |
-| Push Notifications | Not applicable (no user interaction) |
-| Background Sync | Not needed (persistent connection) |
-| Web App Manifest | Remove (not installable) |
-| Add to Home Screen | Not applicable |
-| Geolocation API | Not available |
-| Camera/Microphone (getUserMedia) | BrightSign camera API (limited models) |
-| Vibration API | Not applicable |
-| Share API | Not applicable |
-| Install prompts | Remove |
-| Notification API | Remove or use custom on-screen notifications |
 
-### What to Optimize 🎯
-
-- **Display Size**: Adjust for large signage displays (typically 1920x1080 or 4K)
-- **Font Sizes**: Optimize for viewing distance (larger than mobile)
-- **Touch Interactions**: May need removal/adaptation (not all displays are touch)
-- **Viewport**: Update for fixed display size
-- **Navigation**: Remove mobile gestures, use simple navigation
-- **Performance**: Optimize for 24/7 operation
-
----
-
-## Common PWA Patterns
-
-### Pattern 1: React/Vue/Angular SPA
-
-**PWA Structure:**
-```
-pwa-app/
-├── public/
-│   ├── index.html
-│   ├── manifest.json          ← Remove
-│   └── service-worker.js      ← Remove or adapt
-├── src/
-│   ├── components/
-│   ├── services/
-│   ├── store/
-│   └── App.jsx
-├── package.json
-└── build/                      ← Use this for BrightSign
-```
-
-**Migration:** Use production build, remove PWA features
-
-### Pattern 2: Offline-First PWA
-
-**Service Worker Code:**
-```javascript
-// Service worker (remove or simplify)
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
-});
-```
-
-**Migration:** 
-- Remove service worker registration
-- Use direct fetch or local file serving
-- BrightSign can serve content locally via Node.js
-
-### Pattern 3: Multi-Page PWA
-
-**PWA Structure:**
-```
-pwa-app/
-├── index.html
-├── about.html
-├── contact.html
-├── css/
-├── js/
-│   ├── main.js
-│   └── sw-register.js         ← Remove
-├── manifest.json              ← Remove
-└── service-worker.js          ← Remove
-```
-
-**Migration:** Use HTML files directly, remove PWA registration
-
----
 
 ## Getting Started with AI-Assisted Migration
 
-For AI-assisted migration, work with your AI assistant (like Claude via the BrightDeveloper MCP) to automate the migration process.
+**Recommended Approach:** Use AI assistance (like Claude with the BrightDeveloper MCP) to automate migration steps.
 
-**Quick Start:**
-1. **Analyze** - Ask AI to analyze your PWA structure, dependencies, and features
-2. **Adapt** - Ask AI to remove PWA features and optimize for BrightSign displays
-3. **Deploy** - Ask AI to create deployment files (autorun.brs, server setup, etc.)
+### Quick Start Prompt
 
-💡 **For detailed AI prompts and step-by-step instructions**, see [Method 1: Adapt PWA for BrightSign →](method1-adapt.md#step-1-analyze-your-pwa)
+```
+Migrate my Progressive Web App to BrightSign:
+
+Source: [your-project-path]
+Framework: [React/Vue/Angular/Vanilla]
+Display: [1920x1080 or 3840x2160]
+
+Refer to CLAUDE.md for PWA migration patterns and automation schemas.
+
+Tasks:
+1. Analyze PWA structure and dependencies
+2. Build production version
+3. Remove PWA features (service worker, manifest, notifications)
+4. Optimize for signage (viewport, fonts, layout)
+5. Set up Node.js server (if SPA with routing)
+6. Create BrightSign deployment files (autorun.brs)
+7. Generate SD card deployment structure
+
+Provide step-by-step results and complete migration report.
+```
+
+💡 **For detailed step-by-step AI prompts and guidance**, see [Method 1: Adapt PWA for BrightSign →](method1-adapt.md)
 
 ---
 
@@ -196,19 +95,27 @@ For AI-assisted migration, work with your AI assistant (like Claude via the Brig
 
 ---
 
-## Timeline Estimate
+## Complexity Assessment
 
-**Week 1:**
-- Days 1-2: Analysis, build production version, remove PWA features
-- Days 3-4: Display optimization, testing in browser
-- Day 5: BrightSign deployment setup, initial device testing
+Use these factors to estimate migration effort for your team:
 
-**Week 2 (if needed):**
-- Days 1-3: Framework-specific adaptations (SPA routing, etc.)
-- Days 4-5: Extended testing and optimization
+**LOW Complexity** - Static PWA or simple SPA
+- No service worker or simple caching only
+- Standard viewport and layout
+- Few dependencies
+- No complex routing
 
-**Most PWAs**: 1 week
-**Complex SPAs with routing**: 2 weeks
+**MEDIUM Complexity** - SPA with routing
+- Complex service worker with multiple strategies
+- Client-side routing requiring Node.js server
+- Custom viewport or responsive design
+- Multiple API integrations
+
+**HIGH Complexity** - Advanced PWA features
+- Background sync or push notifications to replace
+- Complex offline-first architecture
+- Mobile-first design requiring significant layout changes
+- Framework-specific build optimizations needed
 
 ---
 
@@ -222,18 +129,17 @@ PWA migrations may encounter specific challenges like complex service workers, S
 
 ## When to Choose This Migration
 
-**✅ Perfect fit for PWAs:**
-- Content is HTML/CSS/JavaScript
-- Fast migration (1-2 weeks)
-- Modern web features needed
-- SPA framework (React, Vue, Angular)
-- Standard web functionality
+**✅ Ideal when:**
+- Your PWA is already built with HTML/CSS/JavaScript
+- You want to leverage existing web frameworks (React, Vue, Angular)
+- Your content needs modern web APIs and ES6+ JavaScript
+- You need quick deployment with minimal code changes
 
-**✅ Works well even with:**
-- Service workers (remove/simplify)
-- Complex routing (add Node.js server)
-- Modern JavaScript (fully supported)
-- Large frameworks
+**✅ Handles well:**
+- Service workers → Remove or simplify
+- SPA routing → Add Node.js Express server
+- Mobile-first design → Optimize for fixed displays
+- Offline features → Replace with signage-appropriate alternatives
 
 ---
 

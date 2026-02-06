@@ -1,20 +1,22 @@
 # Method 1: Adapt PWA for BrightSign
 
-> **⏱️ Timeline**: 1-2 weeks  
-> **🎯 Best for**: All Progressive Web Apps (this is the primary migration path)
+> **🎯 Complexity**: **LOW to MEDIUM**  
+> **🚀 Best for**: All Progressive Web Apps (primary migration path)  
+> **⚡ Key Factors**: SPA routing complexity, service worker usage, display optimizations
 
 ---
 
 ## Overview
 
-Progressive Web Apps are modern web applications with PWA-specific features like service workers, web manifests, and offline capabilities. Migration to BrightSign is a straightforward **adaptation process**:
+PWAs are already web applications, so migration involves simple **adaptation**:
 
-1. Build production version of PWA
-2. Adapt and optimize for BrightSign (remove PWA features, optimize display)
-3. Set up Node.js server (if SPA with client-side routing)
-4. Deploy to BrightSign
+1. Build production version
+2. Remove PWA features (service worker, manifest, notifications)
+3. Optimize for signage displays (viewport, fonts, layout)
+4. Set up Node.js server (if SPA with routing)
+5. Deploy to BrightSign with autorun.brs
 
-**No transpilation needed** - you're working with web content throughout.
+**Recommended Approach**: Use AI assistance for each step below. Separating prompts is a great way to maintain clean context and execute AI code generation in a structured way.
 
 ---
 
@@ -69,51 +71,19 @@ Tasks:
 Provide complete analysis with file paths and specific recommendations.
 ```
 
-**Expected Output**:
+**Expected Output** (summarized):
 ```
-PWA Analysis Report
-===================
-
-Framework: React 18.2.0
-Build Tool: Vite 4.3.0
+Framework: React 18.2.0 with Vite
 Build Output: dist/
 
-PWA Features Found:
-- Service Worker: public/service-worker.js
-- SW Registration: src/index.jsx (line 23)
-- Caching Strategy: Cache First with Workbox
-- Web Manifest: public/manifest.json
-- Push Notifications: No
-- Background Sync: No
-- Install Prompt: Yes (src/components/InstallPrompt.jsx)
+PWA Features: Service worker (Workbox), manifest, install prompt
+Routing: Client-side (react-router-dom) - 5 routes
+Complexity: MEDIUM (requires Node.js server for routing)
 
-Routing:
-- Type: Client-side routing
-- Library: react-router-dom v6
-- Routes: 5 routes found
-  - / (Home)
-  - /about (About)
-  - /products (Products)
-  - /contact (Contact)
-  - /dashboard (Dashboard)
-
-Dependencies (Runtime):
-- react: 18.2.0
-- react-dom: 18.2.0
-- react-router-dom: 6.11.0
-- axios: 1.4.0
-
-PWA Packages:
-- workbox-webpack-plugin: 6.5.4
-
-Recommendations:
-1. Build production version: npm run build
-2. Remove service worker registration from src/index.jsx
-3. Remove public/service-worker.js
-4. Remove public/manifest.json references
-5. Set up Express server for client-side routing
-6. Update viewport for 1920x1080 display
-7. Remove install prompt component
+Key Actions:
+- Remove service worker and manifest
+- Set up Express server for SPA routing
+- Optimize viewport and fonts for 1920x1080
 ```
 
 ---
@@ -132,6 +102,8 @@ Tasks:
 1. **Check Build Configuration**:
    - Verify package.json build script
    - Check build tool configuration
+   - Configure webpack to bundle all dependencies into bundle.js
+   - Mark @brightsign/* APIs as commonjs externals in webpack
    - Identify any environment variables needed
    - Check for build-time optimizations
 
@@ -158,132 +130,63 @@ Execute build and provide complete output analysis.
 
 **Common Build Commands**:
 ```bash
-# React (Create React App)
+# React (Create React App or Vite) or Vue (Vue CLI) or Vanilla/Webpack
 npm run build
-# Output: build/
-
-# React (Vite)
-npm run build
-# Output: dist/
-
-# Vue (Vue CLI)
-npm run build
-# Output: dist/
+# Output: build/ or dist/
 
 # Angular
 npm run build -- --configuration production
 # Output: dist/
 
-# Vanilla/Webpack
-npm run build
-# Output: dist/ or build/
+# With custom webpack bundling (recommended for BrightSign)
+npx webpack
+# Output: dist/bundle.js (all dependencies bundled)
 ```
 
-**Verification**:
-```bash
-# Serve build locally to test
-npx serve -s build    # For CRA
-npx serve -s dist     # For Vite/Vue
+**Note**: For BrightSign deployment, configure webpack to bundle all npm dependencies into a single bundle.js file, with `@brightsign/*` APIs marked as externals.
 
-# Open http://localhost:3000 and verify functionality
-```
+</details>
 
 ---
 
 ## Step 3: Adapt and Optimize for BrightSign
 
-### AI Prompt: Remove PWA Features and Optimize Display
+### AI Prompt
 
 ```
-Adapt and optimize my PWA for BrightSign deployment.
+Adapt my PWA for BrightSign digital signage.
 
-Review CLAUDE.md for PWA removal and display optimization patterns.
+Path: [your-project-path]
+Nodejs version: 18.18.2
+Display: 1920x1080 (or 3840x2160 for 4K)
 
-Display Configuration:
-- Width: 1920px (or 3840px for 4K)
-- Height: 1080px (or 2160px for 4K)
-- Orientation: Landscape
-- Viewing Distance: 3-10 feet
+Remove PWA Features:
+1. Service worker registration and files
+2. Web app manifest references
+3. Push notifications and background sync
+4. Install prompts and PWA detection
+5. PWA dependencies from package.json
 
-Tasks:
+Optimize for Signage:
+1. Update viewport to fixed display size (1920x1080)
+2. Increase font sizes for viewing distance (24px+ base)
+3. Remove responsive breakpoints and mobile CSS
+4. Remove touch event handlers
+5. Update layout for landscape orientation
 
-1. **Remove Service Worker Registration**:
-   - Find all serviceWorker.register() calls
-   - Remove registration code from HTML/JavaScript
-   - Delete service worker files
-   - Remove Workbox configuration
-   - Remove service worker build plugins
+Add Signage Features:
+1. Idle detection / screensaver timeout
+2. Auto-refresh for 24/7 operation
+3. Connection status monitoring
+4. Memory cleanup for long-running stability
 
-2. **Remove Web App Manifest**:
-   - Remove <link rel="manifest"> from HTML
-   - Delete manifest.json file
-   - Remove apple-touch-icon references
-   - Remove theme-color meta tags
-
-3. **Remove PWA-Specific Code**:
-   - Remove push notification code
-   - Remove notification permission requests
-   - Remove background sync code
-   - Remove install prompt components
-   - Remove beforeinstallprompt event handlers
-   - Remove PWA detection code
-
-4. **Clean Up Dependencies**:
-   - Remove workbox-* packages from package.json
-   - Remove @angular/service-worker (if Angular)
-   - Remove register-service-worker (if Vue)
-   - Remove other PWA-specific packages
-
-5. **Update Build Configuration**:
-   - Remove service worker plugins from webpack/vite config
-   - Remove manifest plugin
-   - Remove PWA-related build steps
-   - Configure externals for @brightsign/* APIs
-   - Ensure all other dependencies are bundled
-
-6. **Update Viewport**:
-   - Change viewport to fixed display size
-   - Remove device-width scaling
-   - Set to landscape orientation
-
-7. **Adjust Font Sizes**:
-   - Increase base font size (16px → 24px+)
-   - Scale all text for viewing distance
-   - Update heading sizes proportionally
-   - Ensure readability from distance
-
-8. **Optimize Layout**:
-   - Remove responsive breakpoints
-   - Set fixed container widths
-   - Adjust padding/margins for large display
-   - Update grid/flexbox layouts for fixed size
-
-9. **Remove Mobile-Specific CSS**:
-   - Remove max-width media queries
-   - Remove mobile-first breakpoints
-   - Remove touch-specific styles
-   - Remove mobile navigation patterns
-
-10. **Update JavaScript**:
-   - Remove touch event handlers
-   - Remove gesture libraries (Hammer.js, etc.)
-   - Remove mobile detection code
-   - Remove orientation change handlers
-   - Remove viewport resize handlers
-
-11. **Add Signage Features**:
-   - Add idle/screensaver timeout
-   - Add auto-refresh timer (for 24/7 reliability)
-   - Add connection status monitoring
-   - Add error recovery mechanisms
-   - Add enhanced logging for debugging
-   - Add memory leak prevention
-   - Implement periodic cleanup
-
-Show all changes made with before/after code examples.
+Show all changes with before/after examples.
 ```
 
-### Example Removals
+<details>
+<summary><strong>Manual Implementation Reference</strong></summary>
+
+### Key Code Examples
 
 **1. Remove Service Worker Registration**
 
@@ -309,98 +212,15 @@ if ('serviceWorker' in navigator) {
 // Service worker removed - not needed for BrightSign
 ```
 
-**2. Remove Web App Manifest**
+**2. Update Viewport and Font Sizes for Signage**
 
-**Before (index.html):**
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#000000">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/logo192.png">
-    <title>My PWA</title>
-</head>
-```
-
-**After:**
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
-    <title>My BrightSign App</title>
-</head>
-```
-
-**3. Remove Install Prompt Component**
-
-**Before (InstallPrompt.jsx):**
-```javascript
-import { useState, useEffect } from 'react';
-
-function InstallPrompt() {
-    const [installPrompt, setInstallPrompt] = useState(null);
-    
-    useEffect(() => {
-        const handler = (e) => {
-            e.preventDefault();
-            setInstallPrompt(e);
-        };
-        
-        window.addEventListener('beforeinstallprompt', handler);
-        
-        return () => {
-            window.removeEventListener('beforeinstallprompt', handler);
-        };
-    }, []);
-    
-    const handleInstall = () => {
-        if (installPrompt) {
-            installPrompt.prompt();
-        }
-    };
-    
-    if (!installPrompt) return null;
-    
-    return (
-        <button onClick={handleInstall}>
-            Install App
-        </button>
-    );
-}
-```
-
-**After:**
-```javascript
-// Component removed - not applicable for BrightSign
-```
-
-### Display and Signage Optimizations
-
-**4. Viewport Update**
-
-**Before:**
+**Before (index.html + styles.css):**
 ```html
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 ```
-
-**After:**
-```html
-<meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
-```
-
-**5. Font Size Optimization**
-
-**Before (styles.css):**
 ```css
 :root {
     --font-size-base: 16px;
-    --font-size-lg: 18px;
-    --font-size-xl: 24px;
 }
 
 body {
@@ -410,18 +230,15 @@ body {
 h1 {
     font-size: 2rem; /* 32px */
 }
-
-h2 {
-    font-size: 1.5rem; /* 24px */
-}
 ```
 
-**After (styles.css):**
+**After (index.html + styles.css):**
+```html
+<meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
+```
 ```css
 :root {
     --font-size-base: 24px; /* Increased for viewing distance */
-    --font-size-lg: 28px;
-    --font-size-xl: 36px;
 }
 
 body {
@@ -434,249 +251,69 @@ body {
 h1 {
     font-size: 3rem; /* 72px - larger for signage */
 }
-
-h2 {
-    font-size: 2.25rem; /* 54px */
-}
 ```
 
-**6. Remove Responsive Breakpoints**
-
-**Before:**
-```css
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-    
-    .nav {
-        flex-direction: column;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 5px;
-    }
-}
-```
-
-**After:**
-```css
-.container {
-    width: 100%;
-    height: 100%;
-    padding: 40px; /* Larger padding for signage */
-}
-
-/* Removed all mobile breakpoints */
-
-.nav {
-    /* Fixed layout for signage */
-    flex-direction: row;
-}
-```
-
-**7. Remove Touch Events**
-
-**Before:**
-```javascript
-// Touch gesture handling
-element.addEventListener('touchstart', handleTouchStart);
-element.addEventListener('touchmove', handleTouchMove);
-element.addEventListener('touchend', handleTouchEnd);
-
-// Swipe detection
-let touchStartX = 0;
-let touchEndX = 0;
-
-function handleTouchStart(e) {
-    touchStartX = e.changedTouches[0].screenX;
-}
-
-function handleTouchEnd(e) {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-}
-
-function handleSwipe() {
-    if (touchEndX < touchStartX - 50) {
-        // Swipe left
-        nextSlide();
-    }
-    if (touchEndX > touchStartX + 50) {
-        // Swipe right
-        previousSlide();
-    }
-}
-```
-
-**After:**
-```javascript
-// Use simple button navigation for signage
-// Touch events removed
-
-// Auto-advance slides instead
-let currentSlide = 0;
-const SLIDE_INTERVAL = 5000; // 5 seconds
-
-setInterval(() => {
-    nextSlide();
-}, SLIDE_INTERVAL);
-
-function nextSlide() {
-    currentSlide = (currentSlide + 1) % totalSlides;
-    updateSlide();
-}
-```
-
-**8. Add Screensaver/Idle Handler**
+**3. Add Signage Features (Idle Detection & Auto-Refresh)**
 
 ```javascript
-// Add idle detection for screensaver
+// Idle detection for screensaver
 let idleTimer = null;
 const IDLE_TIMEOUT = 60000; // 1 minute
 
 function resetIdleTimer() {
     clearTimeout(idleTimer);
     hideScreensaver();
-    
-    idleTimer = setTimeout(() => {
-        showScreensaver();
-    }, IDLE_TIMEOUT);
+    idleTimer = setTimeout(() => showScreensaver(), IDLE_TIMEOUT);
 }
 
-function showScreensaver() {
-    document.getElementById('screensaver').style.display = 'block';
-}
-
-function hideScreensaver() {
-    document.getElementById('screensaver').style.display = 'none';
-}
-
-// Reset on any interaction
 document.addEventListener('click', resetIdleTimer);
 document.addEventListener('keypress', resetIdleTimer);
-
-// Start timer
 resetIdleTimer();
-```
 
-**9. Add Connection Status Monitoring**
-
-```javascript
-// Monitor network connection status
-let isOnline = navigator.onLine;
-
-function updateConnectionStatus() {
-    const wasOnline = isOnline;
-    isOnline = navigator.onLine;
-    
-    if (isOnline !== wasOnline) {
-        if (isOnline) {
-            console.log('Connection restored');
-            showNotification('Online', 'success');
-        } else {
-            console.log('Connection lost');
-            showNotification('Offline', 'warning');
-        }
-    }
-}
-
-window.addEventListener('online', updateConnectionStatus);
-window.addEventListener('offline', updateConnectionStatus);
-
-// Periodic connection check
-setInterval(updateConnectionStatus, 30000); // Every 30 seconds
-```
-
-**10. Add Auto-Refresh for 24/7 Operation**
-
-```javascript
 // Auto-refresh every 24 hours for reliability
-const AUTO_REFRESH_INTERVAL = 86400000; // 24 hours
-
 setTimeout(() => {
     console.log('Auto-refresh triggered (24-hour cycle)');
     window.location.reload();
-}, AUTO_REFRESH_INTERVAL);
-
-console.log(`Auto-refresh scheduled in ${AUTO_REFRESH_INTERVAL / 3600000} hours`);
+}, 86400000);
 ```
 
-**11. Add Memory Cleanup**
-
-```javascript
-// Periodic memory cleanup for 24/7 operation
-const CLEANUP_INTERVAL = 3600000; // 1 hour
-
-setInterval(() => {
-    console.log('Performing memory cleanup');
-    
-    // Clear old cached data
-    if (window.dataCache && window.dataCache.size > 1000) {
-        window.dataCache.clear();
-    }
-    
-    // Clear old log entries
-    if (window.logs && window.logs.length > 100) {
-        window.logs = window.logs.slice(-100);
-    }
-    
-    // Force garbage collection if available
-    if (window.gc) {
-        try {
-            window.gc();
-            console.log('Forced garbage collection');
-        } catch (e) {
-            console.log('Garbage collection not available');
-        }
-    }
-}, CLEANUP_INTERVAL);
-```
+**Additional Changes:**
+- Remove web app manifest references (`<link rel="manifest">`, theme-color meta tags)
+- Remove install prompt components
+- Remove responsive breakpoints (@media queries)
+- Remove touch event handlers (touchstart, touchmove, touchend)
+- Add connection status monitoring
+- Add memory cleanup for long-running stability
 
 ---
+</details>
 
 ## Step 4: Set Up Node.js Server (for SPAs)
 
-### AI Prompt: Create Node.js Server for SPA Routing
+**Note**: Only needed if your PWA uses client-side routing (React Router, Vue Router, Angular Router)
+
+### AI Prompt
 
 ```
-Set up Node.js Express server for my React/Vue/Angular SPA.
+Create Node.js Express server for my SPA routing.
 
-Consult CLAUDE.md for SPA routing server patterns if needed.
+Path: [your-project-path]
+Build Directory: dist (webpack output)
 
 Tasks:
+1. Create server.js with Express
+2. Configure static file serving from dist/
+3. Add catch-all route for client-side routing
+4. Add health check endpoint
+5. Update package.json with express dependency and build script
+6. Ensure webpack bundles all dependencies except express
+7. Test server locally with all routes
 
-1. **Create Express Server**:
-   - Install express dependency
-   - Create server.js file
-   - Configure static file serving
-   - Set up catch-all route for client-side routing
-   - Add health check endpoint
-   - Add error handling
-
-2. **Update Package.json**:
-   - Add express to dependencies
-   - Add start script
-   - Configure production settings
-
-3. **Test Server Locally**:
-   - Run server
-   - Test all routes work
-   - Verify static files served correctly
-   - Check console for errors
-
-Provide complete server setup code.
+Provide complete server code and setup instructions.
 ```
 
-### Express Server for SPA
+<details>
+<summary><strong>Manual Server Implementation Reference</strong></summary>
 
 **server.js:**
 ```javascript
@@ -686,7 +323,7 @@ const app = express();
 
 // Configuration
 const PORT = process.env.PORT || 8080;
-const BUILD_DIR = path.join(__dirname, 'build'); // or 'dist' for Vite/Vue
+const BUILD_DIR = path.join(__dirname, 'dist'); // Webpack output directory
 
 // Middleware - serve static files
 app.use(express.static(BUILD_DIR));
@@ -741,66 +378,44 @@ process.on('SIGTERM', () => {
   },
   "scripts": {
     "start": "node server.js",
-    "build": "vite build"
+    "build": "webpack --config webpack.config.js"
   }
-}
 ```
 
-**Testing:**
-```bash
-# Install dependencies
-npm install
-
-# Build production version
-npm run build
-
-# Start server
-npm start
-
-# Test in browser
-# Open http://localhost:8080
-# Navigate to different routes
-# Verify all routes work
-```
+</details>
 
 ---
 
 ## Step 5: Create BrightSign Deployment
 
-### AI Prompt: Generate BrightSign Deployment Files
+### AI Prompt
 
 ```
-Create BrightSign deployment configuration.
+Generate BrightSign deployment files for my PWA.
 
-Refer to CLAUDE.md for BrightSign deployment patterns and autorun.brs templates.
+Application Type: [SPA with Node.js OR Static]
+Display: [1920x1080 OR 3840x2160]
+Build Directory: dist (webpack bundled output)
 
-Application Type: {{SPA_OR_STATIC}}
-Display: {{WIDTH}}x{{HEIGHT}}
-Node.js Required: {{YES_OR_NO}}
-
-Tasks:
-
-1. **Create autorun.brs**:
-   - Configure for SPA (with Node.js) or static site
-   - Set display dimensions
-   - Add error handling
+Create:
+1. autorun.brs (BrightSign launcher script)
+   - Configure for SPA (with Node.js) or static serving
+   - Set display resolution
    - Enable remote debugging (port 2999)
+   - Add error handling
 
-2. **Document SD Card Structure**:
-   - List all required files
-   - Specify directory structure
-   - Include setup instructions
+2. SD_CARD_STRUCTURE.md (deployment documentation)
+   - List all required files (including bundle.js)
+   - Include directory structure
+   - Add setup instructions
 
-3. **Create Deployment Guide**:
-   - Pre-deployment checklist
-   - Installation steps
-   - Testing procedures
-   - Troubleshooting tips
+3. Deployment guide with troubleshooting tips
 
 Provide complete deployment package.
 ```
 
-### BrightSign autorun.brs
+<details>
+<summary><strong>Manual autorun.brs Templates</strong></summary>
 
 **For SPA with Node.js:**
 ```brightscript
@@ -810,7 +425,7 @@ Sub Main()
     
     ' Start Node.js server
     print "Starting Node.js server..."    
-    node = CreateObject("roNodeJs", "SD:/server.js)
+    node = CreateObject("roNodeJs", "SD:/server.js")
     
     ' Wait for server to start
     sleep(3000)
@@ -820,7 +435,7 @@ Sub Main()
     htmlRect = CreateObject("roRectangle", 0, 0, 1920, 1080)
     htmlConfig = {
         nodejs_enabled: true,
-        url: "file:///sd:/dist/index.html",
+        url: "file:///sd:/index.html",
         port: msgPort,
         security_params: {
             websecurity: false
@@ -909,89 +524,227 @@ Sub Main()
 End Sub
 ```
 
+</details>
+
 ---
 
 ## Step 6: Package for Deployment
 
-### SD Card Structure
+### AI Prompt
 
-**For SPA with Node.js:**
+```
+Package my BrightSign application for SD card deployment.
+
+Application Type: [SPA with Node.js OR Static]
+Build Directory: dist (webpack bundled output)
+
+Tasks:
+1. Configure webpack to bundle all npm dependencies into bundle.js
+   - Include all dependencies in the bundle
+   - Add BrightSign APIs (@brightsign/*) as commonjs externals
+   - Ensure proper module resolution
+2. Document SD card directory structure
+3. List all required files
+4. Create deployment instructions
+5. Add pre-deployment checklist
+6. Include SD card formatting requirements
+7. Provide testing steps
+
+Output complete deployment guide with webpack configuration.
+```
+
+<details>
+<summary><strong>Manual Deployment Reference</strong></summary>
+
+### Webpack Configuration for Bundling
+
+**Important**: Bundle all npm dependencies to avoid deploying `node_modules/` to the SD card.
+
+**webpack.config.js:**
+```javascript
+const path = require('path');
+
+module.exports = {
+  entry: './src/index.js', // Your main entry point
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  mode: 'production',
+  
+  // Mark BrightSign APIs as external (commonjs modules)
+  externals: {
+    '@brightsign/deviceinfo': 'commonjs @brightsign/deviceinfo',
+    '@brightsign/networkconfiguration': 'commonjs @brightsign/networkconfiguration',
+    '@brightsign/serialport': 'commonjs @brightsign/serialport',
+    // Add other @brightsign/* APIs as needed
+  },
+  
+  module: {
+    rules: [
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env', '@babel/preset-react']
+          }
+        }
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      }
+    ]
+  },
+  
+  resolve: {
+    extensions: ['.js', '.jsx']
+  }
+};
+```
+
+**Why bundle dependencies:**
+- Avoids copying large `node_modules/` folder to SD card
+- Reduces deployment size significantly  
+- Faster load times on BrightSign
+- Only BrightSign-specific APIs remain as external modules
+
+**Why mark @brightsign/* as externals:**
+- These APIs are provided by the BrightSign runtime
+- Cannot be bundled (native modules)
+- Must be loaded as commonjs modules by the player
+
+**package.json scripts:**
+```json
+{
+  "scripts": {
+    "build": "npx webpack",
+    "build:prod": "NODE_ENV=production npx webpack"
+  },
+  "devDependencies": {
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.4",
+    "babel-loader": "^9.1.2",
+    "@babel/core": "^7.22.0",
+    "@babel/preset-env": "^7.22.0",
+    "@babel/preset-react": "^7.22.0",
+    "style-loader": "^3.3.3",
+    "css-loader": "^6.8.1"
+  }
+}
+```
+
+---
+
+**SD Card Structures:**
+
+**For SPA with Node.js (with bundled dependencies):**
 ```
 SD_CARD/
 ├── autorun.brs           # BrightSign launcher
-├── server.js             # Express server
-├── package.json          # Dependencies
-├── node_modules/         # Installed packages
+├── server.js             # Express server (if needed)
+├── package.json          # Only express dependency
+├── node_modules/         # Only express (minimal)
 │   └── express/
-└── build/                # Production build
+└── dist/                 # Production build
     ├── index.html
-    ├── static/
-    │   ├── css/
-    │   │   └── main.*.css
-    │   └── js/
-    │       └── main.*.js
+    ├── bundle.js         # All app dependencies bundled
+    ├── styles.css
     └── assets/
         └── images/
 ```
 
-**For Static PWA:**
+**For Static PWA (fully bundled):**
 ```
 SD_CARD/
 ├── autorun.brs           # BrightSign launcher
 ├── index.html            # Main HTML
-├── css/
-│   └── styles.css
-├── js/
-│   └── app.js
+├── bundle.js             # All dependencies bundled
+├── styles.css
 └── assets/
     └── images/
 ```
 
+**Note**: If using BrightSign APIs (@brightsign/*), they remain as external modules and are loaded by the BrightSign runtime, not included in bundle.js.
+
 ### Deployment Steps
 
 ```bash
-# 1. Build production version
-npm run build
+# 1. Configure webpack (if not already done)
+# Create webpack.config.js with externals for @brightsign/* APIs
 
-# 2. Create deployment directory
+# 2. Build production version with dependencies bundled
+npm run build  # Uses webpack to create bundle.js
+
+# 3. Create deployment directory
 mkdir brightsign-deploy
 cd brightsign-deploy
 
-# 3a. For SPA - copy everything
-cp -r ../build ./
+# 4a. For SPA with Node.js - copy bundled build
+cp -r ../dist ./
 cp ../server.js ./
-cp ../package.json ./
+cp ../package.json ./  # Only includes express
 cp ../autorun.brs ./
 
-# Install production dependencies
-npm install --production
+# Install only production dependencies (just express)
+npm install --production --omit=dev
 
-# 3b. For Static - copy build contents
-cp -r ../build/* ./
+# 4b. For Static - copy bundled build only
+cp -r ../dist/* ./
 cp ../autorun.brs ./
+# No node_modules needed - everything bundled!
 
-# 4. Copy to SD card
+# 5. Copy to SD card
 # - Insert SD card
 # - Format as FAT32 or exFAT
 # - Copy all files to root of SD card
 
-# 5. Test on BrightSign
+# 6. Test on BrightSign
 # - Insert SD card into player
 # - Power on
 # - Application should start automatically
+
+# Verify bundle size
+ls -lh dist/bundle.js  # Should be significantly smaller than node_modules
 ```
+
+**Benefits of bundling:**
+- SD card deployment: ~5-20 MB instead of 50-200+ MB
+- Faster initial load on BrightSign
+- Simpler deployment process
+- Fewer files to manage
+
+</details>
 
 ---
 
 ## Testing and Verification
 
-### Pre-Deployment Testing
+### AI Prompt for Testing
+
+```
+Create testing plan for my BrightSign PWA deployment.
+
+Provide:
+1. Pre-deployment browser testing steps
+2. Node.js server testing (if SPA)
+3. Remote debugging setup (Chrome DevTools on port 2999)
+4. On-device verification checklist
+5. Common issues and solutions
+
+Include specific commands and URLs to test.
+```
+
+<details>
+<summary><strong>Manual Testing Reference</strong></summary>
 
 **1. Test in Browser:**
 ```bash
 # Serve production build locally
 npm run build
-npm start  # or npx serve -s build
+npm start  # or npx serve -s dist
 
 # Open http://localhost:8080
 # Verify:
@@ -999,6 +752,7 @@ npm start  # or npx serve -s build
 # - All routes work (for SPA)
 # - No console errors
 # - Display looks correct at 1920x1080
+# - bundle.js loads correctly (check Network tab)
 ```
 
 **2. Test Node.js Server (if SPA):**
@@ -1046,11 +800,11 @@ ssh brightsign@BRIGHTSIGN_IP
 
 ```javascript
 // server.js - Make sure catch-all route is LAST
-app.use(express.static('build'));
+app.use(express.static('dist'));
 
 // This must be after all other routes
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 ```
 
@@ -1058,19 +812,27 @@ app.get('*', (req, res) => {
 
 **Problem**: Fonts or images return 404
 
-**Solution**: Check asset paths and build configuration
+**Solution**: Check asset paths and webpack configuration
 
 ```javascript
-// Verify assets are in build directory
-ls -R build/
+// Verify assets are in dist directory
+ls -R dist/
 
-// Check webpack/vite public path
-// vite.config.js
-export default {
-    base: '/', // Should be '/' for BrightSign
-    build: {
-        outDir: 'build'
-    }
+// Check webpack configuration
+// webpack.config.js
+module.exports = {
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/', // Should be '/' for BrightSign
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(png|svg|jpg|jpeg|gif|woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource'
+      }
+    ]
+  }
 }
 ```
 
@@ -1117,90 +879,79 @@ body {
 }
 ```
 
+</details>
+
 ---
 
 ## Common Migration Challenges
 
-These AI prompts help you overcome common PWA-specific challenges during migration:
+Use these AI prompts when encountering specific migration issues:
 
-### Challenge 1: Complex Service Worker
+### Complex Service Worker
 
-**Scenario**: Your PWA has a complex service worker with multiple caching strategies, offline support, and background sync.
-
-**AI Prompt:**
 ```
-My PWA has a complex service worker with multiple caching strategies.
+Analyze and replace my complex service worker.
 
-Review the service worker migration patterns in CLAUDE.md, then help me:
-1. Analyze what the service worker does
-2. Determine which features are needed on BrightSign
-3. Replace caching with localStorage/IndexedDB
-4. Remove unnecessary offline features
-5. Provide simplified data persistence code
+Tasks:
+1. Analyze caching strategies and offline features
+2. Determine what's needed for always-online signage
+3. Replace with localStorage/IndexedDB where appropriate
+4. Remove unnecessary PWA offline features
 
-Show migration strategy for my service worker.
+Provide replacement strategy with code examples.
 ```
 
-### Challenge 2: SPA Client-Side Routing
+### SPA Client-Side Routing
 
-**Scenario**: Your PWA is a React/Vue/Angular SPA with client-side routing that needs to work on BrightSign.
-
-**AI Prompt:**
 ```
-My PWA is a React/Vue/Angular SPA with client-side routing.
+My PWA uses [React Router/Vue Router/Angular Router] for client-side routing.
 
-Consult the SPA routing patterns in CLAUDE.md, then help me:
-1. Set up Node.js server for routing
-2. Configure server to handle all routes
-3. Create autorun.brs to launch server and Chromium
-4. Test all routes work correctly
-5. Optimize for BrightSign environment
+Tasks:
+1. Set up Express server for SPA routing
+2. Configure catch-all route correctly
+3. Create autorun.brs for Node.js + Chromium
+4. Test all application routes
 
-Provide complete server setup and deployment code.
+Provide complete server setup code.
 ```
 
-### Challenge 3: Push Notifications
+### Push Notifications
 
-**Scenario**: Your PWA uses push notifications for user engagement, which need to be replaced with on-screen notifications.
-
-**AI Prompt:**
 ```
-My PWA uses push notifications.
+Replace Web Push Notifications with on-screen alternative.
 
-Review the notification handling patterns in CLAUDE.md, then help me:
-1. Identify what notifications are used for
-2. Design alternative on-screen notification system
-3. Create custom notification UI
-4. Implement notification logic without Web Notification API
-5. Test notification display
+Tasks:
+1. Analyze current notification usage
+2. Design custom on-screen notification system
+3. Create notification UI component  
+4. Remove Web Notification API dependencies
 
-Provide alternative notification implementation.
+Provide complete replacement implementation.
 ```
 
-### Challenge 4: Mobile-First Responsive Design
+### Mobile-First Design
 
-**Scenario**: Your PWA is mobile-first with many responsive breakpoints that need to be adapted for fixed signage displays.
-
-**AI Prompt:**
 ```
-My PWA is mobile-first with many responsive breakpoints.
+Optimize mobile-first responsive design for fixed 1920x1080 signage display.
 
-Refer to the display optimization patterns in CLAUDE.md, then help me:
-1. Identify target signage display resolution
-2. Remove mobile breakpoints
-3. Adjust layout for fixed large display
-4. Update font sizes for viewing distance
-5. Remove mobile-specific interactions
-6. Test on target display size
+Tasks:
+1. Remove all mobile breakpoints
+2. Update viewport to 1920x1080 fixed
+3. Increase font sizes for viewing distance
+4. Remove touch interactions
+5. Set fixed layout dimensions
 
-Provide optimized CSS for signage displays.
+Show all CSS and JavaScript changes needed.
 ```
 
 ---
 
 ## Optimization Tips
 
-### Performance Optimization
+<details>
+<summary><strong>Performance and Reliability Best Practices</strong></summary>
+
+### Error Recovery
 
 ```javascript
 // 1. Add memory cleanup for 24/7 operation
@@ -1274,25 +1025,17 @@ function scheduleDaily Refresh() {
 scheduleDailyRefresh();
 ```
 
+</details>
+
 ---
 
-## Next Steps
+## What's Next
 
-After completing migration:
+After migration is complete:
 
-1. **Deploy to Production**:
-   - Copy to SD card
-   - Test on actual display
-   - Monitor for issues
+1. Deploy to SD card and test on actual BrightSign device
+2. Set up remote debugging (port 2999) for troubleshooting
+3. Monitor application stability over 24-48 hours
+4. Fine-tune display settings based on viewing environment
 
-2. **Monitor and Maintain**:
-   - Set up remote debugging access
-   - Monitor logs for errors
-   - Schedule periodic updates
-
-3. **Optimize Further**:
-   - Adjust fonts/layout based on viewing
-   - Add analytics (if needed)
-   - Implement content updates
-
-Your PWA is now ready for BrightSign deployment! 🎉
+**Need help?** Use the AI prompts throughout this guide or consult [CLAUDE.md](CLAUDE.md) for automation patterns.
