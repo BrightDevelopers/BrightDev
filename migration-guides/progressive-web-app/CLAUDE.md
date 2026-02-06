@@ -19,15 +19,6 @@
 - **PWA Features**: Service workers, web manifest, offline support, installability
 - **Frameworks**: May use React, Vue, Angular, or vanilla JavaScript
 
-### Key Advantage
-PWAs are **already web applications**, so migration is **adaptation**:
-1. Build production version of PWA
-2. Remove PWA-specific features (service worker, manifest, etc.)
-3. Optimize for signage displays
-4. Set up BrightSign deployment (with Node.js if SPA)
-
-**No transpilation needed** - adaptation and optimization only.
-
 ---
 
 ## Migration Strategy
@@ -48,8 +39,8 @@ Create BrightSign deployment
     ↓
 Package for deployment
     
-Timeline: 1-2 weeks
-Complexity: LOW
+Complexity: LOW to MEDIUM
+Key Factors: SPA routing needs, service worker complexity, display optimization requirements
 ```
 
 ---
@@ -1080,4 +1071,7 @@ Migration is complete when:
 - No console errors
 - Signage features functioning
 
-Timeline: 1-2 weeks (1 week for static, 2 weeks for complex SPAs with challenges)
+Complexity Assessment:
+- **LOW**: Static PWA or simple SPA, minimal service worker, standard layout
+- **MEDIUM**: SPA with routing, complex service worker, custom design adaptations
+- **HIGH**: Advanced PWA features, background sync, mobile-first requiring major layout changes
