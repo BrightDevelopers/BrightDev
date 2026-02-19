@@ -984,7 +984,7 @@ window.addEventListener('error', (event) => {
 // Reload page daily to clear memory
 const DAILY_REFRESH_TIME = '03:00'; // 3 AM
 
-function scheduleDaily Refresh() {
+function scheduleDailyRefresh() {
     const now = new Date();
     const [hours, minutes] = DAILY_REFRESH_TIME.split(':');
     
