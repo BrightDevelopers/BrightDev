@@ -128,25 +128,6 @@ Tasks:
 Execute build and provide complete output analysis.
 ```
 
-**Common Build Commands**:
-```bash
-# React (Create React App or Vite) or Vue (Vue CLI) or Vanilla/Webpack
-npm run build
-# Output: build/ or dist/
-
-# Angular
-npm run build -- --configuration production
-# Output: dist/
-
-# With custom webpack bundling (recommended for BrightSign)
-npx webpack
-# Output: dist/bundle.js (all dependencies bundled)
-```
-
-**Note**: For BrightSign deployment, configure webpack to bundle all npm dependencies into a single bundle.js file, with `@brightsign/*` APIs marked as externals.
-
-</details>
-
 ---
 
 ## Step 3: Adapt and Optimize for BrightSign
