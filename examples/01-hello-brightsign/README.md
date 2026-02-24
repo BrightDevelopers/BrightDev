@@ -20,7 +20,7 @@ Think of the SD card like a recipe card you hand directly to a chef. No phone ca
 
 - A BrightSign player (any model)
 - An SD card (formatted FAT32 or exFAT)
-- A display connected to the player
+- A display connected to the player via HDMI
 - A text editor
 - 5 minutes
 
