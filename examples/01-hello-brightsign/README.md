@@ -42,67 +42,24 @@ Open your AI assistant of choice and paste this prompt:
 
 ```
 Write a BrightScript autorun.brs file that:
-1. Downloads an image from this URL: https://raw.githubusercontent.com/BrightDevelopers/BrightDev/main/examples/hello-brightsign/static/hello-brightsign.png
-2. Saves it to the SD card as "hello.png"
-3. Displays it fullscreen using roImagePlayer
-4. Keeps displaying it forever
+1. Displays an image from the SD card ("SD:/hello-brightsign.png") fullscreen using roImagePlayer
+2. Keeps displaying it forever
 
-Use roUrlTransfer for the download. Print progress messages so I can see what's happening via serial console or SSH.
+Print a startup message so I can see what's happening via serial console or SSH.
 ```
 
 Or, if you prefer to write it yourself (or your AI is feeling uncooperative), here's what that looks like:
 
 ```brightscript
 ' autorun.brs - Hello BrightSign!
-' Downloads and displays an image from the internet
 
 Sub Main()
     print "=== Hello BrightSign! ==="
-    print "Starting up..."
 
-    ' The image we want to display
-    imageUrl$ = "https://raw.githubusercontent.com/BrightDevelopers/BrightDev/main/examples/hello-brightsign/static/hello-brightsign.png"
-    localPath$ = "SD:/hello.png"
-
-    ' Download the image
-    print "Downloading image..."
-    urlTransfer = CreateObject("roUrlTransfer")
-    urlTransfer.SetUrl(imageUrl$)
-
-    ' Enable HTTPS
-    urlTransfer.SetCertificatesFile("common:/certs/ca-bundle.crt")
-    urlTransfer.InitClientCertificates()
-
-    ' Download to local file
-    responseCode = urlTransfer.GetToFile(localPath$)
-
-    if responseCode = 200 then
-        print "Download complete!"
-    else
-        print "Download failed with code: "; responseCode
-        print "Attempting to display anyway (file may already exist)..."
-    end if
-
-    ' Create the image player
-    print "Creating image player..."
     imagePlayer = CreateObject("roImagePlayer")
+    imagePlayer.SetDefaultMode(1) ' https://docs.brightsign.biz/developers/roimageplayer#setdefaultmodemode-as-integer-as-boolean
+    imagePlayer.DisplayFile("SD:/hello-brightsign.png")
 
-    ' Scale image to fit screen while maintaining aspect ratio
-    imagePlayer.SetDefaultMode(1)
-
-    ' Display the image
-    print "Displaying image..."
-    result = imagePlayer.DisplayFile(localPath$)
-
-    if result then
-        print "Image displayed successfully!"
-    else
-        print "Failed to display image"
-    end if
-
-    print "=== Running ==="
-
-    ' Keep the script alive forever
     while true
         sleep(1000)
     end while
@@ -115,16 +72,18 @@ End Sub
 
 1. Insert the SD card into your computer
 2. Save the code above as `autorun.brs` at the root of the card
-3. Eject the card properly (this matters more than you think)
+3. Download `hello-brightsign.png` from this repo and copy it to the root of the card
+4. Eject the card properly (this matters more than you think)
 
 Your SD card should look like this:
 
 ```
 SD:/
-└── autorun.brs
+├── autorun.brs
+└── hello-brightsign.png
 ```
 
-That's the whole deployment. One file.
+That's the whole deployment. Two files.
 
 ---
 
@@ -147,44 +106,9 @@ Let's trace the path of execution, because understanding this unlocks everything
 1. **Power on**: The player's bootloader wakes up and loads BrightSign OS
 2. **Storage scan**: The OS checks the SD card for an `autorun.brs` file
 3. **Script execution**: BrightScript interpreter runs your code
-4. **Network fetch**: `roUrlTransfer` reaches out to GitHub and downloads the PNG
-5. **File write**: The image saves to the SD card
-6. **Display**: `roImagePlayer` takes over the video output and shows the image
+4. **Display**: `roImagePlayer` takes over the video output and shows the image
 
-Each of these objects (`roUrlTransfer`, `roImagePlayer`) is a window into the player's capabilities. The SDK has dozens of them. Today you met two.
-
----
-
-## The Offline Alternative
-
-Don't want to depend on network connectivity? Download the image yourself first:
-
-1. Save `hello-brightsign.png` to your SD card
-2. Simplify the script:
-
-```brightscript
-Sub Main()
-    print "=== Hello BrightSign (Offline) ==="
-
-    imagePlayer = CreateObject("roImagePlayer")
-    imagePlayer.SetDefaultMode(1)
-    imagePlayer.DisplayFile("SD:/hello-brightsign.png")
-
-    while true
-        sleep(1000)
-    end while
-End Sub
-```
-
-Your SD card now looks like:
-
-```
-SD:/
-├── autorun.brs
-└── hello-brightsign.png
-```
-
-This is the "airplane mode" version. It works without internet access. The tradeoff is obvious: you can't update the content without physically touching the card.
+`roImagePlayer` is a window into the player's capabilities. The SDK has dozens of objects like it. Today you met one.
 
 ---
 
@@ -192,11 +116,11 @@ This is the "airplane mode" version. It works without internet access. The trade
 
 If nothing appears on screen:
 
-**Check the serial console**: Connect to the player via serial port or SSH. You'll see print statements showing exactly where things went wrong.
+**Check the serial console**: Connect to the player via [serial port](https://docs.brightsign.biz/advanced/serial-port-configuration) or [SSH](https://docs.brightsign.biz/advanced/telnet-and-ssh). You'll see print statements showing exactly where things went wrong.
 
 **Verify the file exists**: After running once, check if `hello.png` appeared on the SD card. No file means the download failed (check network/URL).
 
-**Check the display connection**: BrightSign outputs video immediately on boot. If you see the boot splash but not your content, the issue is in your script.
+**Check the display connection**: BrightSign outputs the content immediately on boot. If you see the boot splash but not your content, the issue is in your script.
 
 **Verify the image format**: BrightSign supports JPEG, PNG, and BMP. Make sure your file is actually one of these formats, not just renamed.
 
@@ -220,13 +144,11 @@ The SD card method is like hand-delivering a letter. The cloud method is like se
 
 | Object | Purpose |
 |--------|---------|
-| `roUrlTransfer` | HTTP/HTTPS requests |
 | `roImagePlayer` | Display images fullscreen |
 | `CreateObject()` | Instantiate any BrightSign object |
 
 | Function | Purpose |
 |----------|---------|
-| `GetToFile(path)` | Download URL to local file |
 | `DisplayFile(path)` | Show image on screen |
 | `SetDefaultMode(1)` | Scale-to-fit with aspect ratio |
 
