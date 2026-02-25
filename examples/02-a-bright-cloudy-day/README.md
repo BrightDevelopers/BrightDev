@@ -33,7 +33,7 @@ Same result as Tutorial 1. Radically different delivery mechanism.
 The cloud path requires a bit more setup than the SD card path. You'll need:
 
 1. **A BSN.cloud account** - [Sign up free at bsn.cloud](https://bsn.cloud)
-2. **A BSN network** - Created automatically when you sign up
+2. **A bsn.Cloud network** - Created automatically when you sign up
 3. **A registered player** - Connected to the internet and registered to your network
 4. **API credentials** - We'll create these in Step 1
 
