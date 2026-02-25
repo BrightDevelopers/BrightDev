@@ -49,7 +49,7 @@ Before we write code, let's understand what we're building.
 
 BSN.cloud is BrightSign's management platform. Think of it as a switchboard that knows where all your players are and how to reach them. When you want to talk to a player, you don't connect directly. You tell BSN.cloud what you want, and it relays the message.
 
-The Remote DWS (Device Web Server) API is your communication channel. "DWS" is a tiny web server running inside every BrightSign player. "Remote" means you're accessing it through BSN.cloud rather than on the local network.
+The Remote DWS (Diagnostics Web Server) API is your communication channel. "DWS" is a tiny web server running inside every BrightSign player. "Remote" means you're accessing it through BSN.cloud rather than on the local network.
 
 The flow looks like this:
 
