@@ -32,12 +32,12 @@ Same result as Tutorial 1. Radically different delivery mechanism.
 
 The cloud path requires a bit more setup than the SD card path. You'll need:
 
-1. **A BSN.cloud account** - [Sign up free at bsn.cloud](https://bsn.cloud?utm_source=brightdev-tutorial-2)
+1. **A BSN.cloud account** - [Sign up free at bsn.cloud](https://bsn.cloud?utm_source=brightdev-tutorial-2-a-bright-cloudy-day)
 2. **A bsn.Cloud network** - Created automatically when you sign up
 3. **A registered player** - Connected to the internet and registered to your network
 4. **API credentials** - We'll create these in Step 1
 
-If your player isn't registered yet, follow the [Player Setup video](https://vimeo.com/948903290?fl=pl&fe=ti&utm_source=brightdev-tutorial-2). The player needs to phone home before you can phone it.
+If your player isn't registered yet, follow the [Player Setup video](https://vimeo.com/948903290?fl=pl&fe=ti&utm_source=brightdev-tutorial-2-a-bright-cloudy-day). The player needs to phone home before you can phone it.
 
 **Got all four? Let's go.**
 
@@ -63,7 +63,7 @@ It's like sending a package through a courier service. You hand it to the courie
 
 ## Step 1: Get Your API Credentials
 
-Log into [the BSN Admin Panel](https://adminpanel.bsn.cloud/?utm_source=brightdev-tutorial-2).
+Log into [the BSN Admin Panel](https://adminpanel.bsn.cloud/?utm_source=brightdev-tutorial-2-a-bright-cloudy-day).
 
 Navigate to **Settings → Applications → Add Application**.
 
@@ -75,7 +75,7 @@ Copy two values:
 
 Store these securely. The secret is shown exactly once. Lose it, and you'll need to create a new application.
 
-*Note: The Admin Panel is for generating API credentials only. To create presentations, manage setups, or confirm player registration through a UI, use [BrightAuthor:connected](https://www.brightsign.biz/brightauthor-connected/?utm_source=brightdev-tutorial-2). If these steps don't match your screen, refer to the [BrightSign API Authentication Guide](https://docs.brightsign.biz/developers/2025-api-usage-guide?utm_source=brightdev-tutorial-2).*
+*Note: The Admin Panel is for generating API credentials only. To create presentations, manage setups, or confirm player registration through a UI, use [BrightAuthor:connected](https://www.brightsign.biz/brightauthor-connected/?utm_source=brightdev-tutorial-2-a-bright-cloudy-day). If these steps don't match your screen, refer to the [BrightSign API Authentication Guide](https://docs.brightsign.biz/developers/2025-api-usage-guide?utm_source=brightdev-tutorial-2-a-bright-cloudy-day).*
 
 ---
 
@@ -138,7 +138,7 @@ Generate a complete, working program that displays "Hello BrightSign" on my play
 - Player serial: [YOUR_PLAYER_SERIAL_HERE]
 ```
 
-Replace the bracketed values with your actual network name and player serial number. You can find both in [BSN.cloud](https://bsn.cloud/?utm_source=brightdev-tutorial-2) under Devices.
+Replace the bracketed values with your actual network name and player serial number. You can find both in [BSN.cloud](https://bsn.cloud/?utm_source=brightdev-tutorial-2-a-bright-cloudy-day) under Devices.
 
 ---
 
@@ -226,11 +226,11 @@ The player serial number isn't sensitive (it's printed on the device), but the c
 
 **"Player not found"**: Verify the serial number matches exactly. Check that the player is online and registered to the network you specified.
 
-**"Upload failed"**: RDWS has a 10MB limit per file. Compress large images or split large deployments into multiple uploads. For larger deployments, consider packaging your content as an [`autorun.zip`](https://docs.brightsign.biz/how-tos/create-install-an-autorunzip?utm_source=brightdev-tutorial-2) with an `autozip.brs` included, which lets the player unpack the archive on boot.
+**"Upload failed"**: RDWS has a 10MB limit per file. Compress large images or split large deployments into multiple uploads. For larger deployments, consider packaging your content as an [`autorun.zip`](https://docs.brightsign.biz/how-tos/create-install-an-autorunzip?utm_source=brightdev-tutorial-2-a-bright-cloudy-day) with an `autozip.brs` included, which lets the player unpack the archive on boot.
 
 **"Player didn't reboot"**: Some players require a moment between file upload and reboot command. Add a short delay if uploads complete but reboot doesn't trigger.
 
-**"Image doesn't display"**: [SSH into the player](https://docs.brightsign.biz/advanced/telnet-and-ssh?utm_source=brightdev-tutorial-2) and check if the files exist. Verify `autorun.brs` syntax by running it manually in the BrightScript debugger.
+**"Image doesn't display"**: [SSH into the player](https://docs.brightsign.biz/advanced/telnet-and-ssh?utm_source=brightdev-tutorial-2-a-bright-cloudy-day) and check if the files exist. Verify `autorun.brs` syntax by running it manually in the BrightScript debugger.
 
 ---
 
@@ -270,11 +270,11 @@ Most projects use both. Develop locally with SD cards. Deploy to production via 
 
 ## What's Next?
 
-- **[BrightDev Repository](https://github.com/BrightDevelopers/BrightDev?utm_source=brightdev-tutorial-2)** - AI-first BrightSign development tutorials
-- **[GitHub Issues](https://github.com/BrightDevelopers/issues?utm_source=brightdev-tutorial-2)** - Questions, ideas, bug reports
-- **[BSN.cloud API Docs](https://docs.brightsign.biz/developers?utm_source=brightdev-tutorial-2)** - Complete API reference
-- **[dev-cookbook](https://github.com/brightsign/dev-cookbook?utm_source=brightdev-tutorial-2)** - More code examples
+- **[BrightDev Repository](https://github.com/BrightDevelopers/BrightDev?utm_source=brightdev-tutorial-2-a-bright-cloudy-day)** - AI-first BrightSign development tutorials
+- **[GitHub Issues](https://github.com/BrightDevelopers/issues?utm_source=brightdev-tutorial-2-a-bright-cloudy-day)** - Questions, ideas, bug reports
+- **[BSN.cloud API Docs](https://docs.brightsign.biz/developers?utm_source=brightdev-tutorial-2-a-bright-cloudy-day)** - Complete API reference
+- **[dev-cookbook](https://github.com/brightsign/dev-cookbook?utm_source=brightdev-tutorial-2-a-bright-cloudy-day)** - More code examples
 
 ---
 
-*Part of [BrightDeveloper](https://github.com/BrightDevelopers?utm_source=brightdev-tutorial-2) - BrightSign's AI-first developer program.*
+*Part of [BrightDeveloper](https://github.com/BrightDevelopers?utm_source=brightdev-tutorial-2-a-bright-cloudy-day) - BrightSign's AI-first developer program.*
