@@ -138,7 +138,7 @@ In [Tutorial 2: A Bright Cloudy Day](tutorial-2-bright-cloudy-day.md), we'll dep
 
 The SD card method is like hand-delivering a letter. The cloud method is like sending an email. Both get the message there. One scales.
 
-- **[BrightDev Repository](https://github.com/BrightDevelopers/BrightDev?utm_source=brightdev-tutorial-1-hello-brightsign)** - More examples
+- **[BrightDev Repository](https://github.com/BrightDevelopers/BrightDev?utm_source=brightdev-tutorial-1-hello-brightsign)** - AI-first BrightSign development tutorials
 - **[GitHub Issues](https://github.com/BrightDevelopers/issues?utm_source=brightdev-tutorial-1-hello-brightsign)** - Questions, ideas, bug reports
 - **[BSN.cloud API Docs](https://docs.brightsign.biz/developers?utm_source=brightdev-tutorial-1-hello-brightsign)** - Complete API reference
 - **[dev-cookbook](https://github.com/brightsign/dev-cookbook?utm_source=brightdev-tutorial-1-hello-brightsign)** - More code examples

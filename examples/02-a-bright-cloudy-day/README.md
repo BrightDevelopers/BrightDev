@@ -270,7 +270,7 @@ Most projects use both. Develop locally with SD cards. Deploy to production via 
 
 ## What's Next?
 
-- **[BrightDev Repository](https://github.com/BrightDevelopers/BrightDev?utm_source=brightdev-tutorial-2)** - More examples
+- **[BrightDev Repository](https://github.com/BrightDevelopers/BrightDev?utm_source=brightdev-tutorial-2)** - AI-first BrightSign development tutorials
 - **[GitHub Issues](https://github.com/BrightDevelopers/issues?utm_source=brightdev-tutorial-2)** - Questions, ideas, bug reports
 - **[BSN.cloud API Docs](https://docs.brightsign.biz/developers?utm_source=brightdev-tutorial-2)** - Complete API reference
 - **[dev-cookbook](https://github.com/brightsign/dev-cookbook?utm_source=brightdev-tutorial-2)** - More code examples
