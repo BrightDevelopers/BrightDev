@@ -75,7 +75,7 @@ Copy two values:
 
 Store these securely. The secret is shown exactly once. Lose it, and you'll need to create a new application.
 
-*Note: If these steps don't match your screen, refer to the [BrightSign API Authentication Guide](https://docs.brightsign.biz/developers/2025-api-usage-guide).*
+*Note: The Admin Panel is for generating API credentials only. To create presentations, manage setups, or confirm player registration through a UI, use [BrightAuthor:connected](https://www.brightsign.biz/brightauthor-connected/). If these steps don't match your screen, refer to the [BrightSign API Authentication Guide](https://docs.brightsign.biz/developers/2025-api-usage-guide).*
 
 ---
 
@@ -83,7 +83,7 @@ Store these securely. The secret is shown exactly once. Lose it, and you'll need
 
 Here's where AI-first development gets interesting.
 
-The BrightDeveloper MCP server gives your AI assistant direct access to BrightSign documentation. Instead of you searching docs and pasting snippets, the AI queries the documentation in real-time and generates accurate code on the first try.
+The BrightDeveloper MCP server gives your AI assistant direct access to BrightSign documentation. Instead of you searching docs and pasting snippets, the AI queries the documentation in real-time and generates well-informed code.
 
 It's like giving your assistant a photographic memory of every BrightSign API.
 
@@ -138,7 +138,7 @@ Generate a complete, working program that displays "Hello BrightSign" on my play
 - Player serial: [YOUR_PLAYER_SERIAL_HERE]
 ```
 
-Replace the bracketed values with your actual network name and player serial number. You can find both in the BSN Admin Panel under Devices.
+Replace the bracketed values with your actual network name and player serial number. You can find both in [BSN.cloud](https://bsn.cloud/) under Devices.
 
 ---
 
@@ -226,11 +226,11 @@ The player serial number isn't sensitive (it's printed on the device), but the c
 
 **"Player not found"**: Verify the serial number matches exactly. Check that the player is online and registered to the network you specified.
 
-**"Upload failed"**: RDWS has a 10MB limit per file. Compress large images or split large deployments into multiple uploads.
+**"Upload failed"**: RDWS has a 10MB limit per file. Compress large images or split large deployments into multiple uploads. For larger deployments, consider packaging your content as an [`autorun.zip`](https://docs.brightsign.biz/how-tos/create-install-an-autorunzip) with an `autozip.brs` included, which lets the player unpack the archive on boot.
 
 **"Player didn't reboot"**: Some players require a moment between file upload and reboot command. Add a short delay if uploads complete but reboot doesn't trigger.
 
-**"Image doesn't display"**: SSH into the player and check if the files exist. Verify `autorun.brs` syntax by running it manually in the BrightScript debugger.
+**"Image doesn't display"**: [SSH into the player](https://docs.brightsign.biz/advanced/telnet-and-ssh) and check if the files exist. Verify `autorun.brs` syntax by running it manually in the BrightScript debugger.
 
 ---
 
@@ -249,23 +249,6 @@ The RDWS API is just one piece. BSN.cloud also offers:
 - **Group API**: Organize players and deploy to groups
 - **Device API**: Query player status, network info, and diagnostics
 - **Content API**: Manage a content library and assign content to players
-
----
-
-## Quick Reference
-
-| API Endpoint | Purpose |
-|--------------|---------|
-| `POST /oauth/token` | Get access token |
-| `POST /network/context` | Set active network |
-| `POST /rdws/upload` | Upload file to player |
-| `POST /rdws/reboot` | Reboot player |
-
-| Authentication | Value |
-|----------------|-------|
-| Grant type | `client_credentials` |
-| Token URL | `https://auth.bsn.cloud/oauth/token` |
-| API Base | `https://api.bsn.cloud/2022/06/REST` |
 
 ---
 
@@ -290,6 +273,7 @@ Most projects use both. Develop locally with SD cards. Deploy to production via 
 - **[BrightDev Repository](https://github.com/BrightDevelopers/BrightDev)** - More examples
 - **[GitHub Issues](https://github.com/BrightDevelopers/issues)** - Questions, ideas, bug reports
 - **[BSN.cloud API Docs](https://docs.brightsign.biz/developers)** - Complete API reference
+- **[dev-cookbook](https://github.com/brightsign/dev-cookbook)** - More code examples
 
 ---
 
