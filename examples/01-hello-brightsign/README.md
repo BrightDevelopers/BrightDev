@@ -116,7 +116,7 @@ Let's trace the path of execution, because understanding this unlocks everything
 
 If nothing appears on screen:
 
-**Check the serial console**: Connect to the player via [serial port](https://docs.brightsign.biz/advanced/serial-port-configuration) or [SSH](https://docs.brightsign.biz/advanced/telnet-and-ssh). You'll see print statements showing exactly where things went wrong.
+**Check the serial console**: Connect to the player via [serial port](https://docs.brightsign.biz/advanced/serial-port-configuration?utm_source=brightdev-tutorial-1-hello-brightsign) or [SSH](https://docs.brightsign.biz/advanced/telnet-and-ssh?utm_source=brightdev-tutorial-1-hello-brightsign). You'll see print statements showing exactly where things went wrong.
 
 **Verify the file exists**: After running once, check if `hello.png` appeared on the SD card. No file means the download failed (check network/URL).
 
@@ -154,4 +154,4 @@ The SD card method is like hand-delivering a letter. The cloud method is like se
 
 ---
 
-*Part of [BrightDeveloper](https://github.com/BrightDevelopers) - BrightSign's AI-first developer program.*
+*Part of [BrightDeveloper](https://github.com/BrightDevelopers?utm_source=brightdev-tutorial-1-hello-brightsign) - BrightSign's AI-first developer program.*
