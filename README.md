@@ -44,7 +44,7 @@ Here's the recommended path to go from zero to production:
 
 | Stage | Goal | Start here |
 |-------|------|------------|
-| **1. Hello Brightsign on Single Player** | Deploy content in under 15 minutes | [Hello BrightSign](examples/hello-brightsign/) |
+| **1. Hello Brightsign on Single Player** | Deploy content in under 15 minutes | [Hello BrightSign](examples/01-hello-brightsign/) |
 | **2. Single Player Deployment** | Get your MVP deployed on 1 player | 🚧 Coming Soon |
 | **3. Multi-Player Deployment** | Scale to a fleet | 🚧 Coming Soon |
 | **4. Production** | Monitoring, metrics, and maintenance | 🚧 Coming Soon |
