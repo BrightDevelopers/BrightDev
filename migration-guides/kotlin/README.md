@@ -115,49 +115,11 @@ Analyze my Kotlin Android application and provide a comprehensive inventory:
 Provide results in a structured format with specific file paths and line numbers.
 ```
 
-## 3. Let AI Set Up Your Development Environment
-
-**Use this prompt instead of manual commands:**
-
-```
-Set up a BrightSign development environment for my Kotlin migration:
-
-1. Verify Node.js is installed (v18.18.2) and show the version
-2. Create a new BrightSign project with this structure:
-   - src/ui/ for HTML/CSS/JavaScript
-   - src/backend/ for Node.js server code
-   - src/utils/ for helper functions
-   - assets/ for media files
-3. Initialize npm with appropriate package.json
-4. Install required dependencies (express, webpack, etc.)
-5. Set up webpack configuration for BrightSign
-6. Create a basic autorun.brs launcher file
-
-Provide the full project structure and all configuration files.
-```
-
-## 4. Start AI-Driven Migration
+## 3. Start AI-Driven Migration
 
 Follow the detailed AI prompts in your chosen method guide:
 - [Method 1: AI-Assisted Transpilation →](method1-transpilation.md)
 - [Method 2: AI-Driven Fresh Rebuild →](method2-fresh-rebuild.md) ⭐
-
-## 5. Let AI Help Test and Deploy
-
-**Use this prompt for testing:**
-
-```
-Help me test and deploy my BrightSign application:
-
-1. Analyze the code for any common issues or bugs
-2. Create a testing checklist for all features
-3. Set up remote debugging configuration (port 2999)
-4. Generate deployment instructions for SD card
-5. Create monitoring and logging setup
-6. Provide troubleshooting guide for common issues
-
-Include specific commands and configurations needed.
-```
 
 ---
 
