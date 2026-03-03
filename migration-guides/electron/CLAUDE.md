@@ -422,9 +422,9 @@
     {
       "category": "brightsign_specific",
       "electron_api": "N/A",
-      "brightsign_api": "@brightsign/networkinterface",
+      "brightsign_api": "@brightsign/networkconfiguration",
       "code_pattern": {
-        "brightsign": "const NetworkInterface = require('@brightsign/networkinterface'); const netConfig = new NetworkInterface(); // Network configuration"
+        "brightsign": "const NetworkConfiguration = require('@brightsign/networkconfiguration'); const netConfig = new NetworkConfiguration(); // Network configuration"
       },
       "notes": "BrightSign network configuration APIs"
     }
@@ -601,20 +601,19 @@
   "electron_webpack": {
     "description": "Electron requires separate webpack configs for main and renderer",
     "configs": ["main process config (target: electron-main)", "renderer process config (target: electron-renderer)", "preload script config (target: electron-preload)"],
-    "externals_pattern": "{ 'electron': 'commonjs2 electron', 'fs': 'commonjs2 fs', ... }"
+    "externals_pattern": "{ 'electron': 'commonjs electron', 'fs': 'commonjs fs', ... }"
   },
   "brightsign_webpack": {
     "description": "BrightSign uses single webpack config for browser-like environment",
     "config": "single config (target: 'web' or omit)",
-    "externals_pattern": "{ '@brightsign/deviceinfo': 'commonjs2 @brightsign/deviceinfo', '@brightsign/videooutput': 'commonjs2 @brightsign/videooutput', ... }",
+    "externals_pattern": "{ '@brightsign/deviceinfo': 'commonjs @brightsign/deviceinfo', '@brightsign/videooutput': 'commonjs @brightsign/videooutput', ... }",
     "required_externals": [
       "@brightsign/deviceinfo",
       "@brightsign/videooutput",
-      "@brightsign/networkinterface",
+      "@brightsign/networkconfiguration",
       "@brightsign/screenshot",
       "@brightsign/messageport",
       "@brightsign/serialport",
-      "@brightsign/gpio",
       "fs",
       "path",
       "crypto",
@@ -624,7 +623,7 @@
   },
   "transformation_example": {
     "before": "module.exports = [ /* main config */, /* renderer config */ ];",
-    "after": "module.exports = { target: 'web', entry: './src/app.js', output: { path: __dirname + '/dist', filename: 'bundle.js' }, externals: { '@brightsign/deviceinfo': 'commonjs2 @brightsign/deviceinfo', 'fs': 'commonjs2 fs' } };"
+    "after": "module.exports = { target: 'web', entry: './src/app.js', output: { path: __dirname + '/dist', filename: 'bundle.js' }, externals: { '@brightsign/deviceinfo': 'commonjs @brightsign/deviceinfo', 'fs': 'commonjs fs' } };"
   }
 }
 ```
@@ -719,7 +718,7 @@
       {
         "check_id": "brightsign_apis_work",
         "description": "Test BrightSign device APIs",
-        "apis_to_test": ["DeviceInfo", "VideoOutput (if used)", "NetworkInterface (if used)"],
+        "apis_to_test": ["DeviceInfo", "VideoOutput (if used)", "NetworkConfiguration (if used)"],
         "validation": "All BrightSign APIs return expected data",
         "failure_action": "AI_PLACEHOLDER: Debug BrightSign API integration"
       }
@@ -757,7 +756,7 @@
       "pitfall": "Not externalizing BrightSign APIs in webpack",
       "impact": "Webpack tries to bundle native modules, build fails",
       "solution": "Add all @brightsign/* modules to webpack externals",
-      "example": "externals: { '@brightsign/deviceinfo': 'commonjs2 @brightsign/deviceinfo' }"
+      "example": "externals: { '@brightsign/deviceinfo': 'commonjs @brightsign/deviceinfo' }"
     },
     {
       "pitfall": "Using hardcoded file paths from desktop environment",
@@ -874,7 +873,7 @@
         "phase": "4_brightsign_integration",
         "tasks": [
           "Add @brightsign/deviceinfo for device information",
-          "Add other BrightSign APIs as needed (videooutput, networkinterface, etc.)",
+          "Add other BrightSign APIs as needed (videooutput, networkconfiguration, etc.)",
           "Implement async initialization for BrightSign APIs",
           "Create mocks for local development"
         ]
