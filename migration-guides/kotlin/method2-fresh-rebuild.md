@@ -1,51 +1,24 @@
 # Method 2: Fresh HTML/JavaScript/Node.js Application ⭐
 
-**🤖 AI-Driven Rebuild**: This method uses AI to analyze your Kotlin app and rebuild it from scratch using web technologies. AI handles architecture design, code generation, and configuration.
-
-> For machine-readable patterns, see [CLAUDE.md](CLAUDE.md)
-
 [← Back to Main Guide](README.md)
-
----
-
-## Overview
 
 Build a new application from scratch using native web technologies. This provides the best long-term value despite higher initial effort.
 
-**⏱️ Timeline**: 4-6 weeks  
-**🎯 Best for**: Production deployments  
-**✅ BrightSign Recommended**  
-**📦 Target Platform**: Node.js v18.18.2 (BrightSign OS)
-
----
-
-## Why BrightSign Recommends This Method
-
-- ✅ **Superior debugging** - Full Chrome DevTools support
-- ✅ **Easier maintenance** - Clean, readable JavaScript code
-- ✅ **Better performance** - Optimized for BrightSign's engine
-- ✅ **Incremental development** - Build and test feature by feature
-- ✅ **Direct API access** - Full BrightSign platform integration
-- ✅ **Future-proof** - Easy to extend and modify
+- **🎯 Best for**: Production deployments  
+- **📦 Target Platform**: Node.js v18.18.2 (BrightSign OS)
+- **✅ BrightSign Recommended**: Superior debugging, easier maintenance, better performance, and full platform integration
 
 ---
 
 # AI-Assisted Migration with BrightDeveloper MCP
 
-The BrightDeveloper MCP server automates your complete application rebuild. The prompt below orchestrates AI to analyze your Kotlin app, design the web architecture, generate all code, and create deployment artifacts.
-
-> **💡 AI Does the Work**: You provide requirements, AI builds the entire application. Code generation, configuration, and setup are fully automated.
-
-## Prerequisites
+The prompt below orchestrates AI to analyze your Kotlin app, design the web architecture, generate all code, and create deployment artifacts.
 
 Before using this prompt:
 - ✅ Ensure the [BrightDeveloper MCP server](https://github.com/BrightDevelopers/technical-documentation/blob/main/MCP-SERVER-HOWTO.md) is connected
 - ✅ Have your Kotlin project accessible in the workspace
 - ✅ Attach the [CLAUDE.md](CLAUDE.md) file to the AI context for code transformation patterns
 
----
-
-## Complete AI Migration Prompt for Method 2
 
 **This single prompt automates the entire rebuild process:**
 
@@ -137,25 +110,3 @@ Output a production-ready BrightSign application with complete documentation.
 **Checkbox Instructions:**
 - Mark `[x]` for applicable items
 - Leave `[ ]` for non-applicable items
-
----
-
-## Tips for Best Results
-
-1. **Be Specific**: Provide accurate counts and detailed feature lists - AI uses this to estimate scope
-2. **Include Dependencies**: Mention all third-party libraries - AI will find modern web equivalents
-3. **Describe Custom Features**: Unique functionality needs clear description - AI can recreate if well-explained
-4. **State Constraints**: Network, hardware, performance requirements - AI designs accordingly
-5. **Review Architecture**: Let AI propose the architecture before coding - validate the approach
-6. **Iterative Development**: Have AI build and test each feature incrementally
-7. **Ask for Explanations**: If generated code seems complex, ask AI to explain its decisions
-8. **Test Locally First**: Use webpack dev mode with mocks before deploying to BrightSign
-9. **Use Chrome DevTools**: Take advantage of remote debugging (port 2999) - AI can help set this up
-
----
-
-## Next Steps
-
-- [← Return to Main Guide](README.md)
-- [View Method 1: Transpilation](method1-transpilation.md) (For rapid prototyping)
-- [View Advanced Migration Approaches](README.md#advanced-migration-approaches)

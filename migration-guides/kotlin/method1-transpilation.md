@@ -1,56 +1,25 @@
 # Method 1: Kotlin to JavaScript Transpilation
 
-**🤖 AI-Driven Transpilation**: This method uses AI to automate Kotlin-to-JavaScript transpilation. You'll provide high-level goals, and AI will handle code extraction, configuration, and transformation.
-
-> For machine-readable patterns, see [CLAUDE.md](CLAUDE.md)
-
 [← Back to Main Guide](README.md)
 
----
-
-## Overview
-
 Transpile your existing Kotlin code to JavaScript, allowing you to reuse business logic while rebuilding the UI layer. This is the fastest path to a working prototype.
-
-**⏱️ Timeline**: 1-2 weeks  
-**🎯 Best for**: Rapid prototyping, simple applications  
-**⚠️ Note**: Plan to refactor to [Method 2](method2-fresh-rebuild.md) for production
-
----
 
 ## When to Use
 
 - ✅ Need a working prototype quickly
 - ✅ Well-separated business logic and UI code
 - ✅ Comfortable with mocked/placeholder implementations
-- ⚠️ Understand this is a temporary solution
-
----
-
-## Common Android → JavaScript Replacements
-
-| Android API | JavaScript/BrightSign Equivalent |
-|-------------|----------------------------------|
-| `SharedPreferences` | `localStorage` or `IndexedDB` |
-| `Context.getSystemService()` | BrightSign device APIs |
-| `File` / `FileInputStream` | Node.js `fs` module |
-| Coroutines | `async/await` |
-| `OkHttp` / `Retrofit` | `fetch()` API |
-
-For more comprehensive API replacements, see the [main guide](README.md#common-api-replacements).
+- ⚠️ Plan to refactor to [Method 2](method2-fresh-rebuild.md) for production
 
 ---
 
 ## AI-Driven Migration Workflow
 
-The BrightDeveloper MCP server automates your Kotlin to JavaScript migration. The prompt below orchestrates the entire workflow - AI will handle code analysis, extraction, configuration, and transformation automatically.
+The prompt below orchestrates the entire migration workflow - AI will handle code analysis, extraction, configuration, and transformation automatically.
 
 - ✅ Ensure the [BrightDeveloper MCP server](https://github.com/BrightDevelopers/technical-documentation/blob/main/MCP-SERVER-HOWTO.md) is connected
 - ✅ Have your Kotlin project accessible in the workspace
 - ✅ Attach the [CLAUDE.md](CLAUDE.md) file to the AI context for code transformation patterns
----
-
-## Complete AI Migration Prompt for Method 1
 
 **This single prompt automates the entire transpilation process:**
 
@@ -132,11 +101,3 @@ Output a complete working prototype ready for BrightSign deployment.
 6. **Iterative Refinement**: Let AI implement incrementally, test each component
 7. **Ask Questions**: If AI's approach seems unclear, ask for explanations
 8. **Plan for Production**: This is a prototype - schedule Method 2 migration for production
-
----
-
-## Next Steps
-
-- [← Return to Main Guide](README.md)
-- [View Method 2: Fresh Rebuild →](method2-fresh-rebuild.md) (Recommended for production)
-- [View Advanced Migration Approaches](README.md#advanced-migration-approaches)

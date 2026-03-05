@@ -54,6 +54,10 @@ However, if the AI approach is not yielding results, follow the manual troublesh
 - Configure source sets (commonMain, jsMain)
 
 **build.gradle.kts Pattern:**
+
+<details>
+<summary>Click to expand</summary>
+
 ```kotlin
 plugins {
     kotlin("multiplatform") version "1.9.20"
@@ -87,6 +91,8 @@ kotlin {
 }
 ```
 
+</details>
+
 **Common Issues:**
 - Plugin version conflicts: Use compatible Kotlin and plugin versions
 - Source set not found: Ensure correct naming (commonMain, jsMain)
@@ -102,6 +108,7 @@ kotlin {
 - Convert Android notifications to browser notifications
 
 **expect/actual Pattern:**
+
 ```kotlin
 // In commonMain/PlatformStorage.kt
 expect class PlatformStorage {
@@ -159,6 +166,7 @@ actual class PlatformStorage {
 - Integrate transpiled business logic
 
 **Android Activity → HTML Pattern:**
+
 ```html
 <!-- dashboard.html -->
 <!DOCTYPE html>
@@ -235,6 +243,7 @@ grep -r "@brightsign" . --include="*.kt"
 - Install webpack and required loaders
 
 **Project Structure:**
+
 ```
 brightsign-app/
 ├── src/
@@ -259,6 +268,7 @@ brightsign-app/
 ```
 
 **package.json Setup:**
+
 ```json
 {
   "name": "brightsign-kotlin-migration",
@@ -293,6 +303,10 @@ brightsign-app/
 - Set up development server with mocks
 
 **webpack.config.js Pattern (Node v18.18.2 CommonJS):**
+
+<details>
+<summary>Click to expand</summary>
+
 ```javascript
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -354,6 +368,8 @@ module.exports = (env, argv) => {
 };
 ```
 
+</details>
+
 **Common Issues:**
 - "Cannot find module @brightsign/*": Add to externals with 'commonjs' prefix
 - Mocks not resolving in dev mode: Check resolve.alias paths
@@ -369,6 +385,10 @@ module.exports = (env, argv) => {
 - Provide fallback implementations
 
 **Platform Abstraction Pattern (Synchronous for Node v18.18.2):**
+
+<details>
+<summary>Click to expand</summary>
+
 ```javascript
 // src/utils/platform.js
 class BrightSignPlatform {
@@ -448,7 +468,10 @@ class BrightSignPlatform {
 module.exports = new BrightSignPlatform();
 ```
 
+</details>
+
 **Mock Pattern (for Local Development):**
+
 ```javascript
 // src/mocks/deviceinfo.js
 class DeviceInfo {
@@ -474,7 +497,6 @@ module.exports = DeviceInfo; // CommonJS export for Node v18.18.2
 ```
 
 **Common Issues:**
-- "ensureInitialized is not a function": Remove async/await patterns, use synchronous initialization
 - BrightSign APIs not found: Ensure webpack externals are configured correctly
 - Mock modules not loading: Check webpack resolve.alias in development mode
 - require() errors: Verify using CommonJS exports (module.exports)
@@ -488,6 +510,10 @@ module.exports = DeviceInfo; // CommonJS export for Node v18.18.2
 - Implement event handlers in JavaScript
 
 **Android Activity → HTML/JS Pattern:**
+
+<details>
+<summary>Click to expand</summary>
+
 ```javascript
 // src/ui/app.js
 import './styles.css';
@@ -545,6 +571,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 ```
 
+</details>
+
 **Common Issues:**
 - Event handlers not firing: Ensure DOM elements exist before adding listeners
 - Platform methods returning undefined: Check synchronous initialization completed
@@ -560,6 +588,10 @@ document.addEventListener('DOMContentLoaded', () => {
 - Implement data caching strategies
 
 **Data Service Pattern:**
+
+<details>
+<summary>Click to expand</summary>
+
 ```javascript
 // src/utils/dataService.js
 class DataService {
@@ -606,6 +638,8 @@ class DataService {
 module.exports = new DataService();
 ```
 
+</details>
+
 **Common Issues:**
 - CORS errors: Configure API servers or use proxy
 - Cache not working: Check Map usage and timestamp logic
@@ -622,6 +656,10 @@ module.exports = new DataService();
 - Test on BrightSign device
 
 **autorun.brs Template:**
+
+<details>
+<summary>Click to expand</summary>
+
 ```brightscript
 Sub Main()
     msgPort = CreateObject("roMessagePort")
@@ -645,13 +683,16 @@ Sub Main()
     while true
         msg = wait(0, msgPort)
         if type(msg) = "roHtmlWidgetEvent" then
-            print "HTML Event: "; msg.GetReason()
+            print "HTML Event: "; msg.GetUserData()
         end if
     end while
 End Sub
 ```
 
-**SD Card Structure (Method 2 - Fresh Rebuild):**
+</details>
+
+SD Card Structure (Method 2 - Fresh Rebuild):
+
 ```
 SD_CARD/
 ├── autorun.brs           # BrightSign launcher
@@ -672,18 +713,6 @@ SD_CARD/
 ---
 
 ## Common Issues Across Both Methods
-
-### Webpack Externals Configuration
-
-**Problem**: "Cannot find module '@brightsign/deviceinfo'"
-
-**Solution**: Add to webpack externals with 'commonjs' prefix:
-```javascript
-externals: {
-    '@brightsign/deviceinfo': 'commonjs @brightsign/deviceinfo',
-    '@brightsign/networkconfiguration': 'commonjs @brightsign/networkconfiguration'
-}
-```
 
 ### Node.js Version Compatibility
 
@@ -746,8 +775,8 @@ savePreference(key, value) {
 
 ## Additional Resources
 
-- **README.md**: Complete migration guide with two primary methods
-- **CLAUDE.md**: Machine-readable automation patterns and code transformations
-- **BrightSign Developer Portal**: https://docs.brightsign.biz/developers
-- **JavaScript API Reference**: https://docs.brightsign.biz/developers/javascript-apis
-- **Debugging Guide**: https://docs.brightsign.biz/developers/debugging-htmlnode-apps
+- [README.md](./README.md): Complete migration guide with two primary methods
+- [CLAUDE.md](./CLAUDE.md): Machine-readable automation patterns and code transformations
+- [BrightSign Developer Portal](https://docs.brightsign.biz/developers)
+- [JavaScript API Reference](https://docs.brightsign.biz/developers/javascript-apis)
+- [Debugging HTML/Nodejs apps](https://docs.brightsign.biz/developers/debugging-htmlnode-apps)
