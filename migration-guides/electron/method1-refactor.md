@@ -1,35 +1,17 @@
 # Method 1: Refactor & Replace Electron APIs
 
-**🤖 AI-Driven Refactoring**: This method uses AI to systematically analyze your Electron app and refactor it to native HTML/JavaScript/Node.js v18.18.2. AI handles architecture transformation, API replacement, and configuration.
-
-> For machine-readable patterns, see [CLAUDE.md](CLAUDE.md)
-
 [← Back to Main Guide](README.md)
-
----
-
-## Overview
 
 Systematically refactor your Electron application by removing Electron-specific APIs and replacing them with web standards, Node.js APIs, and BrightSign device APIs.
 
-**⏱️ Timeline**: 2-4 weeks  
-**🎯 Best for**: All Electron applications  
-**✅ BrightSign Recommended**  
+**🎯 Best for**: All Electron applications   
 **📦 Target Platform**: Node.js v18.18.2 (BrightSign OS)
-
----
-
-## Prerequisites
 
 Before using this prompt:
 - ✅ Ensure the [BrightDeveloper MCP server](https://github.com/BrightDevelopers/technical-documentation/blob/main/MCP-SERVER-HOWTO.md) is connected
 - ✅ Have your Electron project accessible in the workspace
 - ✅ Attach the [CLAUDE.md](CLAUDE.md) file to the AI context for code transformation patterns
 - ✅ Have a BrightSign player available for testing (or use browser for initial testing)
-
----
-
-## Complete AI Migration Prompt
 
 **This single prompt automates the entire refactoring process:**
 
@@ -247,21 +229,6 @@ Output a production-ready BrightSign application with complete documentation.
 
 ---
 
-## Tips for Best Results
-
-1. **Provide Complete Information**: Fill in all placeholders accurately - helps AI make correct decisions
-2. **Check All Applicable Items**: The more accurate your checklist, the better the migration plan
-3. **Describe Your App's Purpose**: Context helps AI understand priorities and make smart choices
-4. **Mention Critical Features**: Highlight features that absolutely must work
-5. **Specify Target Hardware**: Knowing the BrightSign model helps optimize for that platform
-6. **Review Generated Code**: Check that refactored code maintains your app's logic
-7. **Test Incrementally**: Validate each phase before moving to the next
-8. **Use Local Browser First**: Test with mocked BrightSign APIs in Chrome/Edge before deploying
-9. **Leverage Remote Debugging**: Use Chrome DevTools with `inspector_server` for BrightSign debugging
-10. **Ask Questions**: If AI's approach seems unclear, request explanations or alternatives
-
----
-
 ## Troubleshooting
 
 For detailed troubleshooting of common migration issues, see the comprehensive [Troubleshooting Guide](troubleshooting.md) which covers:
@@ -275,66 +242,6 @@ For detailed troubleshooting of common migration issues, see the comprehensive [
 
 ---
 
-## Example: Before and After
-
-### Before (Electron Multi-Process)
-
-**main.js:**
-```javascript
-const { app, BrowserWindow, ipcMain } = require('electron');
-
-app.whenReady().then(() => {
-  const win = new BrowserWindow({ 
-    width: 1920, 
-    height: 1080,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
-    }
-  });
-  win.loadFile('index.html');
-});
-
-ipcMain.handle('read-file', async (event, path) => {
-  return fs.readFileSync(path, 'utf8');
-});
-```
-
-**renderer.js:**
-```javascript
-const { ipcRenderer } = require('electron');
-
-async function loadFile() {
-  const content = await ipcRenderer.invoke('read-file', '/data/file.txt');
-  document.getElementById('content').textContent = content;
-}
-```
-
-### After (BrightSign Single-Process)
-
-**app.js:**
-```javascript
-const fs = require('fs');
-
-document.addEventListener('DOMContentLoaded', () => {
-  initializeApp();
-});
-
-function initializeApp() {
-  loadFile();
-}
-
-function loadFile() {
-  try {
-    const content = fs.readFileSync('/storage/sd/data/file.txt', 'utf8');
-    document.getElementById('content').textContent = content;
-  } catch (error) {
-    console.error('Error reading file:', error);
-  }
-}
-```
-
----
-
 ## Next Steps After Migration
 
 1. **Test Thoroughly**: Verify all features work on BrightSign
@@ -344,23 +251,3 @@ function loadFile() {
 5. **Create Update Mechanism**: Build custom update system if needed
 6. **Document Deployment**: Create deployment guide for operations team
 7. **Train Team**: Ensure team understands new architecture
-
----
-
-## Additional Resources
-
-- [BrightSign JavaScript API Documentation](https://docs.brightsign.biz/developers/javascript-apis/)
-- [Node.js v18 Documentation](https://nodejs.org/docs/latest-v18.x/api/)
-- [BrightSign Developer Cookbook](https://github.com/brightsign/dev-cookbook)
-
----
-
-## Need Help?
-
-- 💬 Ask in [BrightSign Support Community](https://support.brightsign.biz/hc/en-us/community/topics)
-- 🐛 Report issues: [GitHub Issues](https://github.com/BrightDevelopers/BrightDev/issues)
-- 📧 Send an email to `integrations@brightsign.biz` with any questions
-
----
-
-**Ready to migrate?** Copy the AI prompt above, customize the placeholders, and let AI handle the refactoring! 

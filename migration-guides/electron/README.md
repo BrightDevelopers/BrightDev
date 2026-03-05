@@ -47,7 +47,7 @@ This guide helps you migrate your **Electron desktop application** to **native H
 **Migration Approach:**
 - **[Method 1: Refactor & Replace](method1-refactor.md)** - Systematic replacement of Electron APIs
 
-**Timeline**: 2-4 weeks (depending on application complexity)  
+**Timeline**: Depends on application complexity
 **Target Platform**: BrightSign OS with Node.js v18.18.2 and Chromium engine
 
 ---
@@ -104,141 +104,29 @@ This guide helps you migrate your **Electron desktop application** to **native H
 
 ---
 
-## Common API Replacements
-
-### Process & Application Management
-
-| Electron API | BrightSign/Node.js Equivalent |
-|-------------|------------------------------|
-| `app.quit()` | `process.exit(0)` |
-| `app.getPath('userData')` | `process.env.HOME` or `/storage/sd/` paths |
-| `app.getVersion()` | Read from `package.json` or environment variable |
-| `app.getName()` | Read from `package.json` |
-| `app.whenReady()` | `DOMContentLoaded` event or Node.js initialization |
-
-### Window Management
-
-| Electron API | BrightSign Equivalent |
-|-------------|----------------------|
-| `new BrowserWindow({ width, height })` | CSS styling, `window.resizeTo()` (limited), or BrightSign video mode configuration |
-| `win.loadURL()` / `win.loadFile()` | Direct HTML file loading via `autorun.brs` |
-| `win.show()` / `win.hide()` | CSS `display: none` or `visibility: hidden` |
-| `win.maximize()` / `win.fullscreen()` | BrightSign always fullscreen; CSS can simulate |
-| `win.close()` | `window.close()` or `process.exit()` |
-| `win.on('close', callback)` | `window.addEventListener('beforeunload', callback)` |
-
-### Inter-Process Communication (IPC)
-
-| Electron API | BrightSign Equivalent |
-|-------------|----------------------|
-| `ipcRenderer.send()` | Not needed - direct function calls |
-| `ipcRenderer.invoke()` | Not needed - direct async function calls |
-| `ipcMain.on()` | Not needed - single process |
-| `ipcMain.handle()` | Not needed - single process |
-| Preload script APIs | Not needed - single process with full Node.js access |
-
-### Native Dialogs
-
-| Electron API | BrightSign Equivalent |
-|-------------|----------------------|
-| `dialog.showOpenDialog()` | HTML `<input type="file">` |
-| `dialog.showSaveDialog()` | Node.js `fs.writeFile()` with custom UI |
-| `dialog.showMessageBox()` | Custom HTML modal or `window.alert()` / `window.confirm()` |
-| `dialog.showErrorBox()` | Custom HTML error modal or `console.error()` |
-
-### Native Menus & Context Menus
-
-| Electron API | BrightSign Equivalent |
-|-------------|----------------------|
-| `Menu.buildFromTemplate()` | Custom HTML/CSS menu component |
-| `Menu.setApplicationMenu()` | Not applicable (no native menu bar) |
-| Context menu | Custom HTML context menu with `contextmenu` event |
-
-### Notifications
-
-| Electron API | BrightSign Equivalent |
-|-------------|----------------------|
-| `new Notification()` (Electron's) | Web Notifications API `new Notification()` or custom HTML overlay |
-| `notification.show()` | `notification.show()` or custom UI display |
-
-### File System
-
-| Electron API | BrightSign/Node.js Equivalent |
-|-------------|------------------------------|
-| `fs` module (Node.js) | ✅ Same - Node.js `fs` module works directly |
-| `path` module (Node.js) | ✅ Same - Node.js `path` module works directly |
-| `app.getPath('userData')` | `/storage/sd/` or custom directory |
-| File drag & drop (renderer) | HTML5 Drag and Drop API |
-
-### Device & System Information
-
-| Electron API | BrightSign Equivalent |
-|-------------|----------------------|
-| `process.platform` | `process.platform` (Node.js) or BrightSign DeviceInfo API |
-| `os.platform()` | `const DeviceInfo = require('@brightsign/deviceinfo'); new DeviceInfo().model` |
-| `app.getSystemLocale()` | `navigator.language` or BrightSign LocaleInfo API |
-| `screen.getPrimaryDisplay()` | BrightSign VideoOutput API or `window.screen` |
-
-### Networking
-
-| Electron API | BrightSign Equivalent |
-|-------------|----------------------|
-| `net.request()` (Electron) | Standard `fetch()` API or Node.js `https` module |
-| `session.defaultSession` | Not needed - use standard HTTP client |
-
----
-
-## Quick Decision Guide
-
-| Your Situation | Recommendation |
-|---------------|----------------|
-| **Simple Electron app** (< 10 files, basic UI) | Direct refactor - 1-2 weeks |
-| **Medium complexity** (Multiple windows, IPC, some native features) | Systematic refactor - 2-3 weeks |
-| **Complex app** (Heavy IPC, native integrations, background processes) | Phased refactor - 3-4 weeks |
-
-**All paths lead to the same goal**: Native HTML/JS/Node.js v18.18.2 application optimized for BrightSign.
-
----
-
-## Prerequisites
-
-Before starting the migration:
-
-- ✅ **Your Electron application source code** - Full access to all files
-- ✅ **BrightDeveloper MCP Server connected** - For AI-assisted migration
-- ✅ **Understanding of your app's architecture** - Document main features and workflows (use Step 1 AI prompt below if needed)
-- ✅ **List of Electron APIs used** - Run a search for `require('electron')` in your codebase
-- ✅ **Node.js v18.18.2 compatibility** - Check if your current Node.js code works on v18.18.2
-
----
-
 ## Getting Started with AI-Assisted Migration
-
-### Step 1: Analyze Your Electron Application
-
-**Use this AI prompt to inventory your app:**
-
-```
-Analyze my Electron application and provide a comprehensive inventory:
-
-1. Count and list all Electron API usage (grep for 'electron', 'ipcRenderer', 'ipcMain', 'BrowserWindow', 'remote')
-2. Extract all dependencies from package.json
-3. Identify the main process entry point and all renderer processes
-4. Map out IPC communication patterns (what messages are sent between processes)
-5. List all native features used (dialogs, menus, notifications, system tray, auto-updater)
-6. Identify all preload scripts and their purposes
-7. Document the window management strategy (single window, multiple windows)
-8. Flag any platform-specific code (Windows/Mac/Linux differences)
-9. Assess Node.js version compatibility with v18.18.2
-10. Estimate migration complexity (LOW/MEDIUM/HIGH)
-
-Provide results in a structured format with specific file paths and line numbers.
-```
-
-### Step 2: Start AI-Driven Migration
 
 Follow the detailed AI prompt in the migration method guide:
 - **[Method 1: Refactor & Replace →](method1-refactor.md)**
+
+## Tips for Best Results
+
+1. **Provide Complete Information**: Fill in all placeholders accurately - helps AI make correct decisions
+2. **Check All Applicable Items**: The more accurate your checklist, the better the migration plan
+3. **Describe Your App's Purpose**: Context helps AI understand priorities and make smart choices
+4. **Mention Critical Features**: Highlight features that absolutely must work
+5. **Specify Target Hardware**: Knowing the BrightSign model helps optimize for that platform
+6. **Review Generated Code**: Check that refactored code maintains your app's logic
+7. **Test Incrementally**: Validate each phase before moving to the next
+8. **Use Local Browser First**: Test with mocked BrightSign APIs in Chrome/Edge before deploying
+9. **Leverage Remote Debugging**: Use Chrome DevTools with `inspector_server` for BrightSign debugging
+10. **Ask Questions**: If AI's approach seems unclear, request explanations or alternatives
+
+---
+
+## Troubleshooting
+
+See [troubleshooting.md](troubleshooting.md) for common migration issues and solutions.
 
 ---
 
@@ -250,18 +138,9 @@ Follow the detailed AI prompt in the migration method guide:
 
 ---
 
-## Troubleshooting
-
-See [troubleshooting.md](troubleshooting.md) for common migration issues and solutions.
-
----
-
 ## Need Help?
 
 - Report issues: [GitHub Issues](https://github.com/BrightDevelopers/BrightDev/issues)
 - Submit questions: [BrightSign Support Community](https://support.brightsign.biz/hc/en-us/community/topics)
 - Send an email to `integrations@brightsign.biz` with any questions
 
----
-
-**Ready to migrate?** → [Start with Method 1: Refactor & Replace](method1-refactor.md)
