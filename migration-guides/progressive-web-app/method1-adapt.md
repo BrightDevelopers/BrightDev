@@ -2,6 +2,11 @@
 
 [← Back to Main Guide](README.md)
 
+Before using this prompt:
+- ✅ Ensure the [BrightDeveloper MCP server](https://github.com/BrightDevelopers/technical-documentation/blob/main/MCP-SERVER-HOWTO.md) is connected
+- ✅ Have your PWA project accessible in the workspace
+- ✅ Attach the [CLAUDE.md](CLAUDE.md) file to the AI context for code transformation patterns
+
 **This single prompt automates the entire adaptation process:**
 
 ```
