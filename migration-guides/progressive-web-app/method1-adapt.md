@@ -1,14 +1,6 @@
 # Method 1: Adapt PWA for BrightSign
 
-**🤖 AI-Driven Migration**: This method uses AI to automate the adaptation of your Progressive Web App (PWA) for BrightSign digital signage. Use the single prompt below to orchestrate the entire migration process—AI will analyze, adapt, optimize, and package your PWA for BrightSign deployment.
-
-> For machine-readable patterns, see [CLAUDE.md](CLAUDE.md)
-
 [← Back to Main Guide](README.md)
-
----
-
-## Complete AI Migration Prompt for PWA → BrightSign
 
 **This single prompt automates the entire adaptation process:**
 
@@ -138,3 +130,7 @@ Follow all code transformation and deployment patterns from migration-guides/pro
 5. **Review AI Output**: Check generated code and deployment artifacts
 6. **Test Thoroughly**: Use the provided testing plan before deploying to BrightSign
 7. **Iterate as Needed**: Refine and re-run the prompt for incremental improvements
+
+## Troubleshooting
+
+If you encounter issues during migration, refer to the [troubleshooting guide](./troubleshooting.md) for common problems and solutions.
