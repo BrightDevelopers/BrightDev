@@ -115,7 +115,7 @@ externals: {
 ```brightscript
 sub Main()
   ' For HTML/JS application
-  rect = CreateObject("roRectangle, 0, 0, 1920, 1080") ' Fullscreen
+  rect = CreateObject("roRectangle", 0, 0, 1920, 1080) ' Fullscreen
   config = {
     nodejs_enabled: true,
     url: "file:///sd:/dist/index.html",  ' Your main entry point

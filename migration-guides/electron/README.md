@@ -1,5 +1,7 @@
 # Electron to HTML/JavaScript/Node.js Migration Guide
 
+This guide provides a comprehensive roadmap for migrating your Electron desktop application to native HTML/JavaScript/Node.js that runs directly on BrightSign players. The migration process involves refactoring your application's architecture, replacing Electron-specific APIs with BrightSign-compatible alternatives, and optimizing for performance and compatibility on the BrightSign platform.
+
 **🤖 AI-First Migration**: This guide is designed for AI-assisted migration. Instead of manually executing steps, you'll work with AI agents (like Claude via the BrightDeveloper MCP) to automate the entire migration process. For machine-readable patterns and automation schemas, see [CLAUDE.md](CLAUDE.md).
 
 If you have not set up the BrightDeveloper MCP Server yet, follow the instructions in the [Installing the MCP server](https://github.com/BrightDevelopers/BrightDev/blob/main/README.md#install-the-brightsign-mcp-server) section of the main BrightDev README file.
@@ -47,7 +49,6 @@ This guide helps you migrate your **Electron desktop application** to **native H
 **Migration Approach:**
 - **[Method 1: Refactor & Replace](method1-refactor.md)** - Systematic replacement of Electron APIs
 
-**Timeline**: Depends on application complexity
 **Target Platform**: BrightSign OS with Node.js v18.18.2 and Chromium engine
 
 ---
@@ -135,12 +136,3 @@ See [troubleshooting.md](troubleshooting.md) for common migration issues and sol
 - [BrightSign JavaScript API Documentation](https://docs.brightsign.biz/developers/javascript-apis/)
 - [BrightSign Node.js Support](https://docs.brightsign.biz/developers/nodejs)
 - [BrightSign Developer Cookbook](https://github.com/brightsign/dev-cookbook)
-
----
-
-## Need Help?
-
-- Report issues: [GitHub Issues](https://github.com/BrightDevelopers/BrightDev/issues)
-- Submit questions: [BrightSign Support Community](https://support.brightsign.biz/hc/en-us/community/topics)
-- Send an email to `integrations@brightsign.biz` with any questions
-
