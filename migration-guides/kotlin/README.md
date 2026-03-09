@@ -8,167 +8,45 @@ If you have not set up the BrightDeveloper MCP Server yet, follow the instructio
 
 ## Overview
 
-When migrating your Kotlin-based Android application to the BrightSign platform, you have **2 primary approaches**:
+When migrating your Kotlin-based Android application to the BrightSign platform, you have 2 primary approaches:
 
-1. **[Method 1: Kotlin to JavaScript Transpilation](method1-transpilation.md)** - Quick prototyping (1-2 weeks)
-2. **[Method 2: Fresh HTML/JS/Node.js Rebuild](method2-fresh-rebuild.md)** - Production quality (4-6 weeks) ⭐ **Recommended**
+1. **[Method 1: Kotlin to JavaScript Transpilation](method1-transpilation.md)** - Quick prototyping
+2. **[Method 2: Fresh HTML/JS/Node.js Rebuild](method2-fresh-rebuild.md)** - Production quality ⭐
 
 **BrightSign recommends Method 2 (Fresh Rebuild)** for production deployments due to superior debugging, easier maintenance, and better platform integration.
 
-> **Note**: Advanced approaches (Kotlin Multiplatform, WebAssembly, PWA) are available for specialized use cases - see the [Advanced Migration Approaches](#advanced-migration-approaches) section below.
-
----
-
-## Quick Decision Guide
-
-**Choose your migration approach:**
-
-| Your Goal | Recommended Method | Timeline | Use When |
-|-----------|-------------------|----------|----------|
-| **Rapid prototype** - Get something running quickly to demo | [Method 1: Transpilation](method1-transpilation.md) | 1-2 weeks | You need a proof-of-concept fast, plan to rebuild later |
-| **Production app** - Long-term maintainability ⭐ | [Method 2: Fresh Rebuild](method2-fresh-rebuild.md) | 4-6 weeks | You want a production-ready application |
-
-> **For specialized scenarios** (multi-platform code sharing, CPU-intensive operations, offline-first apps), see [Advanced Migration Approaches](#advanced-migration-approaches).
-
----
-
-## Common API Replacements
-
-## Storage
-
-| Android | BrightSign/JavaScript |
-|---------|----------------------|
-| `SharedPreferences.getString()` | `localStorage.getItem(key)` |
-| `SharedPreferences.putString()` | `localStorage.setItem(key, value)` |
-| Room Database | IndexedDB |
-
-## Networking
-
-| Android | BrightSign/JavaScript |
-|---------|----------------------|
-| Retrofit | `fetch()` API or `axios` |
-| OkHttp | Native `fetch()` |
-| Ktor Client (Android) | Ktor Client (JS) |
-
-## UI
-
-| Android | BrightSign/JavaScript |
-|---------|----------------------|
-| `Toast.makeText()` | `console.log()` or custom DOM element |
-| `AlertDialog` | `window.confirm()` or custom modal |
-| `TextView` | `<p>` or `<span>` |
-| `Button` | `<button>` |
-| `RecyclerView` | `<div>` with JavaScript templating |
-
-## Device APIs
-
-| Android | BrightSign |
-|---------|-----------|
-| `Build.MODEL` | `const DeviceInfo = require('@brightsign/deviceinfo'); new DeviceInfo().model` (CommonJS for Node v18.18.2) |
-| `MediaPlayer` | HTML5 `<video>` or `const VideoOutput = require('@brightsign/videooutput')` |
-| File I/O | Node.js `fs` module |
-
-## Async Operations
-
-| Android | JavaScript |
-|---------|-----------|
-| Kotlin Coroutines (`suspend fun`) | `async function` |
-| `launch { }` | `await` |
-| `Flow` | RxJS or async generators |
+**Note**: Advanced approaches (Kotlin Multiplatform, WebAssembly, PWA) are available for specialized use cases - see the [Advanced Migration Approaches](#advanced-migration-approaches) section below.
 
 ---
 
 # Getting Started with AI-Assisted Migration
 
-## 1. Choose Your Migration Method
+| Your Goal | Recommended Method |
+|-----------|-------------------|
+| **Rapid prototype** - Get something running quickly to demo | [Method 1: Transpilation](method1-transpilation.md) |
+| **Production app** - Long-term maintainability | [Method 2: Fresh Rebuild](method2-fresh-rebuild.md) ⭐ |
+| **Specialized needs** - Multi-platform sharing, performance-critical | [Advanced Approaches](#advanced-migration-approaches) |
 
-Answer these questions to guide the AI:
+## Tips for Best Results
 
-1. **Timeline**: How quickly do you need a working app?
-   - Need a quick demo/prototype (1-2 weeks) → Method 1 (Transpilation)
-   - Building for production (4-6 weeks) → Method 2 (Fresh Rebuild) ⭐
+When writing any AI prompts to assist with your migration, keep these tips in mind:
 
-2. **Goal**: What's your primary objective?
-   - Rapid proof-of-concept → Method 1 (then plan to rebuild)
-   - Production deployment → Method 2 ⭐ **Recommended**
-   - Specialized needs (multi-platform, high performance, offline-first) → See [Advanced Approaches](#advanced-migration-approaches)
-
-3. **Team Skills**: What expertise does your team have?
-   - Strong JavaScript/Node.js → Method 2 ⭐ **Best choice**
-   - Kotlin expertise, limited JS → Method 1 for prototype, then Method 2
-
-## 2. Let AI Analyze Your Android App
-
-**Instead of running bash commands manually, use this AI prompt:**
-
-```
-Analyze my Kotlin Android application and provide a comprehensive inventory:
-
-1. Count and list all Activities and Fragments
-2. Extract all dependencies from build.gradle files
-3. Identify all Android-specific APIs being used (imports starting with "android.")
-4. Map out the application architecture (UI layer, data layer, business logic)
-5. Identify which components can be reused vs. need complete rebuilds
-6. Flag any complex dependencies that may need special handling
-7. Estimate the complexity level (LOW/MEDIUM/HIGH) for migration
-
-Provide results in a structured format with specific file paths and line numbers.
-```
-
-## 3. Let AI Set Up Your Development Environment
-
-**Use this prompt instead of manual commands:**
-
-```
-Set up a BrightSign development environment for my Kotlin migration:
-
-1. Verify Node.js is installed (v18.18.2) and show the version
-2. Create a new BrightSign project with this structure:
-   - src/ui/ for HTML/CSS/JavaScript
-   - src/backend/ for Node.js server code
-   - src/utils/ for helper functions
-   - assets/ for media files
-3. Initialize npm with appropriate package.json
-4. Install required dependencies (express, webpack, etc.)
-5. Set up webpack configuration for BrightSign
-6. Create a basic autorun.brs launcher file
-
-Provide the full project structure and all configuration files.
-```
-
-## 4. Start AI-Driven Migration
-
-Follow the detailed AI prompts in your chosen method guide:
-- [Method 1: AI-Assisted Transpilation →](method1-transpilation.md)
-- [Method 2: AI-Driven Fresh Rebuild →](method2-fresh-rebuild.md) ⭐
-
-## 5. Let AI Help Test and Deploy
-
-**Use this prompt for testing:**
-
-```
-Help me test and deploy my BrightSign application:
-
-1. Analyze the code for any common issues or bugs
-2. Create a testing checklist for all features
-3. Set up remote debugging configuration (port 2999)
-4. Generate deployment instructions for SD card
-5. Create monitoring and logging setup
-6. Provide troubleshooting guide for common issues
-
-Include specific commands and configurations needed.
-```
+1. **Be Specific**: Provide accurate counts and detailed feature lists - AI uses this to estimate scope
+2. **Include Dependencies**: Mention all third-party libraries - AI will find modern web equivalents or create abstractions
+3. **Describe Custom Features**: Unique functionality needs clear description - AI can recreate if well-explained
+4. **State Constraints**: Network, hardware, performance requirements - AI will design accordingly
+5. **Review Architecture**: Let AI propose the architecture before coding - validate the approach
+6. **Iterative Development**: Have AI build and test each feature incrementally
+7. **Ask for Explanations**: If generated code seems complex, ask AI to explain its decisions
+8. **Test Locally First**: Use webpack dev mode with mocks before deploying to BrightSign
+9. **Use Chrome DevTools**: Take advantage of remote debugging (port 2999) - AI can help set this up
+10. **Plan for Production**: If using Method 1, schedule a transition to Method 2 for production readiness
 
 ---
 
 # Advanced Migration Approaches
 
-> **Note**: The following approaches are for specialized use cases. For most projects, we recommend Method 2 (Fresh Rebuild).
-
 ## Method 3: Kotlin Multiplatform (KMM)
-
-**⏱️ Timeline**: 2-3 weeks  
-**🎯 Best for**: Teams with Kotlin expertise planning multi-platform support (Android, iOS, Web, BrightSign)
 
 **When to use:**
 - You're already using or planning to use Kotlin Multiplatform
@@ -186,6 +64,7 @@ project/
 ```
 
 **Example:**
+
 ```kotlin
 // shared/commonMain - Business logic
 class UserService(private val repository: UserRepository) {
@@ -206,12 +85,8 @@ actual class PlatformStorage {
 
 ## Method 4: WebAssembly (WASM)
 
-**⏱️ Timeline**: 3-5 weeks  
-**🎯 Best for**: CPU-intensive operations (image processing, ML inference, encryption)
-
 **When to use:**
-- Your app has performance-critical compute operations
-- Image/video processing requirements
+- Your app has performance-critical compute operations (image processing, ML inference, encryption)
 - Complex algorithms or real-time data processing
 - You need near-native performance
 
@@ -239,6 +114,7 @@ class ImageProcessor {
 ```
 
 **JavaScript Integration:**
+
 ```javascript
 async function processImage(imageData) {
     const wasmModule = await import('./imageProcessor.wasm');
@@ -260,10 +136,7 @@ async function processImage(imageData) {
 
 ---
 
-## Method 5: Progressive Web App (PWA)
-
-**⏱️ Timeline**: 2-3 weeks  
-**🎯 Best for**: Apps requiring offline functionality and automatic updates
+## Method 5: Offline Progressive Web App (PWA)
 
 **When to use:**
 - Your app must work offline
@@ -280,6 +153,7 @@ async function processImage(imageData) {
 **Implementation:**
 
 **manifest.json:**
+
 ```json
 {
   "name": "BrightSign App",
@@ -297,6 +171,7 @@ async function processImage(imageData) {
 ```
 
 **Service Worker for Offline:**
+
 ```javascript
 // service-worker.js
 const CACHE_NAME = 'brightsign-app-v1';
@@ -320,6 +195,7 @@ self.addEventListener('fetch', (event) => {
 ```
 
 **IndexedDB for Large Data:**
+
 ```javascript
 class OfflineDatabase {
     async init() {
@@ -348,44 +224,6 @@ class OfflineDatabase {
 
 # BrightSign Resources
 
-**Essential Documentation:**
 - [BrightSign Developer Portal](https://docs.brightsign.biz/developers)
 - [JavaScript API Reference](https://docs.brightsign.biz/developers/javascript-apis)
-- [Debugging Guide](https://docs.brightsign.biz/developers/debugging-htmlnode-apps)
-
-**Example Applications:**
-1. [Simple Node.js Server](https://github.com/brightsign/dev-cookbook/tree/main/examples/node-simple-server)
-2. [IndexedDB Caching](https://github.com/brightsign/dev-cookbook/tree/main/examples/indexeddb-caching)
-3. [Application Self-Updater](https://github.com/brightsign/dev-cookbook/tree/main/examples/bs-self-updater)
-
----
-
-# Recommendations
-
-## For Most Projects ⭐
-**Use Method 2 (Fresh HTML/JS/Node.js Rebuild)**
-- Best long-term value
-- Easier debugging and maintenance
-- Full BrightSign platform integration
-- Clean, readable code
-- Industry-standard web technologies
-
-## For Rapid Prototyping
-**Use Method 1 (Transpilation)**
-- Fastest time to working prototype (1-2 weeks)
-- Reuse existing business logic
-- **Important**: Plan to refactor to Method 2 for production deployment
-
-## For Specialized Use Cases
-See [Advanced Migration Approaches](#advanced-migration-approaches) for:
-- Multi-platform code sharing (Kotlin Multiplatform)
-- CPU-intensive operations (WebAssembly)
-- Offline-first requirements (PWA)
-
----
-
-## Next Steps
-
-Choose your migration method and get started:
-- **[Method 1: Kotlin to JavaScript Transpilation →](method1-transpilation.md)**
-- **[Method 2: Fresh HTML/JS/Node.js Rebuild →](method2-fresh-rebuild.md)** ⭐ Recommended
+- [Debugging HTML/Nodejs apps](https://docs.brightsign.biz/developers/debugging-htmlnode-apps)
