@@ -1,0 +1,42 @@
+name: Weekly Traffic Report
+
+on:
+  schedule:
+    - cron: '0 15 * * 5'
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Skip posting to Slack and print payload to logs instead'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch traffic metrics
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node .github/scripts/fetch-metrics.js
+
+      - name: Compare snapshots
+        run: node .github/scripts/compare-snapshots.js
+
+      - name: Post to Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          TEST_MODE: ${{ inputs.test_mode || 'false' }}
+        run: node .github/scripts/build-slack-payload.js
