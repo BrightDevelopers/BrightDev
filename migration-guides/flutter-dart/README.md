@@ -16,7 +16,7 @@ BrightSign players run a modern Chromium browser. They support WebGL. They suppo
 
 This is the key insight: Flutter Web's output is standard web content. HTML, JavaScript, CSS, and a WebAssembly bundle. BrightSign speaks all of those languages fluently.
 
-The translation is not perfect. Flutter Web expects a browser. BrightSign is a browser, but one built for a screen that never sleeps, never gets touched, and never shows a URL bar. The differences are manageable. Most of them come down to a handful of patterns you need to change.
+The translation is not perfect. Flutter Web expects a browser. BrightSign is a browser, but one built for a screen that never sleeps and never shows a URL bar. The differences are manageable. Most of them come down to a handful of patterns you need to change.
 
 ---
 
