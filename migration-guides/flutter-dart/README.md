@@ -16,6 +16,8 @@ BrightSign players run a modern Chromium browser. They support WebGL. They suppo
 
 This is the key insight: Flutter Web's output is standard web content. HTML, JavaScript, CSS, and a WebAssembly bundle. BrightSign speaks all of those languages fluently.
 
+One thing worth knowing upfront: Flutter removed its old HTML renderer in version 3.29. All Flutter Web builds now use CanvasKit (WebGL and WebAssembly) by default. If you are on Flutter 3.29 or later, you no longer have a choice of renderer - and that is fine. BrightSign Series 5 handles CanvasKit well. The adaptation steps are just slightly different from what older guides described.
+
 The translation is not perfect. Flutter Web expects a browser. BrightSign is a browser, but one built for a screen that never sleeps and never shows a URL bar. The differences are manageable. Most of them come down to a handful of patterns you need to change.
 
 ---
@@ -26,23 +28,21 @@ When you run `flutter build web`, Flutter produces a `build/web/` directory. Her
 
 ```
 build/web/
-├── index.html          # Entry point - Flutter bootstraps from here
-├── main.dart.js        # Your compiled Dart code (with HTML renderer)
-├── flutter.js          # Flutter engine loader
-├── flutter_bootstrap.js # Initialization script
-├── canvaskit/          # WebAssembly rendering engine (CanvasKit renderer)
+├── index.html              # Entry point - Flutter bootstraps from here
+├── main.dart.js            # Your compiled Dart code
+├── flutter.js              # Flutter engine loader
+├── flutter_bootstrap.js    # Initialization script
+├── canvaskit/              # WebAssembly rendering engine (always present in Flutter 3.22+)
 │   ├── canvaskit.js
-│   └── canvaskit.wasm
-└── assets/             # Fonts, images, and other assets
+│   ├── canvaskit.wasm
+│   └── ...                 # May include skwasm variants and debug symbols
+└── assets/                 # Fonts, images, and other assets
     └── AssetManifest.json
 ```
 
-The renderer choice matters for BrightSign. Flutter supports two:
+In Flutter 3.22, support for the HTML renderer was deprecated. In Flutter 3.29, it was removed entirely. All Flutter Web builds now use CanvasKit - the WebGL and WebAssembly renderer. The `canvaskit/` folder will always be present in your build output.
 
-- **CanvasKit (default)**: Uses WebAssembly and WebGL to render. Higher fidelity, heavier initial load. Works on BrightSign Series 4 and 5.
-- **HTML renderer**: Uses standard HTML elements, CSS, and a minimal amount of canvas. Lighter, faster to load. Better choice for most signage apps.
-
-For digital signage, the HTML renderer is usually the right call. Signage apps tend to be simpler visually than consumer apps. The HTML renderer loads faster, uses less memory, and is more predictable on a device that runs continuously.
+If you are on an older Flutter version and still see `--web-renderer html` in your build scripts, it is worth knowing that flag no longer does anything on 3.24+ and will cause an error on 3.29+. You can remove it.
 
 ---
 
@@ -97,7 +97,7 @@ When in doubt, start with Method 1. It is reversible. You can always rebuild lat
 
 | Aspect | Flutter Web | BrightSign |
 |--------|-------------|------------|
-| **Rendering engine** | CanvasKit (WebGL/WASM) or HTML renderer | Chromium - supports both, but HTML renderer preferred |
+| **Rendering engine** | CanvasKit (WebGL/WASM) - the only option since Flutter 3.29 | Chromium on Series 5 supports WebGL and WASM; CanvasKit works |
 | **Navigation** | Navigator 2.0, go_router, deep links | None of these apply. One screen, always on. |
 | **State management** | Provider, Riverpod, Bloc, GetX | Not needed at the framework level. Use simple JS or a tiny pub/sub. |
 | **Platform APIs** | flutter_platform_channel, dart:io | `@brightsign/*` Node.js modules (deviceinfo, videooutput, etc.) |
@@ -110,7 +110,7 @@ The navigation and state management rows are the most important. Signage apps ar
 
 ## Tips for Best Results
 
-1. **Build with the HTML renderer first**: Run `flutter build web --web-renderer html` before starting the migration. Smaller output, easier to adapt.
+1. **Just run `flutter build web`**: There is no renderer flag to worry about in Flutter 3.29+. CanvasKit is the only renderer and it works on BrightSign Series 5. The main adaptation step is ensuring the CanvasKit WASM loads from local files rather than a CDN.
 2. **Test in Chrome before BrightSign**: The migration output should work in a desktop Chrome tab. Fix problems there first, then deploy to the player.
 3. **Describe your app's purpose clearly**: Tell the AI what the screen is supposed to show. The more context, the better the migration plan.
 4. **List your Flutter packages**: Some packages have web implementations, some do not. The AI needs to know what you are using to plan the right replacements.

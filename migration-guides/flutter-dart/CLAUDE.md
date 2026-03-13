@@ -18,6 +18,7 @@
   "primary_methods": ["flutter_web_adaptation", "fresh_rebuild"],
   "recommended_method": "flutter_web_adaptation",
   "fresh_rebuild_method": "fresh_rebuild",
+  "flutter_renderer_note": "HTML renderer deprecated in Flutter 3.22, removed in Flutter 3.29. All builds now use CanvasKit. Do not attempt --web-renderer html on Flutter 3.29+.",
   "target_nodejs_version": "18.18.2",
   "target_runtime": "chromium_brightsign",
   "note": "Method 1 is recommended for existing Flutter Web apps. Method 2 is for performance-critical signage or apps needing BrightSign device APIs."
@@ -158,9 +159,9 @@
       "assets/fonts/": "Embedded font files. Keep as-is."
     },
     "renderer_detection": {
-      "canvaskit_present": "If canvaskit/ directory exists, app was built with CanvasKit renderer.",
-      "html_renderer": "If canvaskit/ directory is absent, app was built with HTML renderer.",
-      "check_command": "Look for 'canvaskit' directory in build/web/"
+      "canvaskit_always_present": "Flutter 3.29+ removed the HTML renderer. All builds use CanvasKit. canvaskit/ will always be present.",
+      "legacy_html_renderer": "If canvaskit/ is absent, the build was produced by Flutter older than 3.22 using the HTML renderer. This is rare on modern projects.",
+      "check_command": "Look for 'canvaskit' directory in build/web/. Expect it to be present on any modern Flutter build."
     }
   }
 }
@@ -204,7 +205,7 @@
     "replace": "./canvaskit/",
     "file": "canvaskit/canvaskit.js"
   },
-  "recommendation": "Prefer HTML renderer (--web-renderer html) to avoid this entirely."
+  "recommendation": "CanvasKit is now the only renderer in Flutter 3.29+. Always apply this patch for modern Flutter builds."
 }
 ```
 
@@ -256,12 +257,13 @@
   "applies_to": "METHOD_1, CanvasKit builds using video_player package",
   "problem": "CanvasKit renders the entire UI on a single canvas. HTML5 <video> elements sit behind the canvas by default.",
   "solution": {
-    "preferred": "Switch to HTML renderer (--web-renderer html) to avoid z-index conflicts entirely.",
-    "workaround_if_canvaskit": [
+    "note": "The HTML renderer was removed in Flutter 3.29. CanvasKit is now the only renderer. Apply the CSS z-index fix below, or consider Method 2 for video-heavy apps.",
+    "workaround": [
       "video_player package on web uses a <video> element with platform view",
       "Flutter Web injects the video as a platform view overlay on top of the canvas",
       "Verify z-index: the video div needs z-index higher than the canvas element",
-      "CSS: .flt-platform-view { position: absolute; z-index: 10; }"
+      "CSS: .flt-platform-view { position: absolute; z-index: 10; }",
+      "Always apply this fix for any Flutter 3.29+ build using video_player"
     ]
   }
 }
@@ -930,13 +932,13 @@ SD_CARD/
       "pitfall": "Video hidden behind CanvasKit canvas",
       "symptom": "Video plays (audio works) but video frame is invisible",
       "cause": "Canvas element covers the HTML5 video element in z-order",
-      "solution": "Switch to HTML renderer, or use Flutter platform view CSS fix for z-index"
+      "solution": "Apply Flutter platform view CSS fix: .flt-platform-view { position: absolute; z-index: 10; }. The HTML renderer no longer exists in Flutter 3.29+."
     },
     {
       "pitfall": "App freezes after 30+ minutes of operation",
       "symptom": "UI becomes unresponsive, BrightSign player requires power cycle",
       "cause": "Memory leak in CanvasKit or Flutter animation loop",
-      "solution": "Switch to HTML renderer. Add auto-refresh every 24 hours as safety net."
+      "solution": "Consider Method 2 (fresh rebuild in plain HTML/JS) if long-running stability is critical. The HTML renderer no longer exists in Flutter 3.29+. Add an auto-refresh every 24 hours as a safety net for Method 1 deployments."
     },
     {
       "pitfall": "Assets fail to load at runtime",

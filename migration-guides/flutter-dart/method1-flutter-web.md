@@ -36,23 +36,15 @@ build/web/
 
 Each of these files plays a role. The AI needs to understand which ones to keep, which to modify, and which to remove.
 
-### Renderer Choice: Make This Decision First
+### The Renderer Situation
 
-Flutter supports two web renderers. Which one you used changes the adaptation work significantly.
+Flutter used to offer two web renderers: CanvasKit and HTML. That choice no longer exists.
 
-**CanvasKit (default)**: Loads a 2-5 MB WebAssembly binary and uses WebGL to paint the entire UI. The output is pixel-perfect but heavy. The WASM file must load before anything appears on screen.
+Flutter 3.22 deprecated the HTML renderer. Flutter 3.29 removed it entirely. All Flutter Web builds now use CanvasKit - a WebGL and WebAssembly rendering engine. If you are on a modern Flutter version, `flutter build web` is all you need. The `--web-renderer` flag does not exist anymore.
 
-**HTML renderer**: Uses HTML elements and CSS with a small canvas layer. Lighter, faster initial load, more familiar to the browser. Less pixel-perfect but more than adequate for signage.
+**What this means for BrightSign**: CanvasKit works on BrightSign Series 5. The player's Chromium runtime supports WebGL and WebAssembly. The main adaptation requirement is ensuring the CanvasKit WASM binary loads from the SD card rather than falling back to a CDN - BrightSign players may not have internet access, and even if they do, you do not want your signage app blocked on a network fetch at startup.
 
-If you have not built yet, use the HTML renderer:
-
-```bash
-flutter build web --web-renderer html
-```
-
-If your `build/web/` already exists and contains a `canvaskit/` folder, you used CanvasKit. You have two options: rebuild with the HTML renderer, or proceed with CanvasKit adaptation (the prompt template handles both).
-
-For most digital signage use cases, the HTML renderer produces a better result on BrightSign. Signage screens are not high-fidelity design canvases. They show content. The HTML renderer is more than good enough, and it loads faster on a device that may restart between content plays.
+The prompt template below handles this automatically.
 
 ---
 
@@ -204,18 +196,15 @@ Additionally, CanvasKit requires WebGL. BrightSign Series 4 and Series 5 support
 
 Flutter Web's CanvasKit renderer redraws the canvas on every frame, even when nothing changes. On a BrightSign player running continuously for days or weeks, this constant GPU activity is worth monitoring.
 
-For static or low-animation signage, the HTML renderer avoids this entirely. For animation-heavy signage, CanvasKit is fine but you should test extended runs (several hours) on actual hardware.
+Since the HTML renderer no longer exists in Flutter 3.29+, you cannot opt out of CanvasKit. For static or low-animation signage, this is the main argument for Method 2 (fresh rebuild) if you hit performance issues - a plain HTML/CSS page does not have a rendering loop. For most signage apps, CanvasKit on Series 5 is fine. Test extended runs (several hours) on actual hardware to confirm stability.
 
 ### Video Playback and Overlays
 
 Flutter's `video_player` package on web uses an HTML5 `<video>` element under the hood. This works on BrightSign.
 
-The complication is z-index and layering. HTML5 `<video>` elements in Chromium are typically composited separately from the canvas. Depending on your Flutter Web renderer:
+The complication is z-index and layering. Since all Flutter Web builds now use CanvasKit, Flutter renders everything to a canvas element. HTML5 `<video>` elements sit in normal document flow - they are HTML, not canvas pixels. Getting Flutter widgets to appear over video requires careful z-index management in the adapted HTML.
 
-- **HTML renderer**: Video elements render in normal document flow. Overlaying Flutter widgets on top of video generally works.
-- **CanvasKit renderer**: Flutter renders to a canvas element. Video elements are HTML, not canvas. Getting Flutter widgets to appear over video requires careful z-index management in the adapted HTML.
-
-If your app does not overlay Flutter UI on top of video (for example, if video plays separately from the main UI), this is a non-issue. If it does, the AI will document the overlay strategy and provide the necessary CSS.
+If your app does not overlay Flutter UI on top of video (for example, if video plays in a separate section from the main UI), this is a non-issue. If it does, the adaptation prompt applies the necessary CSS fix automatically.
 
 For signage apps that need precise video playback control (pausing on exact frames, hardware-accelerated decoding, zone-based video), Method 2 (fresh rebuild) is worth considering. HTML5 video in Flutter Web works, but it does not give you access to BrightSign's VideoOutput API.
 
