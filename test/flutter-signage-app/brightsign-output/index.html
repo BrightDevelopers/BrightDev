@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    BrightSign-adapted Flutter Web app.
+    Migrated from: flutter_signage_app v1.0.0+1
+    Migration method: Method 1 - Flutter Web Adaptation
+    Renderer: HTML (no CanvasKit)
+    Target: BrightSign Series 5, 1920x1080
+
+    Changes from original build/web/index.html:
+    - Removed <base href="$FLUTTER_BASE_HREF"> (replaced with static base href)
+    - Removed serviceWorkerVersion script block
+    - Updated viewport meta to fixed 1920x1080 for BrightSign
+    - Added BrightSign-specific body/html CSS for fixed dimensions
+    - Removed PWA meta tags (apple-mobile-web-app-*) - not relevant for signage
+    - Removed manifest.json link (not needed on BrightSign)
+    - Removed favicon link (not relevant for signage)
+  -->
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="BrightSign Signage Demo">
+
+  <!-- BrightSign fixed-resolution viewport -->
+  <meta name="viewport" content="width=1920, height=1080, initial-scale=1">
+
+  <title>BrightSign Signage Demo</title>
+
+  <style>
+    /* BrightSign: fixed 1920x1080, no scrolling */
+    html, body {
+      width: 1920px;
+      height: 1080px;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000000;
+    }
+
+    /* Flutter HTML renderer creates a flt-glass-pane at the root */
+    flt-glass-pane {
+      width: 1920px !important;
+      height: 1080px !important;
+    }
+
+    /* video_player platform view - ensure correct stacking with HTML renderer */
+    .flt-platform-view {
+      position: absolute;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <!-- Flutter bootstrap - service worker registration removed for BrightSign -->
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
