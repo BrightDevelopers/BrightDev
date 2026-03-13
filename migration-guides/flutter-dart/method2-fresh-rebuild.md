@@ -26,6 +26,29 @@ If none of those apply and your Flutter Web build works today, Method 1 is proba
 
 ---
 
+## What Success Looks Like
+
+When this process completes, your project will have a `brightsign/` folder containing everything needed for SD card deployment:
+
+```
+your-flutter-app/
+├── lib/
+├── pubspec.yaml
+├── src/                      # rebuilt HTML/JS source files
+├── package.json
+├── webpack.config.js
+├── dist/                     # webpack build output
+└── brightsign/               # NEW - everything that goes on the SD card
+    ├── autorun.brs
+    ├── index.html
+    ├── bundle.js
+    └── assets/
+```
+
+The `brightsign/` folder is the SD card. Copy its contents to the root of a FAT32-formatted SD card, insert into the player, and reboot. Nothing else is needed.
+
+---
+
 ## AI-First Migration with BrightDeveloper MCP
 
 Before using the prompt below:
@@ -40,6 +63,8 @@ Before using the prompt below:
 First, read and analyze the automation patterns at migration-guides/flutter-dart/CLAUDE.md.
 
 I need you to rebuild my Flutter/Dart application in HTML/JavaScript/Node.js for BrightSign using Method 2 (Fresh Rebuild).
+
+Success condition: create a brightsign/ folder at the project root containing everything needed for an SD card deployment in the exact structure required. The brightsign/ folder is the SD card - its contents are copied directly to the card root, the player is inserted and rebooted, and the app runs.
 
 Project Details:
 - Flutter Project Path: {YOUR_FLUTTER_PROJECT_PATH}
@@ -106,9 +131,11 @@ Rebuild Tasks:
    - Set window rectangle to 0, 0, 1920, 1080 (or your target resolution)
 
 8. Package for deployment
-   - Document the SD card file structure
-   - Include npm install instructions for the device
-   - List any media assets that must be on the SD card
+   - Run the webpack build to produce the production bundle in dist/
+   - Create a brightsign/ folder at the project root (alongside src/, dist/, package.json)
+   - Copy dist/ contents into brightsign/ and add autorun.brs at the brightsign/ root
+   - The brightsign/ folder must be self-contained: copying it to an SD card root and rebooting the player is all that is needed to run the app
+   - List any media assets that must also be placed in brightsign/ before deployment
 
 Code Quality Requirements:
 - Use modern ES6+ JavaScript with async/await throughout
@@ -121,10 +148,12 @@ Output Deliverables:
 1. Complete HTML/JavaScript source files for each screen
 2. package.json with all dependencies
 3. webpack.config.js configured for BrightSign deployment
-4. autorun.brs launcher file
-5. SD card file structure documentation
-6. Dart-to-JavaScript translation notes for any non-obvious conversions
-7. Testing checklist for BrightSign deployment
+4. A populated brightsign/ folder at the project root containing the complete SD card contents
+5. The complete file tree of the brightsign/ folder
+6. The content of brightsign/autorun.brs
+7. Copy instructions: exactly what to copy to the SD card and how to boot the player
+8. Dart-to-JavaScript translation notes for any non-obvious conversions
+9. Testing checklist for BrightSign deployment
 
 Follow all transformation patterns from CLAUDE.md, including:
 - Synchronous BrightSign API initialization with require()
@@ -250,7 +279,6 @@ To make this concrete: here is the typical structure of a finished Method 2 proj
 
 ```
 my-signage-app/
-├── autorun.brs                 # BrightSign launcher
 ├── package.json                # Dependencies and scripts
 ├── webpack.config.js           # Build configuration
 ├── src/
@@ -270,7 +298,12 @@ my-signage-app/
 ├── assets/
 │   ├── videos/
 │   └── images/
-└── dist/                       # webpack output (SD card contents)
+├── dist/                       # webpack output (intermediate build)
+│   ├── bundle.js
+│   ├── index.html
+│   └── assets/
+└── brightsign/                 # SD card contents - copy this to the card root
+    ├── autorun.brs             # BrightSign launcher
     ├── bundle.js
     ├── index.html
     └── assets/
@@ -296,9 +329,10 @@ The `BrightSignPlatform` class is the key piece. It wraps all `@brightsign/*` mo
 
 1. **Test locally first.** Run `webpack-dev-server` and load the app in Chrome. Confirm all screens render and data loads before touching BrightSign hardware.
 2. **Run `npm run build`** to produce the production bundle in `dist/`.
-3. **Copy `dist/` and `autorun.brs` to an SD card.** The `autorun.brs` goes in the root, the rest of the contents inside a directory or the root depending on your `roHtmlWidget` URL configuration.
-4. **Connect Chrome DevTools.** Open `[DEVICE_IP]:2999` in Chrome to access the remote debugger on the player.
-5. **Check the console.** The first boot usually surfaces one or two path issues. Fix them and redeploy.
-6. **Run for several hours.** Signage apps run continuously. Verify there are no memory leaks or rendering degradations after extended operation.
+3. **Copy the `brightsign/` folder contents to an SD card.** Everything in `brightsign/` goes to the card root. `autorun.brs` is already there at the top level.
+4. **Insert the SD card and reboot.** The player picks up `autorun.brs` on boot and launches the app.
+5. **Connect Chrome DevTools.** Open `[DEVICE_IP]:2999` in Chrome to access the remote debugger on the player.
+6. **Check the console.** The first boot usually surfaces one or two path issues. Fix them, update `brightsign/`, and redeploy.
+7. **Run for several hours.** Signage apps run continuously. Verify there are no memory leaks or rendering degradations after extended operation.
 
 If you want to compare outputs, [Method 1](method1-flutter-web.md) is faster to get running but carries the Flutter runtime with it. Method 2 takes longer upfront and typically produces a more reliable long-term deployment.

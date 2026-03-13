@@ -12,8 +12,6 @@ This is not a rewrite. It is an adaptation. The code stays Flutter. The logic st
 Before using the prompt below:
 - Ensure the [BrightDeveloper MCP server](https://github.com/BrightDevelopers/BrightDev/blob/main/README.md#install-the-brightsign-mcp-server) is connected
 - Have your Flutter project accessible in the workspace (either source or `build/web/` output)
-- Attach the [CLAUDE.md](CLAUDE.md) file to the AI context for transformation patterns
-- Know your target BrightSign model (Series 4 or Series 5) before starting
 
 ---
 
@@ -58,137 +56,121 @@ For most digital signage use cases, the HTML renderer produces a better result o
 
 ---
 
-## The AI Migration Prompt
+## What Success Looks Like
 
-**This single prompt automates the entire adaptation process:**
+When this process completes, your project will have a new `brightsign/` folder sitting alongside your existing `build/` directory:
 
 ```
-First, read and analyze the automation patterns at migration-guides/flutter-dart/CLAUDE.md.
-
-I need you to adapt my Flutter Web app for deployment on a BrightSign digital signage player using Method 1 (Flutter Web Adaptation).
-
-Project Details:
-- Flutter Project Path: {YOUR_FLUTTER_PROJECT_PATH}
-- Build Output Path: {YOUR_BUILD_WEB_PATH or "not yet built"}
-- Flutter Version: {FLUTTER_VERSION from flutter --version}
-- Target BrightSign Model: {e.g., XT1144, HD1024, LS445, or "Series 5 / Series 4"}
-- Web Renderer Used: {CanvasKit or HTML or "not yet built"}
-
-App Description:
-- App Name: {YOUR_APP_NAME}
-- What it displays: {DESCRIBE what the signage screen shows, e.g., "rotating product images with price data from a REST API"}
-- Screen layout: {DESCRIBE the layout, e.g., "full-screen video background with overlay text"}
-- Number of screens/routes: {COUNT, e.g., "1" or "3 routes"}
-
-Flutter Packages Used (list all from pubspec.yaml):
-{PASTE YOUR DEPENDENCIES SECTION HERE}
-
-Platform API Requirements:
-- [ ] BrightSign device info (model, serial number)
-- [ ] BrightSign video output control (advanced playback)
-- [ ] BrightSign network configuration
-- [ ] Serial port communication
-- [ ] GPIO control
-- [ ] Other: {SPECIFY}
-
-Video Playback:
-- Videos used: {YES/NO - if yes, describe: local files, URLs, formats, looping behavior}
-- Current Flutter video solution: {e.g., video_player package, VideoPlayerController.network}
-
-Network/Data:
-- Fetches data from API: {YES/NO - if yes, specify endpoints or describe the data}
-- Requires authentication: {YES/NO}
-- Offline support needed: {YES/NO}
-
-Migration Tasks:
-1. Analyze my Flutter Web build output structure
-   - Identify renderer type (CanvasKit or HTML)
-   - Map all asset references in index.html and flutter_bootstrap.js
-   - Identify any service worker registration code
-   - Locate font loading configuration in FontManifest.json
-
-2. Adapt index.html for BrightSign
-   - Remove any service worker registration code
-   - Remove meta viewport tags that assume a mobile browser
-   - Adapt font loading to use local paths (no CDN fonts)
-   - Ensure base href is compatible with file:/// loading
-   - Remove any PWA manifest references
-
-3. Handle the renderer
-   - If CanvasKit: verify canvaskit.wasm is referenced by local path, not CDN
-   - If CanvasKit: confirm WebGL is enabled in BrightSign autorun.brs configuration
-   - If HTML renderer: no special handling needed beyond standard adaptation
-
-4. Adapt video playback
-   - If using video_player package: confirm web implementation uses HTML5 <video>
-   - Ensure video elements are fullscreen-compatible
-   - Handle BrightSign video overlay considerations (HTML5 video vs. BrightSign hardware video)
-   - Add loop, autoplay, muted attributes as appropriate for signage
-
-5. Handle Flutter plugins
-   - Identify which packages have web implementations
-   - Identify which packages stub out on web (no-op implementations)
-   - For packages with no web support: create stub implementations or remove the feature
-   - Document any packages that require manual adaptation
-
-6. Create autorun.brs launcher
-   - Configure roHtmlWidget for the Flutter Web app
-   - Set nodejs_enabled based on whether any BrightSign Node.js APIs are needed
-   - Configure inspector_server port 2999 for remote debugging
-   - Set appropriate window rectangle (typically 0, 0, 1920, 1080)
-
-7. Create webpack config (if needed for BrightSign API integration)
-   - Only required if adding @brightsign/* Node.js APIs to the Flutter app
-   - Configure CommonJS externals for all @brightsign/* modules
-   - Bundle any BrightSign integration scripts separately
-
-8. Package for SD card deployment
-   - Describe the exact SD card file structure
-   - Specify where build/web/ contents go on the SD card
-   - Include autorun.brs at the SD card root
-   - List any additional assets or configuration files needed
-
-9. Document known issues
-   - Identify any Flutter Web quirks specific to BrightSign Chromium
-   - Note any features that may not work as expected
-   - Provide workarounds for identified issues
-
-Output Deliverables:
-1. Adapted index.html with BrightSign-specific changes
-2. autorun.brs launcher file
-3. SD card file structure documentation
-4. List of adapted files with explanation of each change
-5. Plugin compatibility report (which packages work, which need attention)
-6. Testing checklist for BrightSign deployment
-
-Follow all transformation patterns from CLAUDE.md, including:
-- CanvasKit vs HTML renderer handling
-- Service worker removal
-- Font loading adaptation
-- Video element configuration
-
-Output a complete, deployable BrightSign package.
+your-flutter-app/
+├── lib/
+├── pubspec.yaml
+├── build/
+│   └── web/                  # original Flutter Web output, untouched
+└── brightsign/               # NEW - everything that goes on the SD card
+    ├── autorun.brs
+    ├── index.html
+    ├── main.dart.js
+    ├── flutter.js
+    ├── flutter_bootstrap.js
+    ├── canvaskit/             # only if CanvasKit renderer was used
+    └── assets/
 ```
+
+The `brightsign/` folder is the SD card. Copy its contents to the root of a FAT32-formatted SD card, insert into the player, and reboot. Nothing else is needed.
+
+The original `build/web/` directory is never modified. You keep your normal Flutter Web output intact.
 
 ---
 
-## Customization Guide
+## The AI Migration Prompt
 
-**Replace the following placeholders in the prompt:**
+**This single prompt automates the entire adaptation process. No placeholders to fill in - paste it as-is:**
 
-| Placeholder | Example | Description |
-|------------|---------|-------------|
-| `{YOUR_FLUTTER_PROJECT_PATH}` | `/home/dev/my_flutter_app` | Absolute path to your Flutter project root |
-| `{YOUR_BUILD_WEB_PATH}` | `/home/dev/my_flutter_app/build/web` | Path to the `build/web/` directory after running `flutter build web` |
-| `{FLUTTER_VERSION}` | `3.19.0` | From running `flutter --version` |
-| `{e.g., XT1144, HD1024, ...}` | `XT1144` or `Series 5` | Your target BrightSign player model |
-| `{CanvasKit or HTML}` | `HTML` | Which renderer you used when building |
-| `{YOUR_APP_NAME}` | `RetailSignage` | Your Flutter app name |
-| `{DESCRIBE what the signage screen shows}` | `Rotating product promotions with live pricing from REST API` | What your screen displays |
-| `{FLUTTER_VERSION from flutter --version}` | `3.19.0` | Your Flutter SDK version |
-| `{PASTE YOUR DEPENDENCIES SECTION HERE}` | Contents of `dependencies:` in pubspec.yaml | Lets AI assess plugin compatibility |
+```
+Fetch and internalize the automation patterns at https://raw.githubusercontent.com/BrightDevelopers/BrightDev/main/migration-guides/flutter-dart/CLAUDE.md before doing anything else.
+If the URL is not yet live, check for a local copy at ../BrightDev/migration-guides/flutter-dart/CLAUDE.md relative to the project root.
 
-**Checkbox instructions**: Mark `[x]` for features your app needs, leave `[ ]` for those it does not.
+Your task is to adapt the Flutter Web app in this workspace for deployment on a BrightSign Series 5 digital signage player using Method 1 (Flutter Web Adaptation). Work autonomously,
+discover everything you need by reading the codebase.
+
+Success condition: create a brightsign/ folder at the project root containing everything needed for an SD card deployment in the exact structure required. The brightsign/ folder IS
+the SD card: its contents are copied directly to the card root, the player is inserted and rebooted, and the app runs. The build/web/ directory must not be modified during the copy
+and transformation steps (Phases 2-4). A fresh flutter build web in Phase 1 is expected and allowed, as it produces the clean baseline.
+
+Phase 1 - Discover the project
+
+- Check whether pubspec.yaml exists in the current directory (do NOT search parent directories, subdirectories, or anywhere else in the workspace)
+  - If it does not exist, stop immediately and output only this message: "No pubspec.yaml found in the current directory. Please open a terminal, cd into your Flutter project root,
+and run this prompt again from there." Do not proceed further.
+  - If it exists, treat the current directory as the project root
+- Read pubspec.yaml to determine the app name and all dependencies
+- Run flutter --version to determine the Flutter SDK version
+- Check whether build/web/ exists under the project root
+  - If it does not exist, run flutter build web to generate it
+  - If it exists, use it as-is
+- Check for a canvaskit/ subdirectory in build/web/ to determine the renderer in use. Note: Flutter 3.22+ removed the --web-renderer html flag. If the current Flutter SDK does not
+support --web-renderer, do NOT attempt to switch renderers. Work with whatever renderer the build produced. Modern Flutter builds may include multiple renderer variants in canvaskit/
+(canvaskit, skwasm, skwasm_heavy, wimp). This is normal. The build config in flutter_bootstrap.js determines which one is loaded at runtime. Keep all variants unless SD card space is
+a concern.
+- If CanvasKit is present, check the build config in flutter_bootstrap.js for useLocalCanvasKit. If true, the WASM already loads locally. If false or absent, patching is required.
+- Scan index.html and flutter_bootstrap.js for: service worker registration, CDN font references, CDN asset references
+- Scan pubspec.yaml dependencies against the plugin compatibility list in CLAUDE.md and flag any packages with no web support
+- Search source files for: VideoPlayerController or video_player usage, @brightsign imports, Navigator.push or GoRoute definitions, http/dio API calls
+
+Phase 2 - Build the brightsign/ output folder
+
+- Create a brightsign/ directory at the project root (alongside build/)
+- Copy the entire contents of build/web/ into brightsign/. Do not modify build/web/ at any point from here forward.
+- Do NOT modify main.dart.js or any file under assets/ or canvaskit/. These are sealed build artifacts. CanvasKit loads text fonts (Roboto) from fonts.gstatic.com at runtime. On an
+offline player the request times out and system fonts are used as fallback. Replacing the URL with a local path breaks text rendering because the font files are not bundled locally.
+- In brightsign/, apply the following transformations to the wrapper/loader files only:
+  - In flutter_bootstrap.js: find the _flutter.loader.load({...}) call and replace it with _flutter.loader.load({}) to remove the serviceWorkerSettings parameter. The service worker
+class code will remain as dead code but is never invoked without settings.
+  - In index.html: remove any <link> or <script> tags referencing flutter_service_worker.js (if present)
+  - Delete the flutter_service_worker.js file from brightsign/
+  - Remove CDN font <link> tags from index.html only (if present). Do NOT search or modify main.dart.js for font URLs.
+  - Remove PWA manifest references from index.html and delete manifest.json
+  - Delete build artifacts not needed at runtime: .last_build_id
+  - Update viewport meta tag to: width=1920, height=1080, initial-scale=1
+  - Add to body CSS: html, body { width:1920px; height:1080px; margin:0; padding:0; overflow:hidden; background:#000; }
+  - If CanvasKit renderer: patch the CanvasKit base URL resolver in BOTH flutter_bootstrap.js AND flutter.js to remove the CDN fallback (https://www.gstatic.com/flutter-canvaskit).
+The function to patch is the one that checks useLocalCanvasKit and falls back to a gstatic.com URL. Replace it to always return the local "canvaskit" path.
+  - If video_player with CanvasKit: add z-index CSS fix: .flt-platform-view { position: absolute; z-index: 10; }
+  - Optionally note that .symbols files in canvaskit/ are debug symbols and can be removed to save ~5MB of SD card space if not needed for debugging
+
+Phase 3 - Add deployment files to brightsign/
+
+- Write autorun.brs into brightsign/ using the appropriate template from CLAUDE.md (static HTML for most apps, Node.js server only if SPA routing is required)
+- Create an empty brightsign-dumps/ directory inside brightsign/ with a .gitkeep file. This gives the player a writable location for crash logs.
+- If BrightSign device APIs were found in the source: write webpack.config.js into the project root with @brightsign/* marked as CommonJS externals
+
+Phase 4 - Validate
+
+- Confirm no CDN infrastructure URLs remain in index.html, flutter_bootstrap.js, or flutter.js (gstatic.com, fonts.googleapis.com, cloudflare CDN, unpkg.com). Do not scan main.dart.js
+  or canvaskit/*.js for this check, as those are sealed artifacts. App-level content URLs (API endpoints, video stream URLs defined in the source code) are expected and should be noted
+  but not treated as failures.
+- Confirm no service worker registration is active in brightsign/ (dead code in class definitions is acceptable if the load call passes no settings)
+- Confirm all asset paths are relative (no absolute /storage/ paths in the HTML)
+- Confirm build/web/ is identical to its state before Phase 2 began (untouched)
+- Run through the brightsign_specific_checks list from CLAUDE.md and report pass/fail for each item that can be verified statically
+
+Phase 5 - Generate build script
+
+- Write a build-brightsign.js (Node.js) script at the project root that automates Phases 1-4 in a single node build-brightsign.js command. This allows the developer to regenerate
+brightsign/ after any code change without re-running this prompt. The script must apply every transformation from Phase 2, write deployment files from Phase 3, and run validation from
+  Phase 4.
+
+Output
+
+1. A summary of what was discovered in Phase 1 (renderer, packages flagged, features detected)
+2. The complete file tree of the brightsign/ folder that was created
+3. A list of every transformation applied in Phase 2 with a one-line description of each change
+4. The content of brightsign/autorun.brs
+5. The webpack.config.js if applicable
+6. The Phase 4 validation report
+7. Copy instructions: exactly what to copy to the SD card, how to boot the player, and a note that Chromium remote debugging must be enabled via autorun.brs or the local DWS
+(Diagnostic Web Server) before the inspector port is accessible
+```
 
 ---
 
