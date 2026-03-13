@@ -60,7 +60,7 @@ Already have an application built for another platform? Our migration guides hel
 | **Kotlin/Android** | Migrate Android applications to BrightSign | [Kotlin Migration Guide](migration-guides/kotlin/) |
 | **Android WebView** | Migrate Android WebView-based applications | 🚧 Coming Soon |
 | **Tizen (Samsung)** | Port Samsung Smart Signage Platform apps | 🚧 Coming Soon |
-| **Flutter/Dart** | Convert Flutter applications to web-based apps | 🚧 Coming Soon |
+| **Flutter/Dart** | Migrate Flutter Web apps to BrightSign | [Flutter/Dart Migration Guide](migration-guides/flutter-dart/) |
 | **Java** | Migrate Java applications to JavaScript/Node.js | 🚧 Coming Soon |
 
 
