@@ -1,5 +1,7 @@
 # Flutter/Dart to BrightSign Migration Guide
 
+This guide walks you through migrating a Flutter/Dart application to run on BrightSign digital signage players. It covers two approaches: adapting your existing Flutter Web build, or rebuilding from scratch in plain HTML/JS.
+
 **🤖 AI-First Migration**: This guide is designed for AI-assisted migration. Instead of manually executing steps, you'll work with AI agents (like Claude via the BrightDeveloper MCP) to automate the entire migration process. For machine-readable patterns and automation schemas, see [CLAUDE.md](CLAUDE.md).
 
 If you have not set up the BrightDeveloper MCP Server yet, follow the instructions in the [Installing the MCP server](https://github.com/BrightDevelopers/BrightDev/blob/main/README.md#install-the-brightsign-mcp-server) section of the main BrightDev README file.
@@ -16,7 +18,7 @@ BrightSign players run a modern Chromium browser. They support WebGL. They suppo
 
 This is the key insight: Flutter Web's output is standard web content. HTML, JavaScript, CSS, and a WebAssembly bundle. BrightSign speaks all of those languages fluently.
 
-> One thing worth knowing upfront: Flutter removed its old HTML renderer in version 3.29. All Flutter Web builds now use CanvasKit (WebGL and WebAssembly) by default. If you are on Flutter 3.29 or later, you no longer have a choice of renderer - and that is fine. BrightSign Series 5 handles CanvasKit well. The adaptation steps are just slightly different from what older guides described.
+> One thing worth knowing upfront: Flutter removed its old HTML renderer in version 3.29. All Flutter Web builds now use CanvasKit (WebGL and WebAssembly) by default. If you are on Flutter 3.29 or later, you no longer have a choice of renderer - and that is fine. BrightSign Series 5 handles CanvasKit well.
 
 The translation is not perfect. Flutter Web expects a browser. BrightSign is a browser, but one built for a screen that never sleeps and never shows a URL bar. The differences are manageable. Most of them come down to a handful of patterns you need to change.
 
@@ -40,9 +42,15 @@ build/web/
     └── AssetManifest.json
 ```
 
-In Flutter 3.22, support for the HTML renderer was deprecated. In Flutter 3.29, it was removed entirely. All Flutter Web builds now use CanvasKit - the WebGL and WebAssembly renderer. The `canvaskit/` folder will always be present in your build output.
+<details>
+<summary>Flutter version notes (3.22 - 3.29 renderer changes)</summary>
 
-If you are on an older Flutter version and still see `--web-renderer html` in your build scripts, it is worth knowing that flag no longer does anything on 3.24+ and will cause an error on 3.29+. You can remove it.
+- **Flutter 3.22**: Deprecated the HTML renderer
+- **Flutter 3.29**: Removed it entirely. All builds now use CanvasKit (WebGL/WASM)
+- The `canvaskit/` folder will always be present in your build output on modern Flutter
+- If you still see `--web-renderer html` in your build scripts, that flag does nothing on 3.24+ and causes an error on 3.29+. You can remove it.
+
+</details>
 
 ---
 

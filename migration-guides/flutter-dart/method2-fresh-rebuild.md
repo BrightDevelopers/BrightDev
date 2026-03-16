@@ -6,8 +6,8 @@ Sometimes the best path forward is a clean slate. You take what your Flutter app
 
 This is the harder path upfront. It is the easier path for everything that comes after.
 
-**Best for**: Performance-critical signage, apps that need BrightSign device APIs, long-term maintainable deployments
-**Target platform**: BrightSign OS (Node.js v18.18.2 + Chromium)
+- **Best for**: Performance-critical signage, apps that need BrightSign device APIs, long-term maintainable deployments
+- **Target platform**: BrightSign OS (Node.js v18.18.2 + Chromium)
 
 ---
 
@@ -64,7 +64,11 @@ First, read and analyze the automation patterns at migration-guides/flutter-dart
 
 I need you to rebuild my Flutter/Dart application in HTML/JavaScript/Node.js for BrightSign using Method 2 (Fresh Rebuild).
 
-Success condition: create a brightsign/ folder at the project root containing everything needed for an SD card deployment in the exact structure required. The brightsign/ folder is the SD card - its contents are copied directly to the card root, the player is inserted and rebooted, and the app runs.
+Success condition: Create a brightsign/ folder at the project root containing
+everything needed for an SD card deployment. The brightsign/ folder IS the SD card:
+- Copy its contents directly to the card root
+- Insert the card into the player and reboot
+- The app runs
 
 Project Details:
 - Flutter Project Path: {YOUR_FLUTTER_PROJECT_PATH}
@@ -131,9 +135,8 @@ Rebuild Tasks:
    - Set window rectangle to 0, 0, 1920, 1080 (or your target resolution)
 
 8. Package for deployment
-   - Run the webpack build to produce the production bundle in dist/
-   - Create a brightsign/ folder at the project root (alongside src/, dist/, package.json)
-   - Copy dist/ contents into brightsign/ and add autorun.brs at the brightsign/ root
+   - Configure webpack to output directly to brightsign/ (no intermediate dist/ copy step)
+   - Add autorun.brs at the brightsign/ root
    - The brightsign/ folder must be self-contained: copying it to an SD card root and rebooting the player is all that is needed to run the app
    - List any media assets that must also be placed in brightsign/ before deployment
 
@@ -273,55 +276,7 @@ Each Flutter widget you used maps to an HTML/CSS equivalent. The AI uses this ta
 
 ---
 
-## What the Rebuild Actually Looks Like
-
-To make this concrete: here is the typical structure of a finished Method 2 project.
-
-```
-my-signage-app/
-├── package.json                # Dependencies and scripts
-├── webpack.config.js           # Build configuration
-├── src/
-│   ├── index.html              # Main HTML shell
-│   ├── main.js                 # Entry point
-│   ├── platform/
-│   │   ├── BrightSignPlatform.js   # Device API abstraction
-│   │   └── mocks/
-│   │       └── deviceinfo.js   # Development mock
-│   ├── screens/
-│   │   ├── HomeScreen.js       # Converted from Flutter home page
-│   │   └── MediaScreen.js      # Converted from Flutter media page
-│   ├── data/
-│   │   └── ApiClient.js        # Converted from http/dio calls
-│   └── utils/
-│       └── storage.js          # localStorage wrapper
-├── assets/
-│   ├── videos/
-│   └── images/
-├── dist/                       # webpack output (intermediate build)
-│   ├── bundle.js
-│   ├── index.html
-│   └── assets/
-└── brightsign/                 # SD card contents - copy this to the card root
-    ├── autorun.brs             # BrightSign launcher
-    ├── bundle.js
-    ├── index.html
-    └── assets/
-```
-
-The `BrightSignPlatform` class is the key piece. It wraps all `@brightsign/*` modules behind a single abstraction that uses synchronous initialization with CommonJS `require()`. In development, webpack aliases the BrightSign imports to local mocks. In production, the CommonJS externals tell webpack to leave the `require()` calls in place for BrightSign OS to resolve.
-
----
-
-## Known Dart-to-JavaScript Gotchas
-
-**Streams require a different mental model.** Flutter apps use Streams heavily for reactive UI updates. JavaScript has no equivalent of Dart's built-in stream infrastructure. The AI will convert `StreamController` to `EventEmitter` and `StreamBuilder` to manual event listener patterns. Review these conversions carefully - they usually work, but the error handling path is different.
-
-**Null safety does not carry over.** Dart's null safety is enforced at compile time. JavaScript has no such guarantee. After conversion, add defensive checks where null values would cause runtime errors. The AI will note where `!` (force unwrap) was used in Dart - those are the highest-risk spots.
-
-**Dart `late` initialization has no direct equivalent.** Variables marked `late` in Dart are guaranteed to be set before first use. JavaScript has no such guarantee. The AI converts these to regular properties but you should verify initialization order in the output.
-
-**Extension methods become utility functions.** Dart extension methods add behavior to existing types cleanly. In JavaScript, prefer standalone utility functions over prototype mutation. The AI will extract extensions into utility files.
+For Dart-to-JavaScript conversion gotchas (streams, null safety, late init, extension methods), see **[Troubleshooting](troubleshooting.md#dart-to-javascript-gotchas-method-2)**.
 
 ---
 
@@ -332,7 +287,7 @@ The `BrightSignPlatform` class is the key piece. It wraps all `@brightsign/*` mo
 3. **Copy the `brightsign/` folder contents to an SD card.** Everything in `brightsign/` goes to the card root. `autorun.brs` is already there at the top level.
 4. **Insert the SD card and reboot.** The player picks up `autorun.brs` on boot and launches the app.
 5. **Connect Chrome DevTools.** Open `[DEVICE_IP]:2999` in Chrome to access the remote debugger on the player.
-6. **Check the console.** The first boot usually surfaces one or two path issues. Fix them, update `brightsign/`, and redeploy.
+6. **Check the console.** The first boot may surface missing file errors (e.g., 404 on `bundle.js` or assets due to incorrect relative paths). Fix them, update `brightsign/`, and redeploy.
 7. **Run for several hours.** Signage apps run continuously. Verify there are no memory leaks or rendering degradations after extended operation.
 
 If you want to compare outputs, [Method 1](method1-flutter-web.md) is faster to get running but carries the Flutter runtime with it. Method 2 takes longer upfront and typically produces a more reliable long-term deployment.
