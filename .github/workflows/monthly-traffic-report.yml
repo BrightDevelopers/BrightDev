@@ -1,0 +1,50 @@
+name: Monthly Traffic Report
+
+on:
+  schedule:
+    - cron: '0 15 28-31 * *'
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Skip posting to Slack and print payload to logs instead'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if today is the last day of the month
+        id: check-date
+        run: |
+          TODAY=$(date +%d)
+          LAST=$(date -d "$(date +%Y-%m-01) +1 month -1 day" +%d)
+          if [ "$TODAY" != "$LAST" ]; then
+            echo "Not the last day of the month. Exiting early."
+            echo "is_last_day=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_last_day=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout repository
+        if: steps.check-date.outputs.is_last_day == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        if: steps.check-date.outputs.is_last_day == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Aggregate monthly metrics and post to Slack
+        if: steps.check-date.outputs.is_last_day == 'true'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEST_MODE: ${{ inputs.test_mode || 'false' }}
+        run: node .github/scripts/aggregate-monthly.js
