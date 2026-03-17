@@ -35,72 +35,12 @@ And at the very bottom is the system layer. Logs, screenshots, registry values, 
 Today we are setting up all three layers. You will configure them once and use them for the rest of your development life on this player.
 
 
-## Step 1: The Debug-Ready autorun.brs
+## Step 1: Enable Debugging in Your autorun.brs
 
-Every BrightSign player runs `autorun.brs` at boot. For Tutorial 1, yours was simple. Now we are going to make it development-ready by enabling three things: the Chrome DevTools inspector, SSH access, and the Diagnostic Web Server.
-
-Here is the template. Copy it to the root of your SD card (replacing your existing `autorun.brs`):
+Every BrightSign player runs `autorun.brs` at boot. You already have one. To make it debug-ready, add these lines near the top of your `Sub Main()`:
 
 ```brightscript
-' autorun.brs - Development build with all debug tools enabled
-Sub Main()
-    ' --- Debug tools (disable these for production) ---
-
-    ' 1. Enable Chrome DevTools inspector
-    htmlReg = CreateObject("roRegistrySection", "html")
-    htmlReg.Write("enable_web_inspector", "1")
-    htmlReg.Flush()
-
-    ' 2. Enable SSH and DWS
-    netReg = CreateObject("roRegistrySection", "networking")
-    netReg.Write("ssh", "22")
-    netReg.Write("dwse", "yes")
-    netReg.Flush()
-
-    ' 3. Set passwords for SSH and DWS
-    nc = CreateObject("roNetworkConfiguration", 0)
-    nc.SetupDWS({port: "80", password: "dev123"})
-    nc.SetLoginPassword("dev123")
-    nc.Apply()
-
-    ' --- Your application ---
-
-    rect = CreateObject("roRectangle", 0, 0, 1920, 1080)
-
-    config = {
-        url: "file:///sd:/index.html",
-        inspector_server: { port: 2999 },
-        nodejs_enabled: true
-    }
-
-    htmlWidget = CreateObject("roHtmlWidget", rect, config)
-    htmlWidget.Show()
-
-    ' Keep the app alive
-    msgPort = CreateObject("roMessagePort")
-    htmlWidget.SetPort(msgPort)
-
-    while true
-        msg = wait(0, msgPort)
-    end while
-End Sub
-```
-
-The key pieces:
-
-- `enable_web_inspector` in the registry tells the Chromium engine to accept remote debugging connections
-- `inspector_server: { port: 2999 }` opens port 2999 for Chrome DevTools to connect
-- `ssh` and `dwse` registry writes enable SSH and the Diagnostic Web Server
-- The passwords keep casual traffic off your player (change them from "dev123" for anything beyond your desk)
-
-> **Production warning:** Disable all of these before shipping. The web inspector logs data to memory even when nothing is connected, which can cause memory exhaustion and crashes over time. SSH and DWS are development tools, not production features.
-
-### Already have an autorun.brs?
-
-If you have an existing `autorun.brs` that you do not want to replace, just add these lines near the top of your `Sub Main()` to enable debugging:
-
-```brightscript
-' --- Add to the top of your existing Sub Main() ---
+' --- Debug tools (add to the top of your Sub Main()) ---
 
 ' Enable Chrome DevTools inspector
 htmlReg = CreateObject("roRegistrySection", "html")
@@ -120,87 +60,36 @@ nc.SetLoginPassword("dev123")
 nc.Apply()
 ```
 
-Then add `inspector_server: { port: 2999 }` to your existing `roHtmlWidget` config object. That is all it takes. The registry writes only need to happen once (they persist across reboots), but there is no harm in leaving them in your dev autorun.
+Then add `inspector_server: { port: 2999 }` to your `roHtmlWidget` config object:
 
-
-## Step 2: Create a Simple Test App
-
-You need something to debug. Create an `index.html` alongside your `autorun.brs`:
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Debug Test</title>
-    <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #1a1a2e;
-            color: #eee;
-            font-family: system-ui, sans-serif;
-        }
-        .status {
-            text-align: center;
-            font-size: 2rem;
-        }
-        .timestamp {
-            font-size: 1rem;
-            color: #888;
-            margin-top: 1rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="status">
-        <div id="message">Loading...</div>
-        <div class="timestamp" id="time"></div>
-    </div>
-    <script src="app.js"></script>
-</body>
-</html>
-```
-
-And an `app.js`:
-
-```javascript
-// app.js - A simple app with things to debug
-console.log('App started at:', new Date().toISOString());
-
-function updateDisplay() {
-    const now = new Date();
-    document.getElementById('message').textContent = 'Hello from BrightSign!';
-    document.getElementById('time').textContent = now.toLocaleTimeString();
-    console.log('Display updated:', now.toLocaleTimeString());
+```brightscript
+config = {
+    url: "file:///sd:/index.html",
+    inspector_server: { port: 2999 },
+    nodejs_enabled: true
 }
-
-updateDisplay();
-setInterval(updateDisplay, 1000);
-
-console.log('Screen size:', window.innerWidth + 'x' + window.innerHeight);
 ```
 
-Your SD card should look like this:
+That is all it takes. Here is what each piece does:
 
-```
-SD:/
-├── autorun.brs
-├── index.html
-└── app.js
-```
+- `enable_web_inspector` in the registry tells the Chromium engine to accept remote debugging connections
+- `inspector_server: { port: 2999 }` opens port 2999 for Chrome DevTools to connect
+- `ssh` and `dwse` registry writes enable SSH and the Diagnostic Web Server
+- The passwords keep casual traffic off your player (change them from "dev123" for anything beyond your desk)
+
+The registry writes persist across reboots, so they only need to happen once. There is no harm in leaving them in your dev autorun.
+
+> **Production warning:** Disable all of these before shipping. The web inspector logs data to memory even when nothing is connected, which can cause memory exhaustion and crashes over time. SSH and DWS are development tools, not production features.
 
 
-## Step 3: Deploy and Boot
+## Step 2: Deploy and Boot
 
-Insert the SD card into your player and power on. After the boot sequence (15-30 seconds), your display should show "Hello from BrightSign!" with a ticking clock.
+Deploy your application files and the debug-ready `autorun.brs` to the player (SD card, SCP, or whichever method you prefer). Power on or reboot. After the boot sequence (15-30 seconds), your app should appear on the display.
 
 If the screen stays black, do not panic. That is why we are setting up debugging.
 
 
-## Step 4: Connect Chrome DevTools
+## Step 3: Connect Chrome DevTools
 
 This is the payoff. From your laptop:
 
@@ -223,7 +112,7 @@ A full Chrome DevTools window opens. You will see:
 It is the same DevTools you use on localhost. Pointed at hardware sitting across the room.
 
 
-## Step 5: The Daily Workflow
+## Step 4: The Daily Workflow
 
 Setup happens once. The loop you will repeat hundreds of times is what matters:
 
