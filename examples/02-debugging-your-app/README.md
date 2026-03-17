@@ -95,6 +95,33 @@ The key pieces:
 
 > **Production warning:** Disable all of these before shipping. The web inspector logs data to memory even when nothing is connected, which can cause memory exhaustion and crashes over time. SSH and DWS are development tools, not production features.
 
+### Already have an autorun.brs?
+
+If you have an existing `autorun.brs` that you do not want to replace, just add these lines near the top of your `Sub Main()` to enable debugging:
+
+```brightscript
+' --- Add to the top of your existing Sub Main() ---
+
+' Enable Chrome DevTools inspector
+htmlReg = CreateObject("roRegistrySection", "html")
+htmlReg.Write("enable_web_inspector", "1")
+htmlReg.Flush()
+
+' Enable SSH and DWS
+netReg = CreateObject("roRegistrySection", "networking")
+netReg.Write("ssh", "22")
+netReg.Write("dwse", "yes")
+netReg.Flush()
+
+' Set passwords for SSH and DWS
+nc = CreateObject("roNetworkConfiguration", 0)
+nc.SetupDWS({port: "80", password: "dev123"})
+nc.SetLoginPassword("dev123")
+nc.Apply()
+```
+
+Then add `inspector_server: { port: 2999 }` to your existing `roHtmlWidget` config object. That is all it takes. The registry writes only need to happen once (they persist across reboots), but there is no harm in leaving them in your dev autorun.
+
 
 ## Step 2: Create a Simple Test App
 
