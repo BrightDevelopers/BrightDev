@@ -51,12 +51,13 @@ htmlReg.Flush()
 netReg = CreateObject("roRegistrySection", "networking")
 netReg.Write("ssh", "22")
 netReg.Write("dwse", "yes")
+netReg.Write("telnet_log_level", "7")
 netReg.Flush()
 
 ' Set passwords for SSH and DWS
 nc = CreateObject("roNetworkConfiguration", 0)
-nc.SetupDWS({port: "80", password: "dev123"})
-nc.SetLoginPassword("dev123")
+nc.SetupDWS({port: "80", password: "password"})
+nc.SetLoginPassword("password")
 nc.Apply()
 ```
 
@@ -75,16 +76,19 @@ That is all it takes. Here is what each piece does:
 - `enable_web_inspector` in the registry tells the Chromium engine to accept remote debugging connections
 - `inspector_server: { port: 2999 }` opens port 2999 for Chrome DevTools to connect
 - `ssh` and `dwse` registry writes enable SSH and the Diagnostic Web Server
-- The passwords keep casual traffic off your player (change them from "dev123" for anything beyond your desk)
+- `telnet_log_level` set to `7` enables the interactive console over SSH (without this, SSH may connect but not give you a usable prompt)
+- The passwords keep casual traffic off your player (change them from `password` for anything beyond your desk)
 
 The registry writes persist across reboots, so they only need to happen once. There is no harm in leaving them in your dev autorun.
+
+> **Important: SSH and DWS require two boots.** The registry writes happen during the autorun, but SSH and DWS do not start listening until the *next* boot after the values are written. The first time you deploy your debug-enabled autorun, you will need to reboot the player twice: once to write the registry values, and once more for SSH and DWS to actually come online. After that, they will be available on every boot.
 
 > **Production warning:** Disable all of these before shipping. The web inspector logs data to memory even when nothing is connected, which can cause memory exhaustion and crashes over time. SSH and DWS are development tools, not production features.
 
 
 ## Step 2: Deploy and Boot
 
-Deploy your application files and the debug-ready `autorun.brs` to the player (SD card, SCP, or whichever method you prefer). Power on or reboot. After the boot sequence (15-30 seconds), your app should appear on the display.
+Deploy your application files and the updated `autorun.brs` to the player (SD card or whichever method you prefer). Power on, let it boot, then power cycle once more so SSH and DWS come online. After the second boot sequence, your app should appear on the display and all debug tools will be active.
 
 If the screen stays black, do not panic. That is why we are setting up debugging.
 
@@ -146,14 +150,16 @@ Since you enabled SSH in the autorun, you can push files directly over the netwo
 scp index.html app.js brightsign@<player-ip>:/storage/sd/
 
 # Reboot the player to pick up changes
-ssh brightsign@<player-ip> 'reboot'
+ssh brightsign@<player-ip>
+# Then type: reboot
 ```
 
 For larger projects, `rsync` only transfers what changed:
 
 ```bash
 rsync -avz --progress ./dist/ brightsign@<player-ip>:/storage/sd/
-ssh brightsign@<player-ip> 'reboot'
+ssh brightsign@<player-ip>
+# Then type: reboot
 ```
 
 ### Option B: VS Code Auto-Upload
@@ -167,7 +173,7 @@ For the tightest loop, configure VS Code's SFTP extension to push files on every
     "protocol": "sftp",
     "port": 22,
     "username": "brightsign",
-    "password": "dev123",
+    "password": "password",
     "remotePath": "/storage/sd/",
     "uploadOnSave": true,
     "ignore": [".vscode", ".git", "node_modules"]
@@ -189,7 +195,7 @@ While DevTools shows you the inside of your app, the DWS shows you the inside of
 http://<player-ip>/
 ```
 
-(Use the credentials you set: admin / dev123)
+(Use the credentials you set: admin / password)
 
 You get a dashboard with player status, but the real power is in the API endpoints:
 
@@ -205,7 +211,7 @@ You get a dashboard with player status, but the real power is in the API endpoin
 The screenshot endpoint alone is worth the setup. Instead of walking to the display:
 
 ```bash
-curl http://admin:dev123@<player-ip>/GetScreenshot -o screenshot.jpg
+curl http://admin:password@<player-ip>/GetScreenshot -o screenshot.jpg
 ```
 
 You can see exactly what the player is rendering without leaving your desk.
@@ -236,7 +242,7 @@ Check the system log first:
 
 ```bash
 # Via DWS
-curl http://admin:dev123@<player-ip>/GetSystemLog
+curl http://admin:password@<player-ip>/GetSystemLog
 
 # Or via SSH
 ssh brightsign@<player-ip>
@@ -316,8 +322,8 @@ In Chrome, add `<player-ip>:3000` as a separate target in `chrome://inspect`. Yo
 | View system logs | DWS or SSH | `http://<ip>/GetSystemLog` or `tail /var/log/messages` |
 | Take a screenshot | DWS | `http://<ip>/GetScreenshot` |
 | Upload files over network | SCP or DWS API | `scp` or `curl` |
-| Reboot the player | SSH or DWS | `ssh <ip> 'reboot'` or `http://<ip>/Reboot` |
-| Emergency access (no network) | Serial console | USB-to-serial cable, 115200 baud |
+| Reboot the player | SSH | SSH in and type `reboot` |
+| Emergency access (no network) | [Serial console](serial-console.md) | USB-to-serial cable, 115200 baud |
 
 
 ## The Full Toolkit at a Glance
@@ -332,7 +338,7 @@ BrightSign gives you a deep bench. Here is how the tools rank by how often you w
 
 4. **BrightScript Debugger** - For problems in the `autorun.brs` layer. Interactive stepping, variable inspection, and call stack analysis. Access via SSH or serial.
 
-5. **SSH/Serial Console** - Direct shell access to the player's OS. File operations, network diagnostics, registry inspection. The escape hatch when nothing else works.
+5. **SSH/[Serial Console](serial-console.md)** - Direct shell access to the player's OS. File operations, network diagnostics, registry inspection. The escape hatch when nothing else works.
 
 6. **Node Inspector** - Dedicated debugger for the Node.js runtime. Use when your server-side JavaScript needs attention.
 
@@ -346,22 +352,8 @@ You now have a development environment where the edit-deploy-debug loop takes se
 In the next tutorial, we will build something that actually needs debugging: a data-driven display that fetches content from an API, handles errors gracefully, and recovers when the network drops. The kind of real-world signage app where these tools earn their keep.
 
 
-## Debugging
+## Troubleshooting
 
-If Chrome DevTools will not connect:
-- Verify the player IP address (check via serial or DWS)
-- Confirm `inspector_server: { port: 2999 }` is in your config
-- Confirm `enable_web_inspector` registry key is set to "1"
-- Make sure your computer and the player are on the same network/subnet
-
-If SSH connection is refused:
-- The `networking.ssh` registry key must be "22"
-- The player needs a reboot after enabling SSH for the first time
-- Verify the password you set with `SetLoginPassword()`
-
-If the DWS is not accessible:
-- The `networking.dwse` registry key must be "yes"
-- Check that port 80 is not blocked by your network
-- Try accessing via the player's IP directly, not mDNS
+Something not working? See [troubleshooting.md](troubleshooting.md) for common gotchas with SSH, Chrome DevTools, DWS, file deployment, and the BrightScript Debugger. For hardware-level debugging when the network is not an option, see [serial-console.md](serial-console.md).
 
 *Part of [BrightDeveloper](https://github.com/BrightDevelopers) - BrightSign's AI-first developer program.*
