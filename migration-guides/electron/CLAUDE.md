@@ -521,8 +521,8 @@
     "main_process": "const win = new BrowserWindow({ width: 1920, height: 1080, fullscreen: true }); win.loadFile('index.html');"
   },
   "brightsign_replacement": {
-    "autorun_brs": "sub Main()\n  url$ = \"file:///sd:/index.html\"\n  h = CreateObject(\"roHtmlWidget\", { port: 2999 })\n  h.Show()\n  h.SetUrl({ url: url$ })\nend sub",
-    "alternative_nodejs": "sub Main()\n  config = { nodejs_enabled: true, nodejs_main_script: \"app.js\", inspector_server: 2999 }\n  h = CreateObject(\"roHtmlWidget\", config)\n  h.Show()\n  h.SetUrl({ url: \"http://localhost:3000\" })\nend sub"
+    "autorun_brs": "sub Main()\n  reg = CreateObject(\"roRegistrySection\", \"html\")\n  reg.Write(\"use-brightsign-media-player\", \"0\")\n  reg.Flush()\n  url$ = \"file:///sd:/index.html\"\n  h = CreateObject(\"roHtmlWidget\", { port: 2999 })\n  h.Show()\n  h.SetUrl({ url: url$ })\nend sub",
+    "alternative_nodejs": "sub Main()\n  reg = CreateObject(\"roRegistrySection\", \"html\")\n  reg.Write(\"use-brightsign-media-player\", \"0\")\n  reg.Flush()\n  config = { nodejs_enabled: true, nodejs_main_script: \"app.js\", inspector_server: 2999 }\n  h = CreateObject(\"roHtmlWidget\", config)\n  h.Show()\n  h.SetUrl({ url: \"http://localhost:3000\" })\nend sub"
   },
   "notes": "BrightSign loads HTML via autorun.brs configuration, not programmatically"
 }
@@ -705,7 +705,7 @@
         "check_id": "autorun_brs_configured",
         "description": "Verify autorun.brs launches app correctly",
         "validation": "autorun.brs exists and configured properly",
-        "required_fields": ["nodejs_enabled or roHtmlWidget", "url or nodejs_main_script", "inspector_server for debugging"],
+        "required_fields": ["nodejs_enabled or roHtmlWidget", "url or nodejs_main_script", "inspector_server for debugging", "registry write use-brightsign-media-player 0 for Chromium media player"],
         "failure_action": "AI_PLACEHOLDER: Create autorun.brs from template"
       },
       {
@@ -944,7 +944,7 @@
     "limitations": [
       "Cannot use BrightSign asset pool (no efficient media caching)",
       "Legacy BrightSign JavaScript objects won't work",
-      "Cannot use BrightSign Media Player (only Chromium media player)",
+      "Uses Chromium media player only (full modern web API support, but no BrightSign-native media playback features)",
       "Virtual Keyboard won't work (no on-screen keyboard)",
       "Proxy configuration doesn't apply (network limitations)",
       "No BrightSign-specific user agent keywords",

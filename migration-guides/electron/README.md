@@ -20,7 +20,7 @@ BrightSign's `roElectron` implementation has significant limitations that will i
 
 - ❌ **Cannot use BrightSign asset pool** - No efficient media caching
 - ❌ **Legacy BrightSign JavaScript objects won't work** - Limited platform integration
-- ❌ **Cannot use BrightSign Media Player** - Stuck with basic Chromium media player only
+- ⚠️ **Uses Chromium media player only** - Full modern web API support (service workers, Cache API, IndexedDB), but no BrightSign-native media playback features
 - ❌ **Virtual Keyboard won't work** - No on-screen keyboard support
 - ❌ **Proxy configuration ignored** - Network proxy settings don't apply
 - ❌ **No BrightSign-specific user agent keywords** - Harder to detect device type
