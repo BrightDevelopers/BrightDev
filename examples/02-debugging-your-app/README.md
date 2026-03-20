@@ -79,7 +79,7 @@ That is all it takes. Here is what each piece does:
 
 - `enable_web_inspector` in the registry tells the Chromium engine to accept remote debugging connections
 - `inspector_server: { port: 2999 }` opens port 2999 for Chrome DevTools to connect
-- `ssh` and `dwse` registry writes enable SSH and the Diagnostic Web Server
+- `ssh` and `dwse` registry writes enable SSH and the Local Diagnostic Web Server
 - `telnet_log_level` set to `7` enables the interactive console over SSH (without this, SSH may connect but not give you a usable prompt)
 - The passwords keep casual traffic off your player (change them from `password` for anything beyond your desk)
 
