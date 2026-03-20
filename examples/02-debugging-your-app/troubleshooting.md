@@ -79,7 +79,7 @@ If nothing appears under "Remote Target" in `chrome://inspect/#devices`:
 1. Confirm `inspector_server: { port: 2999 }` is in your `roHtmlWidget` config
 2. Confirm the `enable_web_inspector` registry key is set to `"1"`
 3. Verify your computer and the player are on the same network and subnet
-4. Double-check the player's IP address (boot with a blank SD card to see it on screen)
+4. Double-check the player's IP address (boot without an SD card to see it on screen)
 5. Make sure you added the correct IP and port in Chrome's **Configure** dialog (e.g. `<player-ip>:2999`)
 
 ### DevTools connects but the page is blank or unresponsive
