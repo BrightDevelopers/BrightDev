@@ -290,7 +290,7 @@ Sub Main()
 End Sub
 ```
 
-A second `Ctrl-C` from the debugger drops you into the BrightSign OS shell, where you can run system commands: `ifconfig`, `ping`, `dir /storage/sd`, `registry read`. Typing `exit` from the shell reboots the player, so be intentional about it.
+A second `Ctrl-C` from the debugger drops you into the BrightSign OS shell (the `BrightSign>` prompt), where you can run system commands: `ifconfig`, `ping`, `dir SD:/`, `registry read`. Type `help` or `?` for a full list of commands. Typing `exit` from the shell reboots the player, so be intentional about it.
 
 ### "I need to debug Node.js specifically"
 
