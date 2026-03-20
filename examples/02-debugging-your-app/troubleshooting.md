@@ -155,4 +155,4 @@ Your `autorun.brs` likely has a syntax error or is crashing on startup. Remove t
 
 ### Everything was working and now nothing connects
 
-Check that the player's IP has not changed. If your network uses DHCP, the player may have been assigned a new address. Boot with a blank SD card to see the current IP, or check your router's device list for `BRIGHTSIGN-<SERIALNUMBER>`.
+Check that the player's IP has not changed. If your network uses DHCP, the player may have been assigned a new address. Boot without an SD card to see the current IP, or check your router's device list for `BRIGHTSIGN-<SERIALNUMBER>`.
