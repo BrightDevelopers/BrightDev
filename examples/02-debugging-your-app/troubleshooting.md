@@ -134,12 +134,14 @@ ssh brightsign@<player-ip>
 This only works when connected via SSH or serial console while a BrightScript application is running. If the autorun has already finished executing (or crashed), there is nothing to break into. Check the system log for errors:
 
 ```bash
-curl http://admin:password@<player-ip>/GetSystemLog
+curl --digest -u admin:password http://<player-ip>/api/v1/logs
 ```
+
+## BrightSign Shell
 
 ### Typed `exit` in the shell and the player rebooted
 
-That is the expected behavior. In the BrightSign OS shell (the second Ctrl-C level), typing `exit` reboots the player. If you want to return to the BrightScript debugger instead, type `script`.
+That is the expected behavior. In the BrightSign OS shell (the `BrightSign>` prompt, reached via a second Ctrl-C from the debugger), typing `exit` reboots the player. If you want to return to the BrightScript debugger instead, type `script`.
 
 ## General
 
@@ -149,7 +151,7 @@ Boot the player with a blank SD card (or no SD card). The IP address is displaye
 
 ### The player keeps rebooting in a loop
 
-Your `autorun.brs` likely has a syntax error or is crashing on startup. Connect via serial console (USB-to-serial cable, 115200 baud) to see the error output. Serial does not require SSH or network access, so it works even when everything else is broken.
+Your `autorun.brs` likely has a syntax error or is crashing on startup. Remove the SD card to stop the loop, then connect via serial console (USB-to-serial cable, 115200 baud) to see the error output. Serial does not require SSH or network access, so it works even when everything else is broken.
 
 ### Everything was working and now nothing connects
 
