@@ -267,7 +267,7 @@ The usual suspects: event listeners that never get removed, `setInterval` callba
 
 ### "I need to debug the BrightScript layer"
 
-If the issue is in your `autorun.brs` (not the HTML/JS), Chrome DevTools will not help. You need the BrightScript Debugger.
+If the issue is in your `autorun.brs` (not the HTML/JS), Chrome DevTools will not help. You need the [BrightScript Debugger](https://docs.brightsign.biz/developers/brightscript-debugger).
 
 Connect via SSH and press `Ctrl-C` to break into the debugger:
 
