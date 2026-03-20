@@ -9,7 +9,7 @@ const SNAPSHOTS_DIR = 'metrics/snapshots';
 function buildHeaderBlock(date) {
   return {
     type: 'header',
-    text: { type: 'plain_text', text: `BrightDev Traffic Report - w/e ${date}` },
+    text: { type: 'plain_text', text: `\ud83d\udcca BrightDev Traffic Report - w/e ${date}` },
   };
 }
 
@@ -63,46 +63,18 @@ function buildContextBlock() {
   };
 }
 
-function buildCommunityBlocks(c) {
-  return [
-    buildTwoColumnBlock('Stars', c.stars, 'Forks', c.forks),
-  ];
-}
-
-function buildTrafficBlocks(c) {
-  return [
-    buildTwoColumnBlock('Unique Visits', c.uniqueVisits, 'Unique Clones', c.uniqueClones),
-    buildMetricSectionBlock('Conversion Rate', c.conversionRate),
-  ];
-}
-
-function buildEngagementBlocks(c) {
-  return [
-    buildTwoColumnBlock('Issues Opened', c.issuesOpenedThisWeek, 'External PRs', c.externalPrsThisWeek),
-    buildTwoColumnBlock('Open Issues', c.openIssueCount, 'Avg Issue Age (days)', c.openIssueAvgAgeDays),
-    buildMetricSectionBlock('Avg First Response (hrs)', c.avgFirstResponseHours),
-  ];
-}
-
-function buildReferralBlocks(c) {
-  return [
-    buildListBlock('Top Referrers', c.topReferrers, formatReferrerLine),
-    buildListBlock('Top Content', c.topPaths, formatPathLine),
-  ];
-}
-
 function buildSlackPayload(comparison) {
   return {
     blocks: [
       buildHeaderBlock(comparison.date),
       buildDividerBlock(),
-      ...buildCommunityBlocks(comparison),
+      buildMetricSectionBlock('\ud83d\udc41\ufe0f Unique Visits', comparison.uniqueVisits),
+      buildTwoColumnBlock('\u2b50 Stars', comparison.stars, '\ud83c\udf74 Forks', comparison.forks),
       buildDividerBlock(),
-      ...buildTrafficBlocks(comparison),
+      buildTwoColumnBlock('\ud83d\udcdd Issues Opened', comparison.issuesOpenedThisWeek, '\ud83e\udd1d External PRs', comparison.externalPrsThisWeek),
       buildDividerBlock(),
-      ...buildEngagementBlocks(comparison),
-      buildDividerBlock(),
-      ...buildReferralBlocks(comparison),
+      buildListBlock('\ud83d\udd17 Top Referrers', comparison.topReferrers, formatReferrerLine),
+      buildListBlock('\ud83d\udcc4 Top Content', comparison.topPaths, formatPathLine),
       buildContextBlock(),
     ],
   };

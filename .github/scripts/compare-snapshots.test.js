@@ -39,9 +39,6 @@ function makeFullSnapshot(overrides) {
     forks: 30,
     issuesOpenedThisWeek: 3,
     externalPrsThisWeek: 1,
-    openIssueCount: 12,
-    openIssueAvgAgeDays: 15.3,
-    avgFirstResponseHours: 4.2,
     topReferrers: [{ referrer: 'google.com', uniques: 10 }],
     topPaths: [{ path: '/README.md', uniques: 25 }],
     ...overrides,
@@ -170,7 +167,6 @@ test('compareSnapshots returns first run comparison when only one snapshot exist
   assert.equal(result.date, '2024-01-05');
   assert.equal(result.uniqueVisits.change, FIRST_RUN_LABEL);
   assert.equal(result.stars.change, FIRST_RUN_LABEL);
-  assert.equal(result.avgFirstResponseHours.change, FIRST_RUN_LABEL);
 });
 
 test('compareSnapshots compares two full snapshots correctly', () => {
@@ -197,15 +193,6 @@ test('compareSnapshots handles old-format baseline gracefully', () => {
   assert.equal(result.stars.value, 150);
   assert.equal(result.stars.change, FIRST_RUN_LABEL);
   assert.equal(result.issuesOpenedThisWeek.change, FIRST_RUN_LABEL);
-});
-
-test('compareSnapshots handles null avgFirstResponseHours', () => {
-  const dir = makeTempDir();
-  const snapshot = makeFullSnapshot({ date: '2024-01-05', avgFirstResponseHours: null });
-  writeSnapshot(dir, 'weekly-2024-01-05.json', snapshot);
-  const result = compareSnapshots(dir);
-  assert.equal(result.avgFirstResponseHours.value, null);
-  assert.equal(result.avgFirstResponseHours.change, NO_DATA_LABEL);
 });
 
 test('compareSnapshots passes through topReferrers and topPaths', () => {

@@ -22,15 +22,10 @@ const {
 const SAMPLE_COMPARISON = {
   date: '2024-01-12',
   uniqueVisits: { value: 200, change: '\u2191 +100%' },
-  uniqueClones: { value: 20, change: '\u2191 +100%' },
-  conversionRate: { value: 10, change: '\u2192 0%' },
   stars: { value: 150, change: '\u2191 +5' },
   forks: { value: 30, change: '\u2191 +2' },
   issuesOpenedThisWeek: { value: 3, change: '\u2191 +50%' },
   externalPrsThisWeek: { value: 1, change: 'N/A (first run)' },
-  openIssueCount: { value: 12, change: '\u2193 -8%' },
-  openIssueAvgAgeDays: { value: 15.3, change: '\u2191 +5%' },
-  avgFirstResponseHours: { value: 4.2, change: '\u2193 -20%' },
   topReferrers: [
     { referrer: 'google.com', uniques: 10 },
     { referrer: 'dev.to', uniques: 5 },
@@ -46,7 +41,7 @@ const SAMPLE_COMPARISON = {
 test('buildHeaderBlock includes date in correct format', () => {
   const block = buildHeaderBlock('2024-01-12');
   assert.equal(block.type, 'header');
-  assert.equal(block.text.text, 'BrightDev Traffic Report - w/e 2024-01-12');
+  assert.ok(block.text.text.includes('BrightDev Traffic Report - w/e 2024-01-12'));
   assert.equal(block.text.type, 'plain_text');
 });
 
@@ -133,7 +128,7 @@ test('formatPathLine formats path with bullet, backticks, and uniques', () => {
 
 test('buildSlackPayload produces correct number of blocks', () => {
   const payload = buildSlackPayload(SAMPLE_COMPARISON);
-  assert.equal(payload.blocks.length, 14);
+  assert.equal(payload.blocks.length, 10);
 });
 
 test('buildSlackPayload starts with header and ends with context', () => {
@@ -149,7 +144,7 @@ test('buildSlackPayload header shows correct date', () => {
 
 test('buildSlackPayload contains stars/forks two-column block', () => {
   const payload = buildSlackPayload(SAMPLE_COMPARISON);
-  const starsForks = payload.blocks[2];
+  const starsForks = payload.blocks[3];
   assert.equal(starsForks.type, 'section');
   assert.ok(starsForks.fields);
   assert.ok(starsForks.fields[0].text.includes('Stars'));

@@ -26,7 +26,7 @@ function calculateConversionRate(clones, visits) {
 
 async function fetchAllMetrics(owner, repo, token) {
   const since = api.weekAgoDate();
-  const [views, clones, stats, referrers, paths, issues, prs, issueStats, responseHours] =
+  const [views, clones, stats, referrers, paths, issues, prs] =
     await Promise.all([
       api.fetchTrafficViews(owner, repo, token),
       api.fetchTrafficClones(owner, repo, token),
@@ -35,8 +35,6 @@ async function fetchAllMetrics(owner, repo, token) {
       api.fetchTopPaths(owner, repo, token),
       api.fetchIssuesOpenedSince(owner, repo, token, since),
       api.fetchExternalPrsSince(owner, repo, token, since),
-      api.fetchOpenIssueStats(owner, repo, token),
-      api.fetchAvgFirstResponseHours(owner, repo, token),
     ]);
   return {
     uniqueVisits: views,
@@ -46,8 +44,6 @@ async function fetchAllMetrics(owner, repo, token) {
     topPaths: paths,
     issuesOpenedThisWeek: issues,
     externalPrsThisWeek: prs,
-    ...issueStats,
-    avgFirstResponseHours: responseHours,
   };
 }
 
@@ -61,9 +57,6 @@ function buildSnapshot(date, metrics) {
     forks: metrics.forks,
     issuesOpenedThisWeek: metrics.issuesOpenedThisWeek,
     externalPrsThisWeek: metrics.externalPrsThisWeek,
-    openIssueCount: metrics.openIssueCount,
-    openIssueAvgAgeDays: metrics.openIssueAvgAgeDays,
-    avgFirstResponseHours: metrics.avgFirstResponseHours,
     topReferrers: metrics.topReferrers,
     topPaths: metrics.topPaths,
   };

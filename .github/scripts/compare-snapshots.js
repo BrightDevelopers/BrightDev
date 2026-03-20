@@ -66,37 +66,14 @@ function buildSafeMetricChange(currentValue, previousValue) {
   return buildMetricChange(currentValue, previousValue);
 }
 
-function buildTrafficComparison(current, baseline) {
+function buildComparisonFromBaseline(current, baseline) {
   return {
+    date: current.date,
     uniqueVisits: buildMetricChange(current.uniqueVisits, baseline.uniqueVisits),
-    uniqueClones: buildMetricChange(current.uniqueClones, baseline.uniqueClones),
-    conversionRate: buildMetricChange(current.conversionRate, baseline.conversionRate),
-  };
-}
-
-function buildCommunityComparison(current, baseline) {
-  return {
     stars: buildDeltaChange(current.stars, baseline.stars),
     forks: buildDeltaChange(current.forks, baseline.forks),
     issuesOpenedThisWeek: buildSafeMetricChange(current.issuesOpenedThisWeek, baseline.issuesOpenedThisWeek),
     externalPrsThisWeek: buildSafeMetricChange(current.externalPrsThisWeek, baseline.externalPrsThisWeek),
-  };
-}
-
-function buildHealthComparison(current, baseline) {
-  return {
-    openIssueCount: buildSafeMetricChange(current.openIssueCount, baseline.openIssueCount),
-    openIssueAvgAgeDays: buildSafeMetricChange(current.openIssueAvgAgeDays, baseline.openIssueAvgAgeDays),
-    avgFirstResponseHours: buildSafeMetricChange(current.avgFirstResponseHours, baseline.avgFirstResponseHours),
-  };
-}
-
-function buildComparisonFromBaseline(current, baseline) {
-  return {
-    date: current.date,
-    ...buildTrafficComparison(current, baseline),
-    ...buildCommunityComparison(current, baseline),
-    ...buildHealthComparison(current, baseline),
     topReferrers: current.topReferrers || [],
     topPaths: current.topPaths || [],
   };
@@ -107,37 +84,14 @@ function buildFirstRunMetric(value) {
   return { value, change: FIRST_RUN_LABEL };
 }
 
-function buildFirstRunTrafficMetrics(current) {
+function buildFirstRunComparison(current) {
   return {
+    date: current.date,
     uniqueVisits: buildFirstRunMetric(current.uniqueVisits),
-    uniqueClones: buildFirstRunMetric(current.uniqueClones),
-    conversionRate: buildFirstRunMetric(current.conversionRate),
-  };
-}
-
-function buildFirstRunCommunityMetrics(current) {
-  return {
     stars: buildFirstRunMetric(current.stars),
     forks: buildFirstRunMetric(current.forks),
     issuesOpenedThisWeek: buildFirstRunMetric(current.issuesOpenedThisWeek),
     externalPrsThisWeek: buildFirstRunMetric(current.externalPrsThisWeek),
-  };
-}
-
-function buildFirstRunHealthMetrics(current) {
-  return {
-    openIssueCount: buildFirstRunMetric(current.openIssueCount),
-    openIssueAvgAgeDays: buildFirstRunMetric(current.openIssueAvgAgeDays),
-    avgFirstResponseHours: buildFirstRunMetric(current.avgFirstResponseHours),
-  };
-}
-
-function buildFirstRunComparison(current) {
-  return {
-    date: current.date,
-    ...buildFirstRunTrafficMetrics(current),
-    ...buildFirstRunCommunityMetrics(current),
-    ...buildFirstRunHealthMetrics(current),
     topReferrers: current.topReferrers || [],
     topPaths: current.topPaths || [],
   };
