@@ -21,7 +21,7 @@ The player under the TV is just another browser tab. You just have to tell it to
 - A text editor
 - 10 minutes for initial setup (then seconds per iteration going forward)
 
-**Finding your player's IP address:** Boot the player with a blank SD card (or no SD card at all) and it will display its IP address on screen. The player also appears on your local network as `BRIGHTSIGN-<SERIALNUMBER>`, so you can find it from your router's device list if needed. Write the IP down. You will use it throughout this guide anywhere you see `<player-ip>`.
+**Finding your player's IP address:** Boot the player with a blank SD card (or no SD card at all) and it will display its IP address on screen. If the player has been previously provisioned, you may need to factory reset it first, otherwise it may attempt provisioning/recovery instead of showing the IP. The player also appears on your local network as `BRIGHTSIGN-<SERIALNUMBER>`, so you can find it from your router's device list if needed. Write the IP down. You will use it throughout this guide anywhere you see `<player-ip>`.
 
 
 ## The Mental Model
