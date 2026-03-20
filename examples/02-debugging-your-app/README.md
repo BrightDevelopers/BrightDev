@@ -37,7 +37,7 @@ Today we are setting up all three layers. You will configure them once and use t
 
 ## Step 1: Enable Debugging in your autorun.brs
 
-Every BrightSign player runs `autorun.brs` at boot. You already have one. To make it debug-ready, add these lines near the top of your `Sub Main()`:
+Every BrightSign player runs `autorun.brs` at boot. You already have one from [Tutorial 1](../01-hello-brightsign/). To make it debug-ready, add these lines near the top of your `Sub Main()`:
 
 ```brightscript
 ' --- Debug tools (add to the top of your Sub Main()) ---
