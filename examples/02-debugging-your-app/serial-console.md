@@ -14,6 +14,8 @@ This page tells you what you need, how to connect, and what to do once you are i
 - You want to enable the console or script debug mode from the boot loader
 
 
+For full reference, see the [BrightSign Shell](https://docs.brightsign.biz/developers/brightsign-shell) documentation.
+
 ## What You Need
 
 ### The Cable
