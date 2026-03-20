@@ -114,15 +114,7 @@ This is the payoff. From your laptop:
 6. Wait a moment. Your page will appear under "Remote Target"
 7. Click **Inspect**
 
-A full Chrome DevTools window opens. You will see:
-
-- **Console tab**: Your `console.log` messages streaming in real time ("App started at...", "Display updated...")
-- **Elements tab**: The live DOM of your page running on the player
-- **Sources tab**: Your JavaScript files, ready for breakpoints
-- **Network tab**: Every request the page makes
-- **Memory tab**: Heap snapshots for finding memory leaks
-
-It is the same DevTools you use on localhost. Pointed at hardware sitting across the room.
+A full Chrome DevTools window opens. It is the same DevTools you use on localhost, pointed at hardware sitting across the room.
 
 
 ## Step 4: The Daily Workflow
