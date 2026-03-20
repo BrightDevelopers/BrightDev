@@ -40,7 +40,8 @@ Today we are setting up all three layers. You will configure them once and use t
 Every BrightSign player runs `autorun.brs` at boot. You already have one from [Tutorial 1](../01-hello-brightsign/). To make it debug-ready, add these lines near the top of your `Sub Main()`:
 
 ```brightscript
-' --- Debug tools (add to the top of your Sub Main()) ---
+Sub Main()
+' --- Debug tools ---
 
 ' Enable Chrome DevTools inspector
 htmlReg = CreateObject("roRegistrySection", "html")
@@ -59,6 +60,9 @@ nc = CreateObject("roNetworkConfiguration", 0)
 nc.SetupDWS({port: "80", password: "password"})
 nc.SetLoginPassword("password")
 nc.Apply()
+
+' ... rest of your code
+End Sub
 ```
 
 Then add `inspector_server: { port: 2999 }` to your `roHtmlWidget` config object:
