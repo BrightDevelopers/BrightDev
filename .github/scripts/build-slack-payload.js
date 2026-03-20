@@ -17,18 +17,78 @@ function buildDividerBlock() {
   return { type: 'divider' };
 }
 
+function formatMetricText(label, metric) {
+  if (metric.value == null) return `*${label}*\n${metric.change}`;
+  return `*${label}*\n${metric.value} ${metric.change}`;
+}
+
 function buildMetricSectionBlock(label, metric) {
   return {
     type: 'section',
-    text: { type: 'mrkdwn', text: `*${label}*\n${metric.value} ${metric.change}` },
+    text: { type: 'mrkdwn', text: formatMetricText(label, metric) },
+  };
+}
+
+function buildTwoColumnBlock(leftLabel, leftMetric, rightLabel, rightMetric) {
+  return {
+    type: 'section',
+    fields: [
+      { type: 'mrkdwn', text: formatMetricText(leftLabel, leftMetric) },
+      { type: 'mrkdwn', text: formatMetricText(rightLabel, rightMetric) },
+    ],
+  };
+}
+
+function formatReferrerLine(entry) {
+  return `\u2022 ${entry.referrer} (${entry.uniques} unique)`;
+}
+
+function formatPathLine(entry) {
+  return `\u2022 \`${entry.path}\` (${entry.uniques} unique)`;
+}
+
+function buildListBlock(label, items, formatter) {
+  const lines = items.map(formatter).join('\n');
+  const body = items.length > 0 ? lines : '_No data_';
+  return {
+    type: 'section',
+    text: { type: 'mrkdwn', text: `*${label}*\n${body}` },
   };
 }
 
 function buildContextBlock() {
   return {
     type: 'context',
-    elements: [{ type: 'mrkdwn', text: 'Data from GitHub Traffic API - BrightDev' }],
+    elements: [{ type: 'mrkdwn', text: 'Data from GitHub API - BrightDev' }],
   };
+}
+
+function buildCommunityBlocks(c) {
+  return [
+    buildTwoColumnBlock('Stars', c.stars, 'Forks', c.forks),
+  ];
+}
+
+function buildTrafficBlocks(c) {
+  return [
+    buildTwoColumnBlock('Unique Visits', c.uniqueVisits, 'Unique Clones', c.uniqueClones),
+    buildMetricSectionBlock('Conversion Rate', c.conversionRate),
+  ];
+}
+
+function buildEngagementBlocks(c) {
+  return [
+    buildTwoColumnBlock('Issues Opened', c.issuesOpenedThisWeek, 'External PRs', c.externalPrsThisWeek),
+    buildTwoColumnBlock('Open Issues', c.openIssueCount, 'Avg Issue Age (days)', c.openIssueAvgAgeDays),
+    buildMetricSectionBlock('Avg First Response (hrs)', c.avgFirstResponseHours),
+  ];
+}
+
+function buildReferralBlocks(c) {
+  return [
+    buildListBlock('Top Referrers', c.topReferrers, formatReferrerLine),
+    buildListBlock('Top Content', c.topPaths, formatPathLine),
+  ];
 }
 
 function buildSlackPayload(comparison) {
@@ -36,9 +96,13 @@ function buildSlackPayload(comparison) {
     blocks: [
       buildHeaderBlock(comparison.date),
       buildDividerBlock(),
-      buildMetricSectionBlock('Unique Visits', comparison.uniqueVisits),
-      buildMetricSectionBlock('Unique Clones', comparison.uniqueClones),
-      buildMetricSectionBlock('Conversion Rate', comparison.conversionRate),
+      ...buildCommunityBlocks(comparison),
+      buildDividerBlock(),
+      ...buildTrafficBlocks(comparison),
+      buildDividerBlock(),
+      ...buildEngagementBlocks(comparison),
+      buildDividerBlock(),
+      ...buildReferralBlocks(comparison),
       buildContextBlock(),
     ],
   };
@@ -85,7 +149,12 @@ module.exports = {
   buildHeaderBlock,
   buildDividerBlock,
   buildMetricSectionBlock,
+  buildTwoColumnBlock,
+  buildListBlock,
   buildContextBlock,
+  formatMetricText,
+  formatReferrerLine,
+  formatPathLine,
   isTestMode,
   postPayloadToSlackWebhook,
   deliverPayload,
