@@ -35,7 +35,7 @@ And at the very bottom is the system layer. Logs, screenshots, registry values, 
 Today we are setting up all three layers. You will configure them once and use them for the rest of your development life on this player.
 
 
-## Step 1: Enable Debugging in Your autorun.brs
+## Step 1: Enable Debugging in your autorun.brs
 
 Every BrightSign player runs `autorun.brs` at boot. You already have one. To make it debug-ready, add these lines near the top of your `Sub Main()`:
 
