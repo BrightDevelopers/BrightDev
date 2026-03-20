@@ -142,6 +142,22 @@ test('aggregateMonthlyTotals merges paths across snapshots', () => {
   assert.equal(totals.topPaths[1].uniques, 40);
 });
 
+test('aggregateMonthlyTotals filters pull request paths from merged results', () => {
+  const snapshots = [{
+    date: '2024-01-05',
+    uniqueVisits: 100,
+    topPaths: [
+      { path: '/repo', uniques: 80 },
+      { path: '/repo/pulls', uniques: 10 },
+      { path: '/repo/pull/5', uniques: 5 },
+    ],
+    topReferrers: [],
+  }];
+  const totals = aggregateMonthlyTotals(snapshots);
+  assert.equal(totals.topPaths.length, 1);
+  assert.equal(totals.topPaths[0].path, '/repo');
+});
+
 test('aggregateMonthlyTotals handles snapshots without new fields', () => {
   const legacy = [
     { date: '2024-01-05', uniqueVisits: 100, uniqueClones: 10 },

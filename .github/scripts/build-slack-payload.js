@@ -63,6 +63,16 @@ function buildContextBlock() {
   };
 }
 
+function isPullRequestPath(pathStr) {
+  return pathStr.includes('/pull/') || pathStr.endsWith('/pulls');
+}
+
+function filterAndSortPaths(paths) {
+  return paths
+    .filter((entry) => !isPullRequestPath(entry.path))
+    .sort((a, b) => b.uniques - a.uniques);
+}
+
 function buildSlackPayload(comparison) {
   return {
     blocks: [
@@ -74,7 +84,7 @@ function buildSlackPayload(comparison) {
       buildTwoColumnBlock('\ud83d\udcdd Issues Opened', comparison.issuesOpenedThisWeek, '\ud83e\udd1d External PRs', comparison.externalPrsThisWeek),
       buildDividerBlock(),
       buildListBlock('\ud83d\udd17 Top Referrers', comparison.topReferrers, formatReferrerLine),
-      buildListBlock('\ud83d\udcc4 Top Content', comparison.topPaths, formatPathLine),
+      buildListBlock('\ud83d\udcc4 Top Content', filterAndSortPaths(comparison.topPaths), formatPathLine),
       buildContextBlock(),
     ],
   };
@@ -127,6 +137,8 @@ module.exports = {
   formatMetricText,
   formatReferrerLine,
   formatPathLine,
+  isPullRequestPath,
+  filterAndSortPaths,
   isTestMode,
   postPayloadToSlackWebhook,
   deliverPayload,

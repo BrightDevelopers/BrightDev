@@ -14,6 +14,8 @@ const {
   formatMetricText,
   formatReferrerLine,
   formatPathLine,
+  isPullRequestPath,
+  filterAndSortPaths,
   isTestMode,
   postPayloadToSlackWebhook,
   deliverPayload,
@@ -122,6 +124,35 @@ test('formatPathLine formats path with bullet, backticks, and uniques', () => {
   assert.ok(line.includes('\u2022'));
   assert.ok(line.includes('`/README.md`'));
   assert.ok(line.includes('25 unique'));
+});
+
+// --- isPullRequestPath / filterAndSortPaths ---
+
+test('isPullRequestPath matches /pull/ paths', () => {
+  assert.equal(isPullRequestPath('/repo/pull/10'), true);
+  assert.equal(isPullRequestPath('/repo/pull/123/files'), true);
+});
+
+test('isPullRequestPath matches /pulls path', () => {
+  assert.equal(isPullRequestPath('/repo/pulls'), true);
+});
+
+test('isPullRequestPath does not match non-PR paths', () => {
+  assert.equal(isPullRequestPath('/repo/tree/main/src'), false);
+  assert.equal(isPullRequestPath('/repo/blob/main/README.md'), false);
+});
+
+test('filterAndSortPaths removes PR paths and sorts by uniques descending', () => {
+  const paths = [
+    { path: '/docs/setup.md', uniques: 12 },
+    { path: '/repo/pulls', uniques: 15 },
+    { path: '/README.md', uniques: 25 },
+    { path: '/repo/pull/10', uniques: 8 },
+  ];
+  const result = filterAndSortPaths(paths);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].path, '/README.md');
+  assert.equal(result[1].path, '/docs/setup.md');
 });
 
 // --- buildSlackPayload ---

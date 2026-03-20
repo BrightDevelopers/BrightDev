@@ -61,8 +61,13 @@ function mergeReferrers(snapshots) {
   return mergeListByKey(collectListEntries(snapshots, 'topReferrers'), 'referrer', 'uniques');
 }
 
+function isPullRequestPath(pathStr) {
+  return pathStr.includes('/pull/') || pathStr.endsWith('/pulls');
+}
+
 function mergePaths(snapshots) {
-  return mergeListByKey(collectListEntries(snapshots, 'topPaths'), 'path', 'uniques');
+  const merged = mergeListByKey(collectListEntries(snapshots, 'topPaths'), 'path', 'uniques');
+  return merged.filter((entry) => !isPullRequestPath(entry.path));
 }
 
 function aggregateMonthlyTotals(snapshots) {
