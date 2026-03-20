@@ -242,12 +242,7 @@ console.timeEnd('dataFetch');
 Check the system log first:
 
 ```bash
-# Via DWS
-curl http://admin:password@<player-ip>/GetSystemLog
-
-# Or via SSH
-ssh brightsign@<player-ip>
-tail -n 100 /var/log/messages
+curl --digest -u admin:password http://<player-ip>/api/v1/logs
 ```
 
 Common culprits: a typo in the file path inside `autorun.brs`, a missing file on the SD card, or a JavaScript syntax error that crashes before anything renders. The system log usually tells you which one.
