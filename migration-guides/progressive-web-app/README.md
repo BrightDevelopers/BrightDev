@@ -24,10 +24,10 @@ Since PWAs are **already web-based** with HTML/CSS/JavaScript, migration to Brig
 - You need quick deployment with minimal code changes
 
 **✅ Handles well:**
-- Service workers → Remove or simplify
+- Service workers → Keep for caching/offline support (supported on Chromium)
 - SPA routing → Add Node.js Express server
 - Mobile-first design → Optimize for fixed displays
-- Offline features → Replace with signage-appropriate alternatives
+- Offline features → Retain Cache API and IndexedDB (supported on Chromium)
 
 ---
 
@@ -42,13 +42,13 @@ Use these factors to estimate migration effort for your team:
 - No complex routing
 
 **MEDIUM Complexity** - SPA with routing
-- Complex service worker with multiple strategies
+- Complex service worker requiring adaptation for signage use
 - Client-side routing requiring Node.js server
 - Custom viewport or responsive design
 - Multiple API integrations
 
 **HIGH Complexity** - Advanced PWA features
-- Background sync or push notifications to replace
+- Background sync or install prompts to remove
 - Complex offline-first architecture
 - Mobile-first design requiring significant layout changes
 - Framework-specific build optimizations needed
@@ -59,8 +59,8 @@ Use these factors to estimate migration effort for your team:
 
 **What you'll do:**
 1. Build production version of your PWA
-2. Adapt existing content for BrightSign's embedded Chromium environment (HTML, CSS, JS, fetch/XHR, localStorage, IndexedDB, etc.)
-3. Remove PWA-specific features (service workers, manifest, notifications, background sync, install prompts, etc.)
+2. Adapt existing content for BrightSign's Chromium media player (HTML, CSS, JS, fetch/XHR, localStorage, IndexedDB, etc.)
+3. Remove non-signage PWA features (manifest, install prompts, background sync) while keeping Chromium-supported features (service workers, Cache API, IndexedDB, Web Notifications) if useful
 4. Optimize display and fonts for signage viewing distance
 5. Set up Node.js server (if SPA with client-side routing)
 6. Add auto-refresh, idle detection, memory cleanup for 24/7 operation (if needed)
