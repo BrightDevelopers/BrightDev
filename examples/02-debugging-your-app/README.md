@@ -209,10 +209,10 @@ You get a dashboard with player status, but the real power is in the [LDWS API](
 | GET | `/api/v1/files/sd` | Storage info and file listing |
 | PUT | `/api/v1/control/reboot` | Reboot the player |
 
-The screenshot endpoint alone is worth the setup. Instead of walking to the display:
+The snapshot endpoint alone is worth the setup. Instead of walking to the display:
 
 ```bash
-curl http://admin:password@<player-ip>/GetScreenshot -o screenshot.jpg
+curl -X POST --digest -u admin:password http://<player-ip>/api/v1/snapshot -o screenshot.jpg
 ```
 
 You can see exactly what the player is rendering without leaving your desk.
