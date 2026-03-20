@@ -55,6 +55,11 @@ netReg.Write("dwse", "yes")
 netReg.Write("telnet_log_level", "7")
 netReg.Flush()
 
+' Enable BrightScript debugger (Ctrl+C or SVC to break)
+bsReg = CreateObject("roRegistrySection", "brightscript")
+bsReg.Write("debug", "1")
+bsReg.Flush()
+
 ' Set passwords for SSH and DWS
 nc = CreateObject("roNetworkConfiguration", 0)
 nc.SetupDWS({port: "80", password: "password"})
