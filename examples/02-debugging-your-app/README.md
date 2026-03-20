@@ -198,16 +198,16 @@ http://<player-ip>/
 
 (Use the credentials you set: admin / password)
 
-You get a dashboard with player status, but the real power is in the API endpoints:
+You get a dashboard with player status, but the real power is in the [LDWS API](https://docs.brightsign.biz/advanced/dws-local-access):
 
-| Endpoint | What It Gives You |
-|----------|-------------------|
-| `/GetSystemLog` | System logs (first place to look when something fails) |
-| `/GetPlaybackLog` | Media playback events |
-| `/GetScreenshot` | JPEG of current display output |
-| `/GetRegistry` | All registry values as JSON |
-| `/GetStorageInfo` | Disk usage |
-| `/Reboot` | Reboot the player |
+| Method | Endpoint | What It Gives You |
+|--------|----------|-------------------|
+| GET | `/api/v1/logs` | System and playback logs (first place to look when something fails) |
+| POST | `/api/v1/snapshot` | JPEG of current display output |
+| GET | `/api/v1/registry` | All registry values as JSON |
+| GET | `/api/v1/registry/:section/:key` | A specific registry value |
+| GET | `/api/v1/files/sd` | Storage info and file listing |
+| PUT | `/api/v1/control/reboot` | Reboot the player |
 
 The screenshot endpoint alone is worth the setup. Instead of walking to the display:
 
