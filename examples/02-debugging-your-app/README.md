@@ -294,18 +294,13 @@ A second `Ctrl-C` from the debugger drops you into the BrightSign OS shell (the 
 
 ### "I need to debug Node.js specifically"
 
-If your app uses BrightSign's Node.js runtime, add a Node.js inspector to your config:
+You can launch Node.js with the inspector directly from the `BrightSign>` prompt:
 
-```brightscript
-config = {
-    url: "file:///sd:/index.html",
-    inspector_server: { port: 2999 },
-    nodejs_enabled: true,
-    node_js_inspector: { port: 3000 }
-}
+```
+BrightSign> node --inspect sd:/index.js
 ```
 
-In Chrome, add `<player-ip>:3000` as a separate target in `chrome://inspect`. You get a dedicated DevTools window for the Node.js context, separate from the browser context on port 2999.
+Then add the player's IP and the inspector port as a target in `chrome://inspect`. See the [official debugging guide](https://docs.brightsign.biz/developers/debugging-htmlnode-apps#features-in-recent-os-versions) for details on recent OS versions.
 
 
 ## Quick Reference
