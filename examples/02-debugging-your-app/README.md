@@ -8,7 +8,7 @@ Every developer has a debugging workflow that feels like breathing. You write co
 
 Then you start building for a BrightSign player and it feels like you have been dropped on a desert island. Your code runs on a box under a TV in a conference room. There is no browser tab to right-click. No terminal sitting open. You wrote some JavaScript, copied it to an SD card, walked across the office, inserted it, and now you are staring at a black screen wondering what went wrong.
 
-Here is the thing most people do not realize at first: that BrightSign player is running a full Chromium browser. The same engine behind Chrome. Which means the same Chrome DevTools you use every day, the Console, Sources, Network, Memory, and Performance tabs, can connect to your player over the network.
+Here is the thing most people do not realize at first: that BrightSign player is running a full Chromium browser. The same engine behind Chrome. Which means the same Chrome DevTools you use every day - the Console, Sources, Network, Memory, and Performance tabs - can connect to your player over the local network.
 
 The player under the TV is just another browser tab. You just have to tell it to pick up the phone.
 
