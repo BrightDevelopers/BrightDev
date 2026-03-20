@@ -15,7 +15,7 @@ The player under the TV is just another browser tab. You just have to tell it to
 
 ## What You'll Need
 
-- A BrightSign player (Series 4 or 5) connected to your network via Ethernet
+- A BrightSign player (Series 4+) connected to your network via Ethernet
 - A computer on the same network with Chrome installed
 - Your application files (HTML/JS/CSS)
 - A text editor
