@@ -7,7 +7,9 @@ const path = require('path');
 const {
   calculateRawPercentageChange,
   formatPercentageChange,
+  formatDelta,
   FIRST_RUN_LABEL,
+  NO_DATA_LABEL,
 } = require('./compare-snapshots');
 
 const SNAPSHOTS_DIR = 'metrics/snapshots';
@@ -33,18 +35,46 @@ function groupSnapshotsByMonth(snapshots) {
   }, {});
 }
 
-function calculateConversionRate(uniqueClones, uniqueVisits) {
-  if (uniqueVisits === 0) return 0;
-  return Math.round((uniqueClones / uniqueVisits) * 100 * 100) / 100;
+function sumField(snapshots, field) {
+  return snapshots.reduce((sum, s) => sum + (s[field] || 0), 0);
+}
+
+function latestSnapshotByDate(snapshots) {
+  return [...snapshots].sort((a, b) => a.date.localeCompare(b.date)).pop();
+}
+
+function collectListEntries(snapshots, field) {
+  return snapshots.flatMap((s) => s[field] || []);
+}
+
+function mergeListByKey(entries, keyProp, valueProp) {
+  const merged = {};
+  for (const entry of entries) {
+    merged[entry[keyProp]] = (merged[entry[keyProp]] || 0) + entry[valueProp];
+  }
+  return Object.entries(merged)
+    .map(([key, value]) => ({ [keyProp]: key, [valueProp]: value }))
+    .sort((a, b) => b[valueProp] - a[valueProp]);
+}
+
+function mergeReferrers(snapshots) {
+  return mergeListByKey(collectListEntries(snapshots, 'topReferrers'), 'referrer', 'uniques');
+}
+
+function mergePaths(snapshots) {
+  return mergeListByKey(collectListEntries(snapshots, 'topPaths'), 'path', 'uniques');
 }
 
 function aggregateMonthlyTotals(snapshots) {
-  const uniqueVisits = snapshots.reduce((sum, s) => sum + s.uniqueVisits, 0);
-  const uniqueClones = snapshots.reduce((sum, s) => sum + s.uniqueClones, 0);
+  const latest = latestSnapshotByDate(snapshots);
   return {
-    uniqueVisits,
-    uniqueClones,
-    conversionRate: calculateConversionRate(uniqueClones, uniqueVisits),
+    uniqueVisits: sumField(snapshots, 'uniqueVisits'),
+    stars: latest.stars ?? null,
+    forks: latest.forks ?? null,
+    issuesOpened: sumField(snapshots, 'issuesOpenedThisWeek'),
+    externalPrs: sumField(snapshots, 'externalPrsThisWeek'),
+    topReferrers: mergeReferrers(snapshots),
+    topPaths: mergePaths(snapshots),
     snapshotCount: snapshots.length,
   };
 }
@@ -64,19 +94,44 @@ function buildMetricChange(current, previous) {
   return { value: current, change: formatPercentageChange(change) };
 }
 
+function buildDeltaMetricChange(current, previous) {
+  if (current == null) return { value: null, change: NO_DATA_LABEL };
+  if (previous == null) return { value: current, change: FIRST_RUN_LABEL };
+  return { value: current, change: formatDelta(current - previous) };
+}
+
+function buildSafeMetricChange(current, previous) {
+  if (current == null) return { value: null, change: NO_DATA_LABEL };
+  if (previous == null) return { value: current, change: FIRST_RUN_LABEL };
+  return buildMetricChange(current, previous);
+}
+
 function buildMonthlyComparison(currentTotals, previousTotals) {
   return {
     uniqueVisits: buildMetricChange(currentTotals.uniqueVisits, previousTotals.uniqueVisits),
-    uniqueClones: buildMetricChange(currentTotals.uniqueClones, previousTotals.uniqueClones),
-    conversionRate: buildMetricChange(currentTotals.conversionRate, previousTotals.conversionRate),
+    stars: buildDeltaMetricChange(currentTotals.stars, previousTotals.stars),
+    forks: buildDeltaMetricChange(currentTotals.forks, previousTotals.forks),
+    issuesOpened: buildSafeMetricChange(currentTotals.issuesOpened, previousTotals.issuesOpened),
+    externalPrs: buildSafeMetricChange(currentTotals.externalPrs, previousTotals.externalPrs),
+    topReferrers: currentTotals.topReferrers,
+    topPaths: currentTotals.topPaths,
   };
+}
+
+function buildFirstRunMonthlyMetric(value) {
+  if (value == null) return { value: null, change: NO_DATA_LABEL };
+  return { value, change: FIRST_RUN_LABEL };
 }
 
 function buildFirstRunMonthlyComparison(currentTotals) {
   return {
     uniqueVisits: { value: currentTotals.uniqueVisits, change: FIRST_RUN_LABEL },
-    uniqueClones: { value: currentTotals.uniqueClones, change: FIRST_RUN_LABEL },
-    conversionRate: { value: currentTotals.conversionRate, change: FIRST_RUN_LABEL },
+    stars: buildFirstRunMonthlyMetric(currentTotals.stars),
+    forks: buildFirstRunMonthlyMetric(currentTotals.forks),
+    issuesOpened: buildFirstRunMonthlyMetric(currentTotals.issuesOpened),
+    externalPrs: buildFirstRunMonthlyMetric(currentTotals.externalPrs),
+    topReferrers: currentTotals.topReferrers || [],
+    topPaths: currentTotals.topPaths || [],
   };
 }
 
@@ -129,7 +184,7 @@ function collectLimitedDataWarnings(currentSnapshotCount, previousSnapshotCount)
 function buildHeaderBlock(monthLabel) {
   return {
     type: 'header',
-    text: { type: 'plain_text', text: `BrightDev Monthly Traffic Report - ${monthLabel}` },
+    text: { type: 'plain_text', text: `\ud83d\udcca BrightDev Monthly Report - ${monthLabel}` },
   };
 }
 
@@ -137,17 +192,49 @@ function buildDividerBlock() {
   return { type: 'divider' };
 }
 
+function formatMetricText(label, metric) {
+  if (metric.value == null) return `*${label}*\n${metric.change}`;
+  return `*${label}*\n${metric.value} ${metric.change}`;
+}
+
 function buildMetricSectionBlock(label, metric) {
   return {
     type: 'section',
-    text: { type: 'mrkdwn', text: `*${label}*\n${metric.value} ${metric.change}` },
+    text: { type: 'mrkdwn', text: formatMetricText(label, metric) },
+  };
+}
+
+function buildTwoColumnBlock(leftLabel, leftMetric, rightLabel, rightMetric) {
+  return {
+    type: 'section',
+    fields: [
+      { type: 'mrkdwn', text: formatMetricText(leftLabel, leftMetric) },
+      { type: 'mrkdwn', text: formatMetricText(rightLabel, rightMetric) },
+    ],
+  };
+}
+
+function formatReferrerLine(entry) {
+  return `\u2022 ${entry.referrer} (${entry.uniques} unique)`;
+}
+
+function formatPathLine(entry) {
+  return `\u2022 \`${entry.path}\` (${entry.uniques} unique)`;
+}
+
+function buildListBlock(label, items, formatter) {
+  const lines = items.map(formatter).join('\n');
+  const body = items.length > 0 ? lines : '_No data_';
+  return {
+    type: 'section',
+    text: { type: 'mrkdwn', text: `*${label}*\n${body}` },
   };
 }
 
 function buildContextBlock() {
   return {
     type: 'context',
-    elements: [{ type: 'mrkdwn', text: 'Data from GitHub Traffic API - BrightDev' }],
+    elements: [{ type: 'mrkdwn', text: 'Data from GitHub API - BrightDev' }],
   };
 }
 
@@ -162,9 +249,13 @@ function buildSlackPayload(monthLabel, comparison, warnings) {
   const blocks = [
     buildHeaderBlock(monthLabel),
     buildDividerBlock(),
-    buildMetricSectionBlock('Unique Visits', comparison.uniqueVisits),
-    buildMetricSectionBlock('Unique Clones', comparison.uniqueClones),
-    buildMetricSectionBlock('Conversion Rate', comparison.conversionRate),
+    buildMetricSectionBlock('\ud83d\udc41\ufe0f Unique Visits', comparison.uniqueVisits),
+    buildTwoColumnBlock('\u2b50 Stars', comparison.stars, '\ud83c\udf74 Forks', comparison.forks),
+    buildDividerBlock(),
+    buildTwoColumnBlock('\ud83d\udcdd Issues Opened', comparison.issuesOpened, '\ud83e\udd1d External PRs', comparison.externalPrs),
+    buildDividerBlock(),
+    buildListBlock('\ud83d\udd17 Top Referrers', comparison.topReferrers, formatReferrerLine),
+    buildListBlock('\ud83d\udcc4 Top Content', comparison.topPaths, formatPathLine),
     buildContextBlock(),
   ];
   if (warnings.length > 0) blocks.push(buildWarningBlock(warnings));
@@ -215,13 +306,21 @@ module.exports = {
   buildHeaderBlock,
   buildDividerBlock,
   buildMetricSectionBlock,
+  buildTwoColumnBlock,
+  buildListBlock,
   buildContextBlock,
   buildWarningBlock,
   collectLimitedDataWarnings,
   buildLimitedDataWarning,
   formatMonthLabel,
+  formatMetricText,
+  formatReferrerLine,
+  formatPathLine,
   buildMonthlyComparison,
   buildFirstRunMonthlyComparison,
+  buildFirstRunMonthlyMetric,
+  buildDeltaMetricChange,
+  buildSafeMetricChange,
   isTestMode,
   deliverPayload,
 };
