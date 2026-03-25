@@ -9,7 +9,7 @@ const SNAPSHOTS_DIR = 'metrics/snapshots';
 function buildHeaderBlock(date) {
   return {
     type: 'header',
-    text: { type: 'plain_text', text: `BrightDev Traffic Report - w/e ${date}` },
+    text: { type: 'plain_text', text: `\ud83d\udcca BrightDev Traffic Report - w/e ${date}` },
   };
 }
 
@@ -17,18 +17,60 @@ function buildDividerBlock() {
   return { type: 'divider' };
 }
 
+function formatMetricText(label, metric) {
+  if (metric.value == null) return `*${label}*\n${metric.change}`;
+  return `*${label}*\n${metric.value} ${metric.change}`;
+}
+
 function buildMetricSectionBlock(label, metric) {
   return {
     type: 'section',
-    text: { type: 'mrkdwn', text: `*${label}*\n${metric.value} ${metric.change}` },
+    text: { type: 'mrkdwn', text: formatMetricText(label, metric) },
+  };
+}
+
+function buildTwoColumnBlock(leftLabel, leftMetric, rightLabel, rightMetric) {
+  return {
+    type: 'section',
+    fields: [
+      { type: 'mrkdwn', text: formatMetricText(leftLabel, leftMetric) },
+      { type: 'mrkdwn', text: formatMetricText(rightLabel, rightMetric) },
+    ],
+  };
+}
+
+function formatReferrerLine(entry) {
+  return `\u2022 ${entry.referrer} (${entry.uniques} unique)`;
+}
+
+function formatPathLine(entry) {
+  return `\u2022 \`${entry.path}\` (${entry.uniques} unique)`;
+}
+
+function buildListBlock(label, items, formatter) {
+  const lines = items.map(formatter).join('\n');
+  const body = items.length > 0 ? lines : '_No data_';
+  return {
+    type: 'section',
+    text: { type: 'mrkdwn', text: `*${label}*\n${body}` },
   };
 }
 
 function buildContextBlock() {
   return {
     type: 'context',
-    elements: [{ type: 'mrkdwn', text: 'Data from GitHub Traffic API - BrightDev' }],
+    elements: [{ type: 'mrkdwn', text: 'Data from GitHub API - BrightDev' }],
   };
+}
+
+function isPullRequestPath(pathStr) {
+  return pathStr.includes('/pull/') || pathStr.endsWith('/pulls');
+}
+
+function filterAndSortPaths(paths) {
+  return paths
+    .filter((entry) => !isPullRequestPath(entry.path))
+    .sort((a, b) => b.uniques - a.uniques);
 }
 
 function buildSlackPayload(comparison) {
@@ -36,9 +78,13 @@ function buildSlackPayload(comparison) {
     blocks: [
       buildHeaderBlock(comparison.date),
       buildDividerBlock(),
-      buildMetricSectionBlock('Unique Visits', comparison.uniqueVisits),
-      buildMetricSectionBlock('Unique Clones', comparison.uniqueClones),
-      buildMetricSectionBlock('Conversion Rate', comparison.conversionRate),
+      buildMetricSectionBlock('\ud83d\udc41\ufe0f Unique Visits', comparison.uniqueVisits),
+      buildTwoColumnBlock('\u2b50 Stars', comparison.stars, '\ud83c\udf74 Forks', comparison.forks),
+      buildDividerBlock(),
+      buildTwoColumnBlock('\ud83d\udcdd Issues Opened', comparison.issuesOpenedThisWeek, '\ud83e\udd1d External PRs', comparison.externalPrsThisWeek),
+      buildDividerBlock(),
+      buildListBlock('\ud83d\udd17 Top Referrers', comparison.topReferrers, formatReferrerLine),
+      buildListBlock('\ud83d\udcc4 Top Content', filterAndSortPaths(comparison.topPaths), formatPathLine),
       buildContextBlock(),
     ],
   };
@@ -85,7 +131,14 @@ module.exports = {
   buildHeaderBlock,
   buildDividerBlock,
   buildMetricSectionBlock,
+  buildTwoColumnBlock,
+  buildListBlock,
   buildContextBlock,
+  formatMetricText,
+  formatReferrerLine,
+  formatPathLine,
+  isPullRequestPath,
+  filterAndSortPaths,
   isTestMode,
   postPayloadToSlackWebhook,
   deliverPayload,

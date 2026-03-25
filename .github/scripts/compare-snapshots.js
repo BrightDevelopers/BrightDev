@@ -8,6 +8,7 @@ const path = require('path');
 const SNAPSHOTS_DIR = 'metrics/snapshots';
 const FIRST_RUN_LABEL = 'N/A (first run)';
 const NO_PRIOR_DATA_LABEL = 'N/A (no prior data)';
+const NO_DATA_LABEL = 'N/A';
 
 function readSortedSnapshotFilenames(dir) {
   return fs
@@ -27,7 +28,7 @@ function calculateRawPercentageChange(current, previous) {
   return Math.round(((current - previous) / previous) * 100 * 10) / 10;
 }
 
-function arrowForNumericChange(change) {
+function arrowForChange(change) {
   if (change > 0) return '\u2191';
   if (change < 0) return '\u2193';
   return '\u2192';
@@ -35,9 +36,16 @@ function arrowForNumericChange(change) {
 
 function formatPercentageChange(change) {
   if (typeof change === 'string') return change;
-  const arrow = arrowForNumericChange(change);
+  const arrow = arrowForChange(change);
   const prefix = change > 0 ? '+' : '';
   return `${arrow} ${prefix}${change}%`;
+}
+
+function formatDelta(delta) {
+  if (delta === 0) return '\u2192 no change';
+  const arrow = arrowForChange(delta);
+  const prefix = delta > 0 ? '+' : '';
+  return `${arrow} ${prefix}${delta}`;
 }
 
 function buildMetricChange(currentValue, previousValue) {
@@ -45,21 +53,47 @@ function buildMetricChange(currentValue, previousValue) {
   return { value: currentValue, change: formatPercentageChange(change) };
 }
 
+function buildDeltaChange(currentValue, previousValue) {
+  if (previousValue == null) {
+    return { value: currentValue, change: FIRST_RUN_LABEL };
+  }
+  return { value: currentValue, change: formatDelta(currentValue - previousValue) };
+}
+
+function buildSafeMetricChange(currentValue, previousValue) {
+  if (currentValue == null) return { value: null, change: NO_DATA_LABEL };
+  if (previousValue == null) return { value: currentValue, change: FIRST_RUN_LABEL };
+  return buildMetricChange(currentValue, previousValue);
+}
+
 function buildComparisonFromBaseline(current, baseline) {
   return {
     date: current.date,
     uniqueVisits: buildMetricChange(current.uniqueVisits, baseline.uniqueVisits),
-    uniqueClones: buildMetricChange(current.uniqueClones, baseline.uniqueClones),
-    conversionRate: buildMetricChange(current.conversionRate, baseline.conversionRate),
+    stars: buildDeltaChange(current.stars, baseline.stars),
+    forks: buildDeltaChange(current.forks, baseline.forks),
+    issuesOpenedThisWeek: buildSafeMetricChange(current.issuesOpenedThisWeek, baseline.issuesOpenedThisWeek),
+    externalPrsThisWeek: buildSafeMetricChange(current.externalPrsThisWeek, baseline.externalPrsThisWeek),
+    topReferrers: current.topReferrers || [],
+    topPaths: current.topPaths || [],
   };
+}
+
+function buildFirstRunMetric(value) {
+  if (value == null) return { value: null, change: NO_DATA_LABEL };
+  return { value, change: FIRST_RUN_LABEL };
 }
 
 function buildFirstRunComparison(current) {
   return {
     date: current.date,
-    uniqueVisits: { value: current.uniqueVisits, change: FIRST_RUN_LABEL },
-    uniqueClones: { value: current.uniqueClones, change: FIRST_RUN_LABEL },
-    conversionRate: { value: current.conversionRate, change: FIRST_RUN_LABEL },
+    uniqueVisits: buildFirstRunMetric(current.uniqueVisits),
+    stars: buildFirstRunMetric(current.stars),
+    forks: buildFirstRunMetric(current.forks),
+    issuesOpenedThisWeek: buildFirstRunMetric(current.issuesOpenedThisWeek),
+    externalPrsThisWeek: buildFirstRunMetric(current.externalPrsThisWeek),
+    topReferrers: current.topReferrers || [],
+    topPaths: current.topPaths || [],
   };
 }
 
@@ -76,10 +110,15 @@ module.exports = {
   compareSnapshots,
   calculateRawPercentageChange,
   formatPercentageChange,
+  formatDelta,
   buildFirstRunComparison,
   buildComparisonFromBaseline,
+  buildMetricChange,
+  buildDeltaChange,
+  buildSafeMetricChange,
   FIRST_RUN_LABEL,
   NO_PRIOR_DATA_LABEL,
+  NO_DATA_LABEL,
 };
 
 if (require.main === module) {

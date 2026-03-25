@@ -8,7 +8,14 @@ const {
   buildHeaderBlock,
   buildDividerBlock,
   buildMetricSectionBlock,
+  buildTwoColumnBlock,
+  buildListBlock,
   buildContextBlock,
+  formatMetricText,
+  formatReferrerLine,
+  formatPathLine,
+  isPullRequestPath,
+  filterAndSortPaths,
   isTestMode,
   postPayloadToSlackWebhook,
   deliverPayload,
@@ -17,14 +24,26 @@ const {
 const SAMPLE_COMPARISON = {
   date: '2024-01-12',
   uniqueVisits: { value: 200, change: '\u2191 +100%' },
-  uniqueClones: { value: 20, change: '\u2191 +100%' },
-  conversionRate: { value: 10, change: '\u2192 0%' },
+  stars: { value: 150, change: '\u2191 +5' },
+  forks: { value: 30, change: '\u2191 +2' },
+  issuesOpenedThisWeek: { value: 3, change: '\u2191 +50%' },
+  externalPrsThisWeek: { value: 1, change: 'N/A (first run)' },
+  topReferrers: [
+    { referrer: 'google.com', uniques: 10 },
+    { referrer: 'dev.to', uniques: 5 },
+  ],
+  topPaths: [
+    { path: '/README.md', uniques: 25 },
+    { path: '/docs/setup.md', uniques: 12 },
+  ],
 };
+
+// --- Block builders ---
 
 test('buildHeaderBlock includes date in correct format', () => {
   const block = buildHeaderBlock('2024-01-12');
   assert.equal(block.type, 'header');
-  assert.equal(block.text.text, 'BrightDev Traffic Report - w/e 2024-01-12');
+  assert.ok(block.text.text.includes('BrightDev Traffic Report - w/e 2024-01-12'));
   assert.equal(block.text.type, 'plain_text');
 });
 
@@ -33,7 +52,7 @@ test('buildDividerBlock returns divider type', () => {
   assert.equal(block.type, 'divider');
 });
 
-test('buildMetricSectionBlock includes label and metric value and change', () => {
+test('buildMetricSectionBlock includes label, value, and change', () => {
   const block = buildMetricSectionBlock('Unique Visits', { value: 200, change: '\u2191 +100%' });
   assert.equal(block.type, 'section');
   assert.equal(block.text.type, 'mrkdwn');
@@ -42,22 +61,111 @@ test('buildMetricSectionBlock includes label and metric value and change', () =>
   assert.ok(block.text.text.includes('\u2191 +100%'));
 });
 
-test('buildContextBlock contains GitHub Traffic API attribution', () => {
-  const block = buildContextBlock();
-  assert.equal(block.type, 'context');
-  assert.equal(block.elements[0].type, 'mrkdwn');
-  assert.ok(block.elements[0].text.includes('Data from GitHub Traffic API - BrightDev'));
+test('buildTwoColumnBlock produces section with two fields', () => {
+  const block = buildTwoColumnBlock(
+    'Stars', { value: 150, change: '+5' },
+    'Forks', { value: 30, change: '+2' }
+  );
+  assert.equal(block.type, 'section');
+  assert.equal(block.fields.length, 2);
+  assert.ok(block.fields[0].text.includes('Stars'));
+  assert.ok(block.fields[0].text.includes('150'));
+  assert.ok(block.fields[1].text.includes('Forks'));
+  assert.ok(block.fields[1].text.includes('30'));
 });
 
-test('buildSlackPayload produces six blocks in correct order', () => {
+test('buildListBlock renders bulleted list', () => {
+  const items = [{ name: 'a' }, { name: 'b' }];
+  const block = buildListBlock('Test', items, (i) => `\u2022 ${i.name}`);
+  assert.equal(block.type, 'section');
+  assert.ok(block.text.text.includes('Test'));
+  assert.ok(block.text.text.includes('\u2022 a'));
+  assert.ok(block.text.text.includes('\u2022 b'));
+});
+
+test('buildListBlock shows no data message for empty list', () => {
+  const block = buildListBlock('Empty', [], () => '');
+  assert.ok(block.text.text.includes('_No data_'));
+});
+
+test('buildContextBlock contains GitHub API attribution', () => {
+  const block = buildContextBlock();
+  assert.equal(block.type, 'context');
+  assert.ok(block.elements[0].text.includes('Data from GitHub API - BrightDev'));
+});
+
+// --- formatMetricText ---
+
+test('formatMetricText displays value and change for normal metric', () => {
+  const text = formatMetricText('Stars', { value: 150, change: '+5' });
+  assert.ok(text.includes('*Stars*'));
+  assert.ok(text.includes('150'));
+  assert.ok(text.includes('+5'));
+});
+
+test('formatMetricText displays only change when value is null', () => {
+  const text = formatMetricText('Response', { value: null, change: 'N/A' });
+  assert.ok(text.includes('*Response*'));
+  assert.ok(text.includes('N/A'));
+  assert.ok(!text.includes('null'));
+});
+
+// --- List formatters ---
+
+test('formatReferrerLine formats referrer with bullet and uniques', () => {
+  const line = formatReferrerLine({ referrer: 'google.com', uniques: 10 });
+  assert.ok(line.includes('\u2022'));
+  assert.ok(line.includes('google.com'));
+  assert.ok(line.includes('10 unique'));
+});
+
+test('formatPathLine formats path with bullet, backticks, and uniques', () => {
+  const line = formatPathLine({ path: '/README.md', uniques: 25 });
+  assert.ok(line.includes('\u2022'));
+  assert.ok(line.includes('`/README.md`'));
+  assert.ok(line.includes('25 unique'));
+});
+
+// --- isPullRequestPath / filterAndSortPaths ---
+
+test('isPullRequestPath matches /pull/ paths', () => {
+  assert.equal(isPullRequestPath('/repo/pull/10'), true);
+  assert.equal(isPullRequestPath('/repo/pull/123/files'), true);
+});
+
+test('isPullRequestPath matches /pulls path', () => {
+  assert.equal(isPullRequestPath('/repo/pulls'), true);
+});
+
+test('isPullRequestPath does not match non-PR paths', () => {
+  assert.equal(isPullRequestPath('/repo/tree/main/src'), false);
+  assert.equal(isPullRequestPath('/repo/blob/main/README.md'), false);
+});
+
+test('filterAndSortPaths removes PR paths and sorts by uniques descending', () => {
+  const paths = [
+    { path: '/docs/setup.md', uniques: 12 },
+    { path: '/repo/pulls', uniques: 15 },
+    { path: '/README.md', uniques: 25 },
+    { path: '/repo/pull/10', uniques: 8 },
+  ];
+  const result = filterAndSortPaths(paths);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].path, '/README.md');
+  assert.equal(result[1].path, '/docs/setup.md');
+});
+
+// --- buildSlackPayload ---
+
+test('buildSlackPayload produces correct number of blocks', () => {
   const payload = buildSlackPayload(SAMPLE_COMPARISON);
-  assert.equal(payload.blocks.length, 6);
+  assert.equal(payload.blocks.length, 10);
+});
+
+test('buildSlackPayload starts with header and ends with context', () => {
+  const payload = buildSlackPayload(SAMPLE_COMPARISON);
   assert.equal(payload.blocks[0].type, 'header');
-  assert.equal(payload.blocks[1].type, 'divider');
-  assert.equal(payload.blocks[2].type, 'section');
-  assert.equal(payload.blocks[3].type, 'section');
-  assert.equal(payload.blocks[4].type, 'section');
-  assert.equal(payload.blocks[5].type, 'context');
+  assert.equal(payload.blocks[payload.blocks.length - 1].type, 'context');
 });
 
 test('buildSlackPayload header shows correct date', () => {
@@ -65,27 +173,34 @@ test('buildSlackPayload header shows correct date', () => {
   assert.ok(payload.blocks[0].text.text.includes('2024-01-12'));
 });
 
-test('buildSlackPayload sections contain correct labels', () => {
+test('buildSlackPayload contains stars/forks two-column block', () => {
   const payload = buildSlackPayload(SAMPLE_COMPARISON);
-  assert.ok(payload.blocks[2].text.text.includes('Unique Visits'));
-  assert.ok(payload.blocks[3].text.text.includes('Unique Clones'));
-  assert.ok(payload.blocks[4].text.text.includes('Conversion Rate'));
+  const starsForks = payload.blocks[3];
+  assert.equal(starsForks.type, 'section');
+  assert.ok(starsForks.fields);
+  assert.ok(starsForks.fields[0].text.includes('Stars'));
+  assert.ok(starsForks.fields[1].text.includes('Forks'));
 });
 
-test('buildSlackPayload positive change shows + prefix', () => {
+test('buildSlackPayload contains referrer list', () => {
   const payload = buildSlackPayload(SAMPLE_COMPARISON);
-  assert.ok(payload.blocks[2].text.text.includes('+'));
+  const referrerBlock = payload.blocks.find(
+    (b) => b.text && b.text.text && b.text.text.includes('Top Referrers')
+  );
+  assert.ok(referrerBlock);
+  assert.ok(referrerBlock.text.text.includes('google.com'));
 });
 
-test('buildSlackPayload negative change does not show + prefix', () => {
-  const comparison = {
-    ...SAMPLE_COMPARISON,
-    uniqueVisits: { value: 50, change: '\u2193 -50%' },
-  };
-  const payload = buildSlackPayload(comparison);
-  assert.ok(!payload.blocks[2].text.text.includes('+'));
-  assert.ok(payload.blocks[2].text.text.includes('\u2193'));
+test('buildSlackPayload contains content path list', () => {
+  const payload = buildSlackPayload(SAMPLE_COMPARISON);
+  const pathBlock = payload.blocks.find(
+    (b) => b.text && b.text.text && b.text.text.includes('Top Content')
+  );
+  assert.ok(pathBlock);
+  assert.ok(pathBlock.text.text.includes('/README.md'));
 });
+
+// --- isTestMode ---
 
 test('isTestMode returns true when TEST_MODE env is true', () => {
   const original = process.env.TEST_MODE;
@@ -108,10 +223,11 @@ test('isTestMode returns false when TEST_MODE env is unset', () => {
   process.env.TEST_MODE = original;
 });
 
+// --- Delivery ---
+
 test('postPayloadToSlackWebhook throws on non-2xx response', async () => {
-  const fakeFetch = async () => ({ ok: false, status: 500, text: async () => 'Internal Server Error' });
   const original = global.fetch;
-  global.fetch = fakeFetch;
+  global.fetch = async () => ({ ok: false, status: 500, text: async () => 'Internal Server Error' });
   await assert.rejects(
     () => postPayloadToSlackWebhook('https://example.com', {}),
     /Slack webhook returned 500/
@@ -120,9 +236,8 @@ test('postPayloadToSlackWebhook throws on non-2xx response', async () => {
 });
 
 test('postPayloadToSlackWebhook resolves on 2xx response', async () => {
-  const fakeFetch = async () => ({ ok: true, status: 200 });
   const original = global.fetch;
-  global.fetch = fakeFetch;
+  global.fetch = async () => ({ ok: true, status: 200 });
   await assert.doesNotReject(() => postPayloadToSlackWebhook('https://example.com', {}));
   global.fetch = original;
 });

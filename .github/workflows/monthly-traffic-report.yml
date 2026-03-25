@@ -45,6 +45,6 @@ jobs:
         if: steps.check-date.outputs.is_last_day == 'true'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TRAFFIC_PAT }}
           TEST_MODE: ${{ inputs.test_mode || 'false' }}
         run: node .github/scripts/aggregate-monthly.js

@@ -5,8 +5,8 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const api = require('./github-api');
 
-const GITHUB_API_BASE = 'https://api.github.com';
 const SNAPSHOTS_DIR = 'metrics/snapshots';
 
 function getRepoContext() {
@@ -15,46 +15,50 @@ function getRepoContext() {
   return { owner, repo, token };
 }
 
-async function fetchTrafficEndpoint(owner, repo, token, endpoint) {
-  const url = `${GITHUB_API_BASE}/repos/${owner}/${repo}/traffic/${endpoint}?per=week`;
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-    },
-  });
-  if (!response.ok) {
-    throw new Error(`GitHub API error ${response.status} on ${endpoint}: ${await response.text()}`);
-  }
-  return response.json();
-}
-
-async function fetchUniqueViews(owner, repo, token) {
-  const data = await fetchTrafficEndpoint(owner, repo, token, 'views');
-  return data.uniques;
-}
-
-async function fetchUniqueClones(owner, repo, token) {
-  const data = await fetchTrafficEndpoint(owner, repo, token, 'clones');
-  return data.uniques;
-}
-
-function calculateConversionRate(uniqueClones, uniqueVisits) {
-  if (uniqueVisits === 0) return 0;
-  return Math.round((uniqueClones / uniqueVisits) * 100 * 100) / 100;
-}
-
 function formatDateAsYYYYMMDD(date) {
   return date.toISOString().split('T')[0];
 }
 
-function buildSnapshot(date, uniqueVisits, uniqueClones) {
+function calculateConversionRate(clones, visits) {
+  if (visits === 0) return 0;
+  return Math.round((clones / visits) * 100 * 100) / 100;
+}
+
+async function fetchAllMetrics(owner, repo, token) {
+  const since = api.weekAgoDate();
+  const [views, clones, stats, referrers, paths, issues, prs] =
+    await Promise.all([
+      api.fetchTrafficViews(owner, repo, token),
+      api.fetchTrafficClones(owner, repo, token),
+      api.fetchRepoStats(owner, repo, token),
+      api.fetchTopReferrers(owner, repo, token),
+      api.fetchTopPaths(owner, repo, token),
+      api.fetchIssuesOpenedSince(owner, repo, token, since),
+      api.fetchExternalPrsSince(owner, repo, token, since),
+    ]);
+  return {
+    uniqueVisits: views,
+    uniqueClones: clones,
+    ...stats,
+    topReferrers: referrers,
+    topPaths: paths,
+    issuesOpenedThisWeek: issues,
+    externalPrsThisWeek: prs,
+  };
+}
+
+function buildSnapshot(date, metrics) {
   return {
     date,
-    uniqueVisits,
-    uniqueClones,
-    conversionRate: calculateConversionRate(uniqueClones, uniqueVisits),
+    uniqueVisits: metrics.uniqueVisits,
+    uniqueClones: metrics.uniqueClones,
+    conversionRate: calculateConversionRate(metrics.uniqueClones, metrics.uniqueVisits),
+    stars: metrics.stars,
+    forks: metrics.forks,
+    issuesOpenedThisWeek: metrics.issuesOpenedThisWeek,
+    externalPrsThisWeek: metrics.externalPrsThisWeek,
+    topReferrers: metrics.topReferrers,
+    topPaths: metrics.topPaths,
   };
 }
 
@@ -80,11 +84,8 @@ function commitAndPushSnapshot(date, filePath) {
 async function main() {
   const { owner, repo, token } = getRepoContext();
   const date = formatDateAsYYYYMMDD(new Date());
-  const [uniqueVisits, uniqueClones] = await Promise.all([
-    fetchUniqueViews(owner, repo, token),
-    fetchUniqueClones(owner, repo, token),
-  ]);
-  const snapshot = buildSnapshot(date, uniqueVisits, uniqueClones);
+  const metrics = await fetchAllMetrics(owner, repo, token);
+  const snapshot = buildSnapshot(date, metrics);
   const filePath = writeSnapshotToFile(snapshot);
   commitAndPushSnapshot(date, filePath);
   console.log(`Snapshot written and committed: ${filePath}`);
