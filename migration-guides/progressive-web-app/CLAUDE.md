@@ -81,7 +81,7 @@
       "remove background sync if used (not applicable to signage)",
       "remove PWA-specific build plugins from package.json (workbox-webpack-plugin, webpack-pwa-manifest, vite-plugin-pwa)"
     ],
-    "note": "BrightSign Series 5 Chromium media player supports service workers, Cache API, IndexedDB, and Web Notifications API. Only remove features that are not applicable to digital signage (install prompts, background sync, manifest)."
+    "note": "BrightSign Series 5 Chromium media player (Series 5 onwards only) supports service workers, Cache API, IndexedDB, and Web Notifications API. Only remove features that are not applicable to digital signage (install prompts, background sync, manifest). See troubleshooting.md for cases where the BrightSign media player should be used instead (Series 4, sync, UDP/RTP, chroma key)."
   },
   "optimize_for_signage": {
     "actions": [
@@ -310,7 +310,8 @@ app.listen(PORT, () => {
 Sub Main()
     msgPort = CreateObject("roMessagePort")
 
-    ' Use Chromium media player for full web API support (service workers, Cache API, IndexedDB, etc.)
+    ' Use Chromium media player for full web API support (Series 5 onwards only)
+    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
     registrySection = CreateObject("roRegistrySection", "html")
     registrySection.Write("use-brightsign-media-player", "0")
     registrySection.Flush()
@@ -339,7 +340,8 @@ End Sub
 Sub Main()
     msgPort = CreateObject("roMessagePort")
 
-    ' Use Chromium media player for full web API support (service workers, Cache API, IndexedDB, etc.)
+    ' Use Chromium media player for full web API support (Series 5 onwards only)
+    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
     registrySection = CreateObject("roRegistrySection", "html")
     registrySection.Write("use-brightsign-media-player", "0")
     registrySection.Flush()

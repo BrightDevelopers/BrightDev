@@ -896,6 +896,7 @@
         "check_id": "autorun_brs_configured",
         "description": "Verify autorun.brs launches app correctly",
         "validation": "File exists and contains roHtmlWidget or roNodeApp",
+        "required_fields": ["registry write use-brightsign-media-player 0 for Chromium media player (Series 5 onwards)"],
         "failure_action": "AI_PLACEHOLDER: Create autorun.brs from template"
       },
       {

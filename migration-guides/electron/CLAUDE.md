@@ -524,7 +524,7 @@
     "autorun_brs": "sub Main()\n  reg = CreateObject(\"roRegistrySection\", \"html\")\n  reg.Write(\"use-brightsign-media-player\", \"0\")\n  reg.Flush()\n  url$ = \"file:///sd:/index.html\"\n  h = CreateObject(\"roHtmlWidget\", { port: 2999 })\n  h.Show()\n  h.SetUrl({ url: url$ })\nend sub",
     "alternative_nodejs": "sub Main()\n  reg = CreateObject(\"roRegistrySection\", \"html\")\n  reg.Write(\"use-brightsign-media-player\", \"0\")\n  reg.Flush()\n  config = { nodejs_enabled: true, nodejs_main_script: \"app.js\", inspector_server: 2999 }\n  h = CreateObject(\"roHtmlWidget\", config)\n  h.Show()\n  h.SetUrl({ url: \"http://localhost:3000\" })\nend sub"
   },
-  "notes": "BrightSign loads HTML via autorun.brs configuration, not programmatically"
+  "notes": "BrightSign loads HTML via autorun.brs configuration, not programmatically. Chromium media player is supported on Series 5 onwards only. See troubleshooting.md for cases where the BrightSign media player should be used instead (Series 4, sync, UDP/RTP, chroma key)."
 }
 ```
 

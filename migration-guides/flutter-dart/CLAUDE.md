@@ -726,6 +726,12 @@ module.exports = {
 Sub Main()
     msgPort = CreateObject("roMessagePort")
 
+    ' Use Chromium media player for full web API support (Series 5 onwards only)
+    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
+    registrySection = CreateObject("roRegistrySection", "html")
+    registrySection.Write("use-brightsign-media-player", "0")
+    registrySection.Flush()
+
     htmlRect = CreateObject("roRectangle", 0, 0, 1920, 1080)
     htmlConfig = {
         url: "file:///sd:/index.html",
@@ -748,6 +754,12 @@ End Sub
 ' CanvasKit requires more memory and loads slower. Use HTML renderer if possible.
 Sub Main()
     msgPort = CreateObject("roMessagePort")
+
+    ' Use Chromium media player for full web API support (Series 5 onwards only)
+    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
+    registrySection = CreateObject("roRegistrySection", "html")
+    registrySection.Write("use-brightsign-media-player", "0")
+    registrySection.Flush()
 
     ' CanvasKit needs more GPU memory allocation
     htmlRect = CreateObject("roRectangle", 0, 0, 1920, 1080)
@@ -773,6 +785,12 @@ End Sub
 Sub Main()
     msgPort = CreateObject("roMessagePort")
 
+    ' Use Chromium media player for full web API support (Series 5 onwards only)
+    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
+    registrySection = CreateObject("roRegistrySection", "html")
+    registrySection.Write("use-brightsign-media-player", "0")
+    registrySection.Flush()
+
     htmlRect = CreateObject("roRectangle", 0, 0, 1920, 1080)
     htmlConfig = {
         url: "file:///sd:/index.html",
@@ -795,6 +813,12 @@ End Sub
 ' Use ONLY if app has client-side routing
 Sub Main()
     msgPort = CreateObject("roMessagePort")
+
+    ' Use Chromium media player for full web API support (Series 5 onwards only)
+    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
+    registrySection = CreateObject("roRegistrySection", "html")
+    registrySection.Write("use-brightsign-media-player", "0")
+    registrySection.Flush()
 
     node = CreateObject("roNodeJs", "server.bundle.js", {message_port: msgPort})
     sleep(3000)
