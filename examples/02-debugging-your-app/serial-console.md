@@ -16,6 +16,15 @@ This page tells you what you need, how to connect, and what to do once you are i
 
 For full reference, see the [BrightSign Shell](https://docs.brightsign.biz/developers/brightsign-shell) documentation.
 
+
+## Before You Start
+
+Two settings must be enabled before serial output works:
+
+1. **Console output:** From the bootloader (hold SVC button on power-on, press Ctrl-C), type `console on` and `reboot`. See [Enabling the BrightSign Console](https://docs.brightsign.biz/developers/brightsign-shell#enabling-the-brightsign-console).
+2. **Script debug mode:** From the shell or autorun, run `script debug on` or set the `brightscript.debug` registry key to `1`. This lets you reach the `BrightScript Debugger>` prompt via Ctrl-C.
+
+
 ## What You Need
 
 ### The Cable
@@ -73,7 +82,7 @@ These are the same for every BrightSign player:
 3. Open your terminal software with the settings above
 4. Power on the player
 
-You should see boot output scrolling by. If the screen stays blank, check that your cable is seated fully in the 3.5mm jack and that your terminal is pointing at the correct USB serial device.
+You should see boot output scrolling by. If the screen stays blank, check that your cable is seated fully in the 3.5mm jack and that your terminal is pointing at the correct USB serial device. If the connection is good but you still see no output, the serial console may need to be [enabled from the bootloader](https://docs.brightsign.biz/developers/brightsign-shell#enabling-the-brightsign-console).
 
 
 ## What You See
@@ -97,7 +106,7 @@ This is the BrightSign Shell. Useful commands:
 | `ifconfig` | Show network configuration and IP address |
 | `registry read <section> <key>` | Read a registry value |
 | `registry write <section> <key> <value>` | Write a registry value |
-| `dir /storage/sd` | List files on the SD card |
+| `dir SD:/` | List files on the SD card |
 | `ping <host>` | Test network connectivity |
 | `script` | Drop into the BrightScript Debugger |
 | `script debug on` | Enable script debug mode (allows STOP breakpoints and Ctrl-C) |

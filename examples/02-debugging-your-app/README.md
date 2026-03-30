@@ -122,22 +122,7 @@ A full Chrome DevTools window opens. It is the same DevTools you use on localhos
 Setup happens once. The loop you will repeat hundreds of times is what matters:
 
 ```
-Edit code on your machine
-        |
-        v
-Push files to the player
-        |
-        v
-Reboot (or refresh)
-        |
-        v
-Check chrome://inspect
-        |
-        v
-Debug with DevTools
-        |
-        v
-(repeat)
+Edit code → Push to player → Reboot/refresh → Debug in DevTools → Repeat
 ```
 
 The speed of this loop depends almost entirely on how you deploy. Here are your options, ranked from fastest to most basic.
@@ -198,24 +183,7 @@ http://<player-ip>/
 
 (Use the credentials you set: admin / password)
 
-You get a dashboard with player status, but the real power is in the [LDWS API](https://docs.brightsign.biz/advanced/dws-local-access):
-
-| Method | Endpoint | What It Gives You |
-|--------|----------|-------------------|
-| GET | `/api/v1/logs` | System and playback logs (first place to look when something fails) |
-| POST | `/api/v1/snapshot` | JPEG of current display output |
-| GET | `/api/v1/registry` | All registry values as JSON |
-| GET | `/api/v1/registry/:section/:key` | A specific registry value |
-| GET | `/api/v1/files/sd` | Storage info and file listing |
-| PUT | `/api/v1/control/reboot` | Reboot the player |
-
-The snapshot endpoint alone is worth the setup. Instead of walking to the display:
-
-```bash
-curl -X POST --digest -u admin:password http://<player-ip>/api/v1/snapshot -o screenshot.jpg
-```
-
-You can see exactly what the player is rendering without leaving your desk.
+You get a dashboard with system logs, screenshots, registry values, storage info, and reboot controls. For API details, see the [LDWS API docs](https://docs.brightsign.biz/developers/local-dws-apis).
 
 
 ## Common Debugging Scenarios
@@ -239,11 +207,7 @@ console.timeEnd('dataFetch');
 
 ### "My page is not loading at all"
 
-Check the system log first:
-
-```bash
-curl --digest -u admin:password http://<player-ip>/api/v1/logs
-```
+Check the system log first. Open the DWS dashboard at `http://<player-ip>/` and look at the logs.
 
 Common culprits: a typo in the file path inside `autorun.brs`, a missing file on the SD card, or a JavaScript syntax error that crashes before anything renders. The system log usually tells you which one.
 
@@ -308,11 +272,10 @@ Then add the player's IP and the inspector port as a target in `chrome://inspect
 | What You Want to Do | Tool | How to Access |
 |---------------------|------|---------------|
 | Inspect DOM, console, network | Chrome DevTools | `chrome://inspect` + player IP:2999 |
-| Debug Node.js server code | Node Inspector | `chrome://inspect` + player IP:3000 |
 | Debug BrightScript | BrightScript Debugger | SSH + `Ctrl-C` |
-| View system logs | DWS or SSH | `http://<ip>/GetSystemLog` or `tail /var/log/messages` |
-| Take a screenshot | DWS | `http://<ip>/GetScreenshot` |
-| Upload files over network | SCP or DWS API | `scp` or `curl` |
+| View system logs | DWS | DWS dashboard or SSH |
+| Take a screenshot | DWS | DWS dashboard |
+| Upload files over network | SCP | `scp` via SSH |
 | Reboot the player | SSH | SSH in and type `reboot` |
 | Emergency access (no network) | [Serial console](serial-console.md) | USB-to-serial cable, 115200 baud |
 

@@ -32,7 +32,7 @@ Then connect again. SSH will prompt you to accept the new key.
 
 ### "Permission denied" or wrong password
 
-The SSH username is `brightsign` (not `root`). The password is whatever you set with `SetLoginPassword()` in your autorun. If you did not set one, the default password is the player's serial number.
+The SSH username is `brightsign` (not `root`). The password is whatever you set with `SetLoginPassword()` in your autorun. If you did not set one, the default password is `password`.
 
 ```bash
 # Correct format
@@ -43,16 +43,6 @@ ssh brightsign:password@<player-ip>
 ```
 
 Note: SSH does not accept `user:password@host` syntax. It will prompt you for the password interactively, or you can use key-based authentication.
-
-### SSH connects but hangs with no prompt
-
-If SSH authenticates and prints the player banner (model, serial, OS version) but then hangs with no interactive prompt, you are likely missing the `telnet_log_level` registry setting. Add this to your networking registry writes:
-
-```brightscript
-netReg.Write("telnet_log_level", "7")
-```
-
-This enables the interactive console over both telnet and SSH. Without it, SSH connects but does not give you a usable shell. Redeploy your autorun and reboot twice (once to write the registry, once for it to take effect).
 
 ### "Unknown command: -c reboot" when running a remote command
 
