@@ -52,12 +52,14 @@ Display and Layout:
 
 Migration Tasks:
 1. Analyze the PWA structure and inventory all features, dependencies, and PWA-specific code (service worker, manifest, install prompt, etc.)
-2. Remove all PWA features not needed for BrightSign:
-   - Service worker registration and files
-   - Web app manifest references
-   - Push notifications and background sync
-   - Install prompts and PWA detection
-   - PWA dependencies from package.json
+2. Adapt PWA features for BrightSign's Chromium media player:
+   - Keep service workers if useful (caching, offline support work on Chromium)
+   - Keep Cache API and IndexedDB usage (fully supported on Chromium)
+   - Keep Web Notifications API if useful (supported on Chromium)
+   - Remove web app manifest references (not needed for signage)
+   - Remove install prompts and PWA detection (not applicable to signage)
+   - Remove background sync (not applicable to signage)
+   - Remove PWA-specific build plugins from package.json (workbox-webpack-plugin, webpack-pwa-manifest, vite-plugin-pwa)
 3. Optimize for signage:
    - Update viewport to fixed display size ({1920x1080} or {3840x2160})
    - Increase font sizes for viewing distance (24px+ base)
@@ -97,7 +99,7 @@ Migration Tasks:
    - Common issues and solutions
 
 Follow all code transformation and deployment patterns from migration-guides/progressive-web-app/CLAUDE.md (if available), including:
-- Remove all PWA-specific code and dependencies
+- Remove non-signage PWA features (manifest, install prompts, background sync) while keeping Chromium-supported features (service workers, Cache API, IndexedDB, Web Notifications) if useful
 - Optimize CSS and layout for fixed signage display
 - Add error recovery, memory cleanup, and auto-refresh for reliability
 - Use webpack externals for @brightsign/* APIs

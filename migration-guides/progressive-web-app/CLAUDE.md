@@ -30,7 +30,7 @@
   "migration_plan": [
     "analyze_pwa_structure",
     "build_production_version",
-    "remove_pwa_features",
+    "adapt_pwa_features",
     "optimize_for_signage",
     "add_signage_features",
     "bundle_client_code",
@@ -72,14 +72,16 @@
       "check output directory"
     ]
   },
-  "remove_pwa_features": {
+  "adapt_pwa_features": {
     "actions": [
-      "remove service worker registration and files",
-      "remove manifest references",
-      "remove push notifications and background sync",
-      "remove install prompts",
-      "remove PWA dependencies from package.json"
-    ]
+      "keep service workers (supported on Chromium media player for caching and offline use)",
+      "remove manifest references (not needed for signage deployment)",
+      "keep Web Notifications API if used (supported on Chromium media player)",
+      "remove install prompts (not applicable to signage)",
+      "remove background sync if used (not applicable to signage)",
+      "remove PWA-specific build plugins from package.json (workbox-webpack-plugin, webpack-pwa-manifest, vite-plugin-pwa)"
+    ],
+    "note": "BrightSign Series 5 Chromium media player (Series 5 onwards only) supports service workers, Cache API, IndexedDB, and Web Notifications API. Only remove features that are not applicable to digital signage (install prompts, background sync, manifest). See troubleshooting.md for cases where the BrightSign media player should be used instead (Series 4, sync, UDP/RTP, chroma key)."
   },
   "optimize_for_signage": {
     "actions": [
@@ -148,10 +150,16 @@
 
 ```json
 {
-  "remove_pwa_patterns": {
-    "html": ["<link rel=\"manifest\" ...>", "<meta name=\"theme-color\" ...>"],
-    "js": ["serviceWorker.register", "Notification.requestPermission", "new Notification", "addEventListener('beforeinstallprompt')"],
-    "dependencies": ["workbox-webpack-plugin", "webpack-pwa-manifest", "vite-plugin-pwa"]
+  "adapt_pwa_patterns": {
+    "remove": {
+      "html": ["<link rel=\"manifest\" ...>"],
+      "js": ["addEventListener('beforeinstallprompt')"],
+      "dependencies": ["workbox-webpack-plugin", "webpack-pwa-manifest", "vite-plugin-pwa"]
+    },
+    "keep_on_chromium": {
+      "note": "These features work on BrightSign Chromium media player and can be kept if useful for your signage app",
+      "js": ["serviceWorker.register (caching, offline support)", "Cache API", "IndexedDB", "Notification.requestPermission", "new Notification"]
+    }
   },
   "signage_optimizations": {
     "viewport": "<meta name=\"viewport\" content=\"width=1920, height=1080, initial-scale=1\">",
@@ -301,7 +309,13 @@ app.listen(PORT, () => {
 ' Use this template for MOST apps - simple HTML + bundle.js
 Sub Main()
     msgPort = CreateObject("roMessagePort")
-    
+
+    ' Use Chromium media player for full web API support (Series 5 onwards only)
+    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
+    registrySection = CreateObject("roRegistrySection", "html")
+    registrySection.Write("use-brightsign-media-player", "0")
+    registrySection.Flush()
+
     ' Launch Chromium with local HTML file
     htmlRect = CreateObject("roRectangle", 0, 0, 1920, 1080)
     htmlConfig = {
@@ -311,7 +325,7 @@ Sub Main()
     }
     html = CreateObject("roHtmlWidget", htmlRect, htmlConfig)
     html.Show()
-    
+
     ' Keep alive
     while true
         msg = wait(0, msgPort)
@@ -325,11 +339,17 @@ End Sub
 ' Use this ONLY if your app has client-side routing (React Router, Vue Router, etc.)
 Sub Main()
     msgPort = CreateObject("roMessagePort")
-    
+
+    ' Use Chromium media player for full web API support (Series 5 onwards only)
+    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
+    registrySection = CreateObject("roRegistrySection", "html")
+    registrySection.Write("use-brightsign-media-player", "0")
+    registrySection.Flush()
+
     ' Start Node.js server with bundled server code
     node = CreateObject("roNodeJs", "server.bundle.js", {message_port: msgPort})
     sleep(3000)  ' Wait for server to initialize
-    
+
     ' Launch Chromium pointing to local server
     htmlRect = CreateObject("roRectangle", 0, 0, 1920, 1080)
     htmlConfig = {
@@ -340,7 +360,7 @@ Sub Main()
     }
     html = CreateObject("roHtmlWidget", htmlRect, htmlConfig)
     html.Show()
-    
+
     ' Keep alive
     while true
         msg = wait(0, msgPort)
@@ -385,7 +405,8 @@ SD_CARD/
 ```json
 {
   "validation": [
-    "PWA features removed (service worker, manifest, notifications, install prompts)",
+    "Non-signage PWA features removed (manifest, install prompts, background sync)",
+    "Chromium-supported features retained if useful (service workers, Cache API, IndexedDB, Web Notifications)",
     "Display optimizations applied (viewport, fonts, layout)",
     "Signage features added (idle detection, auto-refresh, connection monitoring)",
     "Mobile-specific code removed",
