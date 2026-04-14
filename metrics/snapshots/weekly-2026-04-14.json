@@ -1,0 +1,42 @@
+{
+  "date": "2026-04-14",
+  "uniqueVisits": 44,
+  "uniqueClones": 23,
+  "conversionRate": 52.27,
+  "stars": 13,
+  "forks": 0,
+  "issuesOpenedThisWeek": 0,
+  "externalPrsThisWeek": 0,
+  "topReferrers": [
+    {
+      "referrer": "github.com",
+      "uniques": 4
+    },
+    {
+      "referrer": "Google",
+      "uniques": 2
+    }
+  ],
+  "topPaths": [
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/README.md",
+      "uniques": 16
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev",
+      "uniques": 17
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/examples/hello-brightsign",
+      "uniques": 13
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/migration-guides/electron",
+      "uniques": 9
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/examples",
+      "uniques": 6
+    }
+  ]
+}
