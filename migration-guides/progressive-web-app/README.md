@@ -6,6 +6,8 @@ If you have not set up the BrightDeveloper MCP Server yet, follow the instructio
 
 > Note that not everything generated using AI agents and the BrightDeveloper MCP may be perfect on the first try. You may need to iterate with the AI, provide additional context, or make manual adjustments as needed.
 
+> **Before you begin:** This guide defaults to the Chromium media player on Series 5 devices, which supports modern web APIs (service workers, Cache API, IndexedDB, etc.). If your app needs HDMI input, RTSP/UDP streams, frame-accurate sync, chroma key, or Series 4 support, read [Media Player Selection](../media-player-selection.md) first.
+
 ## Overview
 
 Since PWAs are **already web-based** with HTML/CSS/JavaScript, migration to BrightSign is straightforward. You'll adapt existing web content for BrightSign's embedded Chromium environment, removing PWA-specific features that don't apply to digital signage.

@@ -727,7 +727,8 @@ Sub Main()
     msgPort = CreateObject("roMessagePort")
 
     ' Use Chromium media player for full web API support (Series 5 onwards only)
-    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
+    ' See ../media-player-selection.md if you need Series 4 support, HDMI input,
+    ' sync, UDP/RTP, or chroma key
     registrySection = CreateObject("roRegistrySection", "html")
     registrySection.Write("use-brightsign-media-player", "0")
     registrySection.Flush()
@@ -756,7 +757,8 @@ Sub Main()
     msgPort = CreateObject("roMessagePort")
 
     ' Use Chromium media player for full web API support (Series 5 onwards only)
-    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
+    ' See ../media-player-selection.md if you need Series 4 support, HDMI input,
+    ' sync, UDP/RTP, or chroma key
     registrySection = CreateObject("roRegistrySection", "html")
     registrySection.Write("use-brightsign-media-player", "0")
     registrySection.Flush()
@@ -786,7 +788,8 @@ Sub Main()
     msgPort = CreateObject("roMessagePort")
 
     ' Use Chromium media player for full web API support (Series 5 onwards only)
-    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
+    ' See ../media-player-selection.md if you need Series 4 support, HDMI input,
+    ' sync, UDP/RTP, or chroma key
     registrySection = CreateObject("roRegistrySection", "html")
     registrySection.Write("use-brightsign-media-player", "0")
     registrySection.Flush()
@@ -815,7 +818,8 @@ Sub Main()
     msgPort = CreateObject("roMessagePort")
 
     ' Use Chromium media player for full web API support (Series 5 onwards only)
-    ' See troubleshooting.md if you need Series 4 support, sync, UDP/RTP, or chroma key
+    ' See ../media-player-selection.md if you need Series 4 support, HDMI input,
+    ' sync, UDP/RTP, or chroma key
     registrySection = CreateObject("roRegistrySection", "html")
     registrySection.Write("use-brightsign-media-player", "0")
     registrySection.Flush()
