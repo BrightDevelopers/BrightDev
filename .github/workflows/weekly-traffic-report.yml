@@ -2,7 +2,7 @@ name: Weekly Traffic Report
 
 on:
   schedule:
-    - cron: '0 15 * * 5'
+    - cron: '0 13 * * 5'
   workflow_dispatch:
     inputs:
       test_mode:
