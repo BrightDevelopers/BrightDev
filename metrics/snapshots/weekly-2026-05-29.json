@@ -1,0 +1,46 @@
+{
+  "date": "2026-05-29",
+  "uniqueVisits": 28,
+  "uniqueClones": 36,
+  "conversionRate": 128.57,
+  "stars": 17,
+  "forks": 0,
+  "issuesOpenedThisWeek": 0,
+  "externalPrsThisWeek": 0,
+  "topReferrers": [
+    {
+      "referrer": "statics.teams.cdn.office.net",
+      "uniques": 4
+    },
+    {
+      "referrer": "Google",
+      "uniques": 3
+    },
+    {
+      "referrer": "github.com",
+      "uniques": 1
+    }
+  ],
+  "topPaths": [
+    {
+      "path": "/BrightDevelopers/BrightDev",
+      "uniques": 14
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/migration-guides",
+      "uniques": 4
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/migration-guides/kotlin",
+      "uniques": 5
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/README.md",
+      "uniques": 3
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/examples/hello-brightsign",
+      "uniques": 3
+    }
+  ]
+}
