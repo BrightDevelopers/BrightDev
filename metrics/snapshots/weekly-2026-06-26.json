@@ -1,0 +1,50 @@
+{
+  "date": "2026-06-26",
+  "uniqueVisits": 31,
+  "uniqueClones": 36,
+  "conversionRate": 116.13,
+  "stars": 17,
+  "forks": 0,
+  "issuesOpenedThisWeek": 0,
+  "externalPrsThisWeek": 0,
+  "topReferrers": [
+    {
+      "referrer": "github.com",
+      "uniques": 6
+    },
+    {
+      "referrer": "Google",
+      "uniques": 5
+    },
+    {
+      "referrer": "Bing",
+      "uniques": 3
+    },
+    {
+      "referrer": "app.zoom.us",
+      "uniques": 1
+    }
+  ],
+  "topPaths": [
+    {
+      "path": "/BrightDevelopers/BrightDev",
+      "uniques": 17
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/README.md",
+      "uniques": 5
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/examples/hello-brightsign",
+      "uniques": 8
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/migration-guides",
+      "uniques": 1
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/DEVELOPMENT.md",
+      "uniques": 6
+    }
+  ]
+}
