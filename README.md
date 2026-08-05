@@ -20,7 +20,7 @@ We wrote this for AI assistants as much as for you. Connect your editor to our M
 
 **Claude Code:**
 ```bash
-claude mcp add brightdeveloper-docs --transport http https://brightdeveloper-mcp.bsn.cloud/mcp
+claude mcp add brightdeveloper-docs --transport http https://brightdeveloper.bsn.cloud/mcp
 ```
 
 **VS Code / Cursor:** Add to your MCP settings:
@@ -29,7 +29,7 @@ claude mcp add brightdeveloper-docs --transport http https://brightdeveloper-mcp
   "servers": {
     "brightdeveloper": {
       "type": "http",
-      "url": "https://brightdeveloper-mcp.bsn.cloud/mcp"
+      "url": "https://brightdeveloper.bsn.cloud/mcp"
     }
   }
 }
