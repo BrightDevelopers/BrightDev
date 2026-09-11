@@ -31,6 +31,7 @@ Unlike migrating from another web-based platform, a Tizen `.wgt` widget can't be
 - ✅ **No manifest/privilege model to maintain** - Deployment permissions are OS/registry-level, not declared per-app.
 - ✅ **Works with plain keyboard/mouse/touch input** - No dependency on Tizen's keycode tables.
 - ✅ **One process, no widget lifecycle handshake** - The app starts running as soon as it's loaded.
+- ✅ **GPIO access Tizen never had** - BrightScript's `roGpioControlPort`/`roGpioButton` read physical GPIO pins (buttons, PIR/proximity sensors, relays, etc.) in `autorun.brs`, bridged into your HTML/JS page over `BSMessagePort`. That's real presence detection, occupancy sensors, or physical button/relay integration - not something a Tizen remote-control app could ever do.
 
 ---
 

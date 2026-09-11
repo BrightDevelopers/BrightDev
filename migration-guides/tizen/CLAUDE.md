@@ -885,7 +885,8 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
       "Runs on standard, well-documented web APIs instead of a proprietary runtime",
       "No manifest/privilege model to maintain",
       "Works with keyboard/mouse/touch input rather than a remote-control keycode table",
-      "Single shared runtime - no separate background service process to manage"
+      "Single shared runtime - no separate background service process to manage",
+      "GPIO access Tizen never had - roGpioControlPort/roGpioButton in autorun.brs, bridged into the HTML/JS page over BSMessagePort, enables presence/occupancy sensors, physical buttons, and relay control"
     ]
   }
 }
