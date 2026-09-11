@@ -202,6 +202,8 @@ end sub
 ```
 Sizing the rectangle from `roVideoMode.GetResX()`/`GetResY()` instead of hardcoding 1920x1080 also avoids letterboxing or a black screen on a player with a different native resolution. See [roHtmlWidget](https://docs.brightsign.biz/develop/rohtmlwidget) and [Autorun Files](https://docs.brightsign.biz/develop/autorun-files), or the [brightsign/dev-cookbook html-starter example](https://github.com/brightsign/dev-cookbook/tree/main/examples/browser/html-starter), for a verified reference. Don't hand-write this from memory - a malformed `CreateObject` call here fails completely silently.
 
+Note: the `use-brightsign-media-player` write above is only valid on Series 5+. On Series 4 or earlier, omit it (that option doesn't exist there regardless of OS version) - the rest of the script is unchanged, and the app will use the default BrightSign media player.
+
 ---
 
 ### The AI deleted a project file while building the deployment package

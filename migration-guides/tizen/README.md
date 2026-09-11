@@ -8,7 +8,7 @@ If you have not set up the BrightDeveloper MCP Server yet, follow the instructio
 
 > Note that not everything generated using AI agents and the BrightDeveloper MCP may be perfect on the first try. You may need to iterate with the AI, provide additional context, or make manual adjustments as needed.
 
-> **Before you begin:** This guide defaults to the Chromium media player on Series 5 devices, which supports modern web APIs (service workers, Cache API, IndexedDB, etc.). If your app needs HDMI input, RTSP/UDP streams, frame-accurate sync, chroma key, or Series 4 support, read [Media Player Selection](../media-player-selection.md) first.
+> **Before you begin:** This guide's examples default to the Chromium media player, which supports modern web APIs (service workers, Cache API, IndexedDB, etc.) but only exists on **Series 5 and later** players. **Targeting a Series 4 or earlier player? This guide still applies to you** - just skip the one registry write that selects Chromium, and your app will use the default BrightSign media player instead, which fully supports standard `<video>` playback. Everything else (API mappings, remote-key handling, packaging) is identical either way. Also read [Media Player Selection](../media-player-selection.md) first if your app needs HDMI input, RTSP/UDP streams, frame-accurate sync, or chroma key - those need the BrightSign media player even on Series 5.
 
 ---
 
@@ -41,7 +41,7 @@ This guide helps you migrate a **Samsung Tizen web application (HTML/CSS/JS + Ti
 **Migration Approach:**
 - **[Method 1: Refactor & Replace](method1-refactor.md)** - Systematic removal of Tizen APIs and manifest model, replaced with standard web APIs and BrightSign primitives
 
-**Target Platform**: BrightSign OS with Chromium media player (Series 5 and later)
+**Target Platform**: BrightSign OS - Chromium media player by default (Series 5 and later), or the native BrightSign media player on Series 4 and earlier. Both are fully supported by this guide.
 
 ---
 
@@ -134,7 +134,7 @@ Follow the detailed AI prompt in the migration method guide:
 5. **Flag DRM dependencies early**: This needs direct verification with BrightSign, not an assumed API mapping
 6. **Test with `tizen`/`webapis` genuinely undefined**: Use a plain desktop browser first to catch every unguarded reference before deploying to hardware
 7. **Check for the muted-autoplay pattern**: If your CMS expects video to start without a remote keypress, confirm the refactored code adds it
-8. **Specify your target BrightSign player series**: The Chromium media player requires Series 5+
+8. **Specify your target BrightSign player series**: Series 5+ gets the Chromium media player by default; Series 4 or earlier just skips that one registry write and uses the native BrightSign media player instead - the rest of the migration is unaffected
 9. **Test incrementally**: Validate the manifest/`autorun.brs` conversion before moving on to media/input replacement
 10. **Ask questions**: If the AI's proposed replacement for a legacy `clsid:SAMSUNG-INFOLINK-*` call seems unclear, request an explanation
 11. **Verify `roHtmlWidget` construction against the docs, not from memory**: `CreateObject("roHtmlWidget", rect, config)` requires a real `roRectangle` first argument - a malformed call renders nothing but throws no error, so a black screen on hardware won't tell you what's wrong

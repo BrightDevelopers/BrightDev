@@ -33,8 +33,8 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
   "automation_level": "full_auto_with_placeholders",
   "primary_method": "refactor_and_replace",
   "recommended_method": "refactor_and_replace",
-  "target_runtime": "chromium_brightsign",
-  "note": "tizen.*/webapis.* are runtime-injected globals with no BrightSign equivalent, and config.xml's privilege/manifest model has no BrightSign analogue. This is a source-level refactor, not a repackage."
+  "target_runtime": "chromium_brightsign_or_brightsign_media_player",
+  "note": "tizen.*/webapis.* are runtime-injected globals with no BrightSign equivalent, and config.xml's privilege/manifest model has no BrightSign analogue. This is a source-level refactor, not a repackage. target_runtime defaults to Chromium (Series 5+) for these examples, but this entire guide applies equally to Series 4 and earlier - those players just use the default BrightSign media player instead (see the signage_defaults/app_manifest categories in the API mapping table). Player series affects one registry key, not eligibility for this migration."
 }
 ```
 
@@ -259,7 +259,7 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
         "tizen": "<tizen:application id='MKSuoBISnk.VideoPlayer' package='MKSuoBISnk' required_version='2.3'/> <tizen:privilege name='http://tizen.org/privilege/tv.inputdevice'/> <tizen:profile name='tizen'/>",
         "brightsign": "sub Main()\n  reg = CreateObject(\"roRegistrySection\", \"html\")\n  reg.Write(\"use-brightsign-media-player\", \"0\")\n  reg.Flush()\n\n  msgPort = CreateObject(\"roMessagePort\")\n  vidmode = CreateObject(\"roVideoMode\")\n  r = CreateObject(\"roRectangle\", 0, 0, vidmode.GetResX(), vidmode.GetResY())\n\n  config = { url: \"file:///sd:/index.html\", port: msgPort }\n  h = CreateObject(\"roHtmlWidget\", r, config)\n  h.Show()\n\n  while true\n    msg = wait(0, msgPort)\n  end while\nend sub"
       },
-      "notes": "Registry key use-brightsign-media-player = 0 selects the Chromium media player. See ../media-player-selection.md for when to keep the default BrightSign media player instead."
+      "notes": "Registry key use-brightsign-media-player = 0 selects the Chromium media player - but this option genuinely does not exist on Series 4 or earlier players, regardless of OS version (confirmed in BrightSign's own docs). If the target player is Series 4 or earlier, skip that registry write entirely (or set it to \"1\", which is the same as omitting it) and use the default BrightSign media player instead - every other part of this pattern (roRectangle, roMessagePort, roHtmlWidget) is unchanged, and standard <video> playback works the same either way. This is a media-decode-engine choice, not a gate on whether this migration guide applies to your player - see ../media-player-selection.md."
     },
     {
       "category": "app_manifest",
@@ -453,7 +453,7 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
   "brightsign_replacement": {
     "autorun_brs": "sub Main()\n  reg = CreateObject(\"roRegistrySection\", \"html\")\n  reg.Write(\"use-brightsign-media-player\", \"0\")\n  reg.Flush()\n\n  msgPort = CreateObject(\"roMessagePort\")\n  vidmode = CreateObject(\"roVideoMode\")\n  r = CreateObject(\"roRectangle\", 0, 0, vidmode.GetResX(), vidmode.GetResY())\n\n  config = { url: \"file:///sd:/index.html\", port: msgPort }\n  h = CreateObject(\"roHtmlWidget\", r, config)\n  h.Show()\n\n  while true\n    msg = wait(0, msgPort)\n  end while\nend sub"
   },
-  "notes": "CreateObject(\"roHtmlWidget\", ...) requires an roRectangle as its first argument and an associative array as the second - it is NOT a single associative array with a port number. port must be an roMessagePort object (for catching load-started/load-finished/load-error events), not an integer - don't confuse it with the unrelated web-inspector debug port. Verify against the roHtmlWidget and Autorun Files docs before treating any autorun.brs as final; a malformed CreateObject call here renders nothing and produces a black screen with no error message. There's no privilege string to carry over - BrightSign doesn't gate JS APIs behind a manifest declaration. If a Tizen privilege corresponds to real functionality (e.g. tv.inputdevice), what changes is the API you call, not a permission you request."
+  "notes": "CreateObject(\"roHtmlWidget\", ...) requires an roRectangle as its first argument and an associative array as the second - it is NOT a single associative array with a port number. port must be an roMessagePort object (for catching load-started/load-finished/load-error events), not an integer - don't confuse it with the unrelated web-inspector debug port. Verify against the roHtmlWidget and Autorun Files docs before treating any autorun.brs as final; a malformed CreateObject call here renders nothing and produces a black screen with no error message. There's no privilege string to carry over - BrightSign doesn't gate JS APIs behind a manifest declaration. If a Tizen privilege corresponds to real functionality (e.g. tv.inputdevice), what changes is the API you call, not a permission you request. The use-brightsign-media-player write shown here is for Series 5+ targets only - on Series 4 or earlier, omit it (or write \"1\"); the rest of this autorun.brs is identical either way."
 }
 ```
 
@@ -565,7 +565,7 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
         "check_id": "autorun_brs_configured",
         "description": "Verify autorun.brs launches the app correctly",
         "validation": "autorun.brs exists and configured properly",
-        "required_fields": ["roHtmlWidget or nodejs_enabled", "url or nodejs_main_script", "registry write use-brightsign-media-player 0 for Chromium media player"],
+        "required_fields": ["roHtmlWidget or nodejs_enabled", "url or nodejs_main_script", "registry write use-brightsign-media-player 0 - Series 5+ targets only, omit on Series 4 or earlier since the option doesn't exist there"],
         "failure_action": "AI_PLACEHOLDER: Create autorun.brs from template"
       },
       {
@@ -755,7 +755,7 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
         "phase": "4_manifest_and_packaging",
         "tasks": [
           "Convert config.xml privilege/feature declarations into an autorun.brs, using CreateObject(\"roHtmlWidget\", rect, config) with a real roRectangle as the first argument - never a bare associative array - and verify the pattern against the roHtmlWidget/Autorun Files docs before treating it as final",
-          "Write the use-brightsign-media-player registry key (0 for Chromium, per ../media-player-selection.md)",
+          "If targeting Series 5 or later, write the use-brightsign-media-player registry key as 0 to select Chromium. If targeting Series 4 or earlier, omit this write entirely (or write \"1\") - Chromium video decode does not exist on those players regardless of OS version, so the app must use the default BrightSign media player instead; standard <video> playback and everything else in this guide is unaffected. See ../media-player-selection.md.",
           "In a separate build/output directory (not in place in the project folder), assemble a single autorun.zip: the standard autozip.brs unpack script at the zip's top level, plus autorun.brs, index.html, and all app assets for it to unpack",
           "Verify autozip.brs references no other file in the archive (it's the only file the player auto-decompresses before running it)",
           "Do not delete, move, or overwrite any existing project file (including the original .wgt) while building the package"

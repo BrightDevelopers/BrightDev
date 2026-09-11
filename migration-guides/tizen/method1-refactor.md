@@ -6,13 +6,13 @@ Systematically identify every Tizen-specific API in your codebase and replace it
 
 **🎯 Best for**: Tizen web apps built with plain HTML/JS (with or without a game framework like Phaser/MelonJS), including apps still carrying the legacy samsung.js/`clsid:SAMSUNG-INFOLINK-*` shim
 
-**📦 Target Platform**: BrightSign OS with Chromium media player (Series 5+)
+**📦 Target Platform**: BrightSign OS - Chromium media player by default (Series 5+), or the native BrightSign media player on Series 4 and earlier (see ../media-player-selection.md). This guide applies to both; only one registry key differs.
 
 Before using this prompt:
 - ✅ BrightDeveloper MCP server connected (see main [BrightDev README](https://github.com/BrightDevelopers/BrightDev))
 - ✅ Your Tizen project's source is accessible to the AI (repo checked out, or files attached)
 - ✅ **Attach CLAUDE.md to your AI context** - the API Mapping Table and transformation rules it contains are what make this prompt reliable
-- ✅ Have BrightSign test hardware available for final validation (a Series 5 player is required if you're keeping the default Chromium media player)
+- ✅ Have BrightSign test hardware available for final validation (any series works - Series 5+ if you're using the default Chromium media player, Series 4 or earlier if you're using the native BrightSign media player instead)
 
 Copy the following prompt, fill in the placeholders, and run it against your project with CLAUDE.md attached:
 
@@ -47,8 +47,8 @@ Tizen APIs Used (check all that apply):
 - [ ] Other: {SPECIFY}
 
 BrightSign Platform Features Needed:
-- [ ] Chromium media player (default - HTML5 <video>, MSE)
-- [ ] BrightSign media player instead (HDMI input, RTSP/UDP, sync, chroma key, or Series 4 support - see ../media-player-selection.md)
+- [ ] Chromium media player (default on Series 5+ - HTML5 <video>, MSE, modern web APIs)
+- [ ] Native BrightSign media player instead (required on Series 4 or earlier - Chromium video decode does not exist on those players regardless of OS version; also needed for HDMI input, RTSP/UDP, sync, or chroma key even on Series 5 - see ../media-player-selection.md)
 - [ ] @brightsign/deviceinfo (device model/serial, replacing webapis.tv.info or legacy GetFirmware/GetIP/GetMAC)
 - [ ] Node.js (nodejs_enabled) - only if porting logic from a Tizen Service app
 - [ ] Interactive input hardware on this deployment (touchscreen, GPIO buttons/sensors, USB HID, etc.) - only check this if the physical BrightSign deployment actually has one; the Tizen app using a remote control does NOT count, since BrightSign has no remote-control equivalent at all
@@ -57,7 +57,7 @@ BrightSign Platform Features Needed:
 Application Requirements:
 - Must support DRM-protected playback: {YES/NO - if YES, flag for direct verification with BrightSign, do not assume support}
 - Must retain color/channel remote-button functionality: {YES/NO - if YES, note there is no BrightSign hardware equivalent}
-- Target BrightSign player model/series: {MODEL}
+- Target BrightSign player model/series: {MODEL} - if Series 4 or earlier, skip the Chromium registry write entirely and use the native BrightSign media player; nothing else in this migration changes
 - Offline/no-network operation required: {YES/NO}
 - Content should loop continuously (typical "set and forget" signage) rather than stop after one playthrough: {YES/NO/UNSURE - default to YES (loop) unless the deployment has confirmed interactive hardware checked above. Do NOT base this on whether the Tizen source used remote-control input - that has no BrightSign equivalent and isn't evidence either way}
 
@@ -79,7 +79,7 @@ Migration Tasks:
 5. **Replace legacy plugin usage** - If the codebase still has a clsid:SAMSUNG-INFOLINK-* embed or the samsung.js shim, replace .Play()/.SetDisplayArea() with a <video> element and .GetIP()/.GetMAC()/.GetFirmware() with @brightsign/deviceinfo (or @brightsign/networkconfiguration).
 6. **Remove widget lifecycle calls** - Delete Common.API.Widget.sendReadyEvent()/blockNavigation()/sendReturnEvent()/sendExitEvent() and tizen.application.getCurrentApplication().exit() - BrightSign has no widget lifecycle handshake to satisfy.
 7. **Replace signage device control** - Replace webapis.audiocontrol volume/mute calls with native HTMLMediaElement.volume/.muted, and webapis.tv.info.getModel()/getProduct() with @brightsign/deviceinfo. If setOnScreenSaver()/setOnIdleEvent() calls are found, raise an AI_QUESTION confirming it's safe to remove them rather than deleting them silently - BrightSign has nothing to suppress, but confirm that assumption holds for this app.
-8. **Convert the manifest** - Turn config.xml's privilege/feature/profile declarations into an autorun.brs that writes the use-brightsign-media-player registry key and loads your HTML via roHtmlWidget. Use CreateObject("roHtmlWidget", rect, config) with a real roRectangle as the first argument - never a bare associative array - and verify this against the roHtmlWidget/Autorun Files docs (or CLAUDE.md's boilerplate) rather than writing it from memory. A malformed call here fails completely silently: no error, just a black screen.
+8. **Convert the manifest** - Turn config.xml's privilege/feature/profile declarations into an autorun.brs that loads your HTML via roHtmlWidget. If targeting Series 5+, write the use-brightsign-media-player registry key as 0 to use Chromium; if targeting Series 4 or earlier, skip that write entirely (Chromium video decode doesn't exist there regardless of OS version) and the app will use the default BrightSign media player instead - nothing else in the pattern changes. Use CreateObject("roHtmlWidget", rect, config) with a real roRectangle as the first argument - never a bare associative array - and verify this against the roHtmlWidget/Autorun Files docs (or CLAUDE.md's boilerplate) rather than writing it from memory. A malformed call here fails completely silently: no error, just a black screen.
 9. **Handle a Service app, if present** - If the app has a Tizen Service app (<tizen:service>), don't port it as-is and don't silently redesign it either. Raise an AI_QUESTION describing what the Service app does and propose a redesign around nodejs_enabled in the same roHtmlWidget, and wait for my confirmation before implementing it.
 10. **Package as autorun.zip** - In a separate build/output directory (not in place in this project folder), assemble a single autorun.zip. It must contain the standard autozip.brs unpack script at the top level (not autorun.brs directly) - autozip.brs is the only file the player auto-decompresses before running it, and its only job is to unpack everything else (your real autorun.brs, index.html, js/, assets) to storage and reboot. After reboot the player finds the now-unpacked autorun.brs and runs it normally. Follow the autozip.brs boilerplate from CLAUDE.md - it shouldn't normally need modification. Do not delete, move, or overwrite any existing file in this project (including the original .wgt) while doing this.
 11. **Test incrementally** - Validate in a plain desktop browser first (with tizen/webapis undefined), then on actual BrightSign hardware. If replacing a dead sample/CMS media URL, verify the replacement with a GET request using a browser User-Agent and a Range header, not a bare curl -I HEAD request - some CDNs return 403 to HEAD requests even for URLs that play back fine.
