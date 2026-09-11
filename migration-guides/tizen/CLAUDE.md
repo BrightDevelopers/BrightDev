@@ -14,9 +14,10 @@ If you're seeing this file as attached/loaded project context and the user asks 
 2. Work through the "AI Automation Instructions" phases below (1_analysis through 7_handoff) against that project's actual files, applying every rule in the "Architecture Transformation Rules" and "API Mapping Table" sections as you go - don't stop to ask permission for each individual replacement.
 3. Whenever you hit one of the four features with no direct BrightSign equivalent - remote color/channel buttons, DRM-protected playback, screensaver/idle suppression, or a Tizen Service app - raise the specific `AI_QUESTION` given for it in the API Mapping Table and wait for an answer before resolving that piece. Everything else, keep moving on your own.
 4. Separately, always ask whether this BrightSign deployment has interactive hardware (touchscreen, GPIO buttons/sensors, etc.) before deciding whether media should loop at the end. A Tizen app being remote-interactive is NOT evidence the BrightSign deployment is interactive - BrightSign has no remote-control equivalent at all, so that signal doesn't carry over. Without confirmed interactive hardware, default media playback to loop continuously (typical "set and forget" signage) rather than stopping after one playthrough.
-5. Produce the deliverables described in "AI Automation Instructions": refactored HTML/JS, a generated `autorun.brs`, and a deployment-ready `autorun.zip` (`autozip.brs` at the top level, per the packaging pattern below) - not just a plan or a summary.
-6. Build the `autorun.zip` package in a separate build/output directory, not in place in the project folder. Never delete, move, or overwrite an existing project file (including the original `.wgt`) as a side effect of packaging or cleanup - if a stray/temp file genuinely needs removing, say out loud what it is and why before removing it.
-7. **End your final summary with the exact physical next step, stated as an instruction, not a question.** You cannot deploy to hardware yourself - that's the one part of this task that is inherently the user's to do - but that doesn't mean the migration ends ambiguously. Once the autorun.zip is built, close with something like: "Copy autorun.zip to the root of an SD card (or USB drive), insert it into the BrightSign player, and reboot the player - it will unpack automatically and launch the app." Do not end with "let me know what you'd like to do next" or an open-ended question - the deployment step is known and always the same; say it plainly.
+5. Ask as many questions as you actually need, across as many turns as it takes - don't try to front-load a fixed checklist and don't silently drop a question because you've hit a per-turn limit on your interface (some tools cap you at a handful of questions per batch). If that happens, ask what you can now, then come back with the rest once you have those answers. The only source of these questions should be things you genuinely can't determine from the project's own files (player model/series, deployment hardware, and whichever of the four no-equivalent features you actually found in the source) - never ask about something the project's files already answer (app name, entry HTML file, which Tizen APIs are in use, whether a game framework is present, etc.) - go find that yourself first.
+6. Produce the deliverables described in "AI Automation Instructions": refactored HTML/JS, a generated `autorun.brs`, and a deployment-ready `autorun.zip` (`autozip.brs` at the top level, per the packaging pattern below) - not just a plan or a summary.
+7. Build the `autorun.zip` package in a separate build/output directory, not in place in the project folder. Never delete, move, or overwrite an existing project file (including the original `.wgt`) as a side effect of packaging or cleanup - if a stray/temp file genuinely needs removing, say out loud what it is and why before removing it.
+8. **End your final summary with the exact physical next step, stated as an instruction, not a question.** You cannot deploy to hardware yourself - that's the one part of this task that is inherently the user's to do - but that doesn't mean the migration ends ambiguously. Once the autorun.zip is built, close with something like: "Copy autorun.zip to the root of an SD card (or USB drive), insert it into the BrightSign player, and reboot the player - it will unpack automatically and launch the app." Do not end with "let me know what you'd like to do next" or an open-ended question - the deployment step is known and always the same; say it plainly.
 
 Only stop to ask a general question if there's genuinely no Tizen project in the working directory to migrate, or if you can't find any source files at all. A loaded project with Tizen source in it is not an ambiguous situation - it's the task.
 
@@ -743,12 +744,13 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
           "Ask whether the BrightSign deployment has interactive hardware (touchscreen, GPIO, etc.) - do not infer this from the Tizen app's remote-control usage, since remote interactivity has no BrightSign equivalent and is not evidence either way",
           "Default end-of-playback behavior to looping (video.loop = true, or restart on 'ended') unless interactive hardware is confirmed - don't carry over Tizen's stop-at-end default unexamined",
           "Replace <object type='application/avplayer'> with <video>",
-          "Replace remote-key registration with keydown/keyup listeners where a keyboard equivalent exists; remove where it doesn't",
+          "Replace remote-key registration with keydown/keyup listeners where a keyboard equivalent exists; if color/channel-button-only logic is found, raise the AI_QUESTION rather than removing or redesigning it yourself",
           "Replace legacy clsid:SAMSUNG-INFOLINK-* plugin calls with <video> and @brightsign/deviceinfo",
           "Replace webapis.audiocontrol volume/mute calls with native HTMLMediaElement.volume/.muted",
           "Replace webapis.tv.info.getModel/getProduct with @brightsign/deviceinfo",
           "Remove Common.API.Widget lifecycle calls and tizen.application.getCurrentApplication().exit()",
-          "Replace tizenvisibilitychange with standard visibilitychange"
+          "Replace tizenvisibilitychange with standard visibilitychange",
+          "If Common.API.Plugin.setOnScreenSaver()/setOnIdleEvent() calls are found, raise the AI_QUESTION confirming it's safe to remove them rather than deleting them silently - BrightSign has nothing to suppress, but confirm that assumption holds for this app"
         ]
       },
       {
@@ -782,6 +784,8 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
       {
         "phase": "7_handoff",
         "tasks": [
+          "List every AI_QUESTION and AI_PLACEHOLDER raised during the migration, and confirm each of the four no-equivalent features (remote color/channel buttons, DRM, screensaver/idle suppression, Service app) that was actually present in this app was explicitly flagged rather than silently resolved",
+          "Produce the full Output Deliverables list (see below) - not just a plan or a summary",
           "End the final summary with the exact physical next step, stated as a plain instruction, not a question",
           "Example closing line: 'Copy autorun.zip to the root of an SD card (or USB drive), insert it into the BrightSign player, and reboot the player - it will unpack automatically and launch the app.'",
           "Do not end with 'let me know what you'd like to do next' or any other open-ended question - hardware deployment is the one step that is inherently the user's to perform, but the instruction for it is always the same and should be stated with confidence"
@@ -800,6 +804,7 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
     "user_questions": {
       "use_when": "Critical information missing that AI cannot determine, and always for any feature with no direct BrightSign equivalent - never silently drop or assume an answer for these",
       "format": "AI_QUESTION: [Question for user]",
+      "batching": "Ask as many questions as needed, across as many turns as it takes. Do not silently drop a question because a UI limits how many can be asked per turn (some interfaces cap this around 4) - ask what fits now, then ask the rest in a follow-up turn once those are answered. Never invent an answer just to stay within a batch.",
       "always_ask_for": [
         "remote_color_channel_buttons",
         "drm_protected_playback",
@@ -817,6 +822,46 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
       ]
     }
   }
+}
+```
+
+---
+
+## Code Quality Requirements
+
+```json
+{
+  "code_quality_requirements": [
+    "Use modern JS (ES6+: const/let, arrow functions, template literals) where the existing codebase already does",
+    "Add try/catch around any BrightSign API call that can fail at runtime (network, filesystem)",
+    "Preserve existing code style and structure where it isn't Tizen-specific - this is a targeted refactor, not a rewrite",
+    "Use AI_PLACEHOLDER comments in code for anything that genuinely requires hardware testing to confirm",
+    "Use AI_QUESTION for anything requiring a decision only the user can make - never silently assume",
+    "Never delete, move, or overwrite an existing project file as a side effect of packaging or cleanup - build the deployment package in a separate directory"
+  ]
+}
+```
+
+---
+
+## Output Deliverables
+
+```json
+{
+  "output_deliverables": [
+    "Complete list of every tizen./webapis. call site found, with its replacement or removal justified",
+    "Refactored HTML/JS with all Tizen APIs replaced per the mapping table",
+    "A generated autorun.brs implementing the equivalent of the original config.xml",
+    "Confirmation that no uncaught ReferenceError occurs with tizen/webapis genuinely undefined",
+    "An explicit AI_QUESTION for each of the four no-equivalent features actually found in this app (remote color/channel buttons, DRM-protected playback, screensaver/idle suppression, a Tizen Service app) - none of these should be silently removed, redesigned, or assumed away",
+    "An explicit AI_QUESTION about whether this deployment has interactive hardware (touchscreen/GPIO), plus confirmation of what looping default was applied to media playback as a result",
+    "A flagged list of every other AI_QUESTION raised",
+    "A deployment-ready autorun.zip structure (autozip.brs at the top level, plus autorun.brs, index.html, and app assets for it to unpack)",
+    "Notes on anything that still needs manual/hardware verification (AI_PLACEHOLDER items)",
+    "A summary of what was removed outright (widget lifecycle, dead legacy plugin code) vs replaced",
+    "Updated documentation reflecting the new BrightSign-native architecture",
+    "A closing instruction telling the user exactly what to physically do next - not a question (see the 7_handoff phase above)"
+  ]
 }
 ```
 

@@ -103,7 +103,7 @@ This guide helps you migrate a **Samsung Tizen web application (HTML/CSS/JS + Ti
 
 BrightSign digital signage is normally "set and forget" - content plays continuously with no one present to interact with it. Tizen apps, by contrast, are commonly built assuming a physical remote control drives navigation, pause, and resume. That distinction matters for migration: **a Tizen app being remote-interactive is not evidence that your BrightSign deployment is interactive** - BrightSign has no remote-control equivalent at all, so that signal simply doesn't carry over.
 
-Default video/media playback to loop (`video.loop = true`) rather than stopping after one playthrough, unless your specific BrightSign deployment has real interactive hardware of its own - a touchscreen, GPIO buttons/sensors, or similar. That's a fact about your hardware deployment, not something derivable from the Tizen source, so [Method 1](method1-refactor.md)'s AI prompt asks about it directly rather than guessing from how the original app used its remote.
+Default video/media playback to loop (`video.loop = true`) rather than stopping after one playthrough, unless your specific BrightSign deployment has real interactive hardware of its own - a touchscreen, GPIO buttons/sensors, or similar. That's a fact about your hardware deployment, not something derivable from the Tizen source, so [CLAUDE.md](CLAUDE.md) asks about it directly rather than guessing from how the original app used its remote.
 
 ---
 
@@ -116,14 +116,14 @@ A handful of Tizen features genuinely have no BrightSign equivalent. Don't let a
 - **Screensaver / idle-timeout suppression** (`setOnScreenSaver()`/`setOffScreenSaver()`, `setOnIdleEvent()`/`setOffIdleEvent()`) - BrightSign has no screensaver or idle timeout to suppress. Confirm it's genuinely safe to just remove these calls for your use case rather than assuming it is.
 - **Tizen Service app** (a separate background Node.js process declared via `<tizen:service>`) - No direct equivalent. This needs a real redesign around `nodejs_enabled` in the same `roHtmlWidget`, not a line-for-line port - decide how before continuing.
 
-[Method 1](method1-refactor.md)'s AI prompt is written to raise each of these as an explicit question rather than assume an answer - see its "Application Requirements" and "Migration Tasks" sections.
+[CLAUDE.md](CLAUDE.md) is written to raise each of these as an explicit question rather than assume an answer - see its API Mapping Table and AI Automation Instructions sections.
 
 ---
 
 ## Getting Started with AI-Assisted Migration
 
-Follow the detailed AI prompt in the migration method guide:
-- **[Method 1: Refactor & Replace →](method1-refactor.md)**
+[CLAUDE.md](CLAUDE.md) is itself the migration prompt - just copy its contents, run your AI tool from the root of the Tizen project you want to migrate, and paste it in. No separate prompt, no placeholders to fill in first.
+- **[Method 1: Refactor & Replace →](method1-refactor.md)** for the exact steps, prerequisites, and what happens next
 
 ## Tips for Best Results
 
