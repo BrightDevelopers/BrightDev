@@ -85,7 +85,7 @@ This guide helps you migrate a **Samsung Tizen web application (HTML/CSS/JS + Ti
 | `tizen.tvinputdevice.registerKey()` + remote keycodes | Standard `keydown`/`keyup` listeners for navigation; color/channel-style actions are built via GPIO, touchscreen, or USB HID peripherals - see [troubleshooting.md](troubleshooting.md) |
 | `webapis.avplay` (AVPlay player, DRM/streaming) | HTML5 `<video>` + MSE via the Chromium media player |
 | `<object type='application/avplayer'>` | `<video>` element |
-| DRM (`ondrmevent`, Widevine/PlayReady license flow) | Confirm current support directly with your BrightSign contact before committing to a DRM-dependent CMS feature - this is worth a direct conversation rather than an assumption |
+| DRM (`ondrmevent`, Widevine/PlayReady license flow) | Confirm current support directly with BrightSign (integrations@brightsign.biz) before committing to a DRM-dependent CMS feature - this is worth a direct conversation rather than an assumption |
 | `config.xml` (`tizen:application`, `tizen:privilege`, `tizen:feature`, `tizen:profile`) | `autorun.brs` + `roRegistrySection` (no manifest/privilege model to maintain) |
 | `.wgt` packaging | `autorun.zip` containing `autozip.brs` (unpack script) + `autorun.brs` (app entry point) + app files, deployed via SD/USB/BrightSign Control |
 | `Common.API.Widget` (`sendReadyEvent`/`blockNavigation`/`sendReturnEvent`/`sendExitEvent`) | Not needed - the app is simply running once loaded, no lifecycle handshake to satisfy |
@@ -113,7 +113,7 @@ Default video/media playback to loop (`video.loop = true`) rather than stopping 
 A handful of Tizen features map to a design decision rather than a drop-in replacement. Don't let an AI-assisted migration silently guess at these - each one is worth a deliberate call from you (and in one case, a direct check with BrightSign) before you ship:
 
 - **Remote color/channel buttons** (`ColorF1Green`/`ColorF2Yellow`/`ColorF3Blue`, `ChannelUp`/`ChannelDown`, etc.) - BrightSign's interactivity is peripheral-driven rather than built around a fixed remote model, so this is a hardware and design choice, not a limitation. Decide whether this functionality is actually required by your CMS; if so, this deployment can use a USB HID remote/RF receiver or a GPIO-wired IR receiver for real button input, or you can redesign it as an on-screen touch/click control - whichever fits the deployment.
-- **DRM-protected playback** (`ondrmevent`, Widevine/PlayReady) - If your CMS plays protected content, confirm current support directly with your BrightSign contact before committing to this migration path - DRM capabilities are worth a direct conversation rather than an assumption either way.
+- **DRM-protected playback** (`ondrmevent`, Widevine/PlayReady) - If your CMS plays protected content, confirm current support directly with BrightSign (integrations@brightsign.biz) before committing to this migration path - DRM capabilities are worth a direct conversation rather than an assumption either way.
 - **Screensaver / idle-timeout suppression** (`setOnScreenSaver()`/`setOffScreenSaver()`, `setOnIdleEvent()`/`setOffIdleEvent()`) - BrightSign players are purpose-built for always-on signage, so there's nothing here to suppress. Confirm that assumption holds for your specific use case before removing these calls.
 - **Tizen Service app** (a separate background Node.js process declared via `<tizen:service>`) - BrightSign's Node.js integration runs in the same `roHtmlWidget` as your page - simpler to build and maintain than juggling two processes, but it does mean redesigning this piece rather than porting it line-for-line.
 
@@ -132,7 +132,7 @@ A handful of Tizen features map to a design decision rather than a drop-in repla
 2. **Read every config.xml**: Its privilege/feature declarations tell you exactly which Tizen APIs are actually exercised, not just referenced in dead code
 3. **Don't trust an existing guard**: Verify it against the actual runtime state - a guard that checks the wrong global still throws (see [troubleshooting.md](troubleshooting.md))
 4. **Say which remote functionality is essential**: Tell the AI which remote-control behavior your CMS truly needs, so it picks the right peripheral (GPIO, USB HID, on-screen control) instead of guessing at a color-button mapping
-5. **Flag DRM dependencies early**: This needs direct verification with BrightSign, not an assumed API mapping
+5. **Flag DRM dependencies early**: This needs direct verification with BrightSign (integrations@brightsign.biz), not an assumed API mapping
 6. **Test with `tizen`/`webapis` genuinely undefined**: Use a plain desktop browser first to catch every unguarded reference before deploying to hardware
 7. **Check for the muted-autoplay pattern**: If your CMS expects video to start without a remote keypress, confirm the refactored code adds it
 8. **Specify your target BrightSign player series**: Series 5+ gets the Chromium media player by default; Series 4 or earlier just skips that one registry write and uses the native BrightSign media player instead - the rest of the migration is unaffected

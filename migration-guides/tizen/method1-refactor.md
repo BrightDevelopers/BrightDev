@@ -45,7 +45,7 @@ See [troubleshooting.md](troubleshooting.md) for detailed fixes, including:
 1. **Remove dead code** - delete the samsung.js shim, legacy clsid:SAMSUNG-INFOLINK-* embeds, and any now-unused config.xml if they're no longer referenced anywhere
 2. **Re-test every remote-key-driven interaction** with a real keyboard, not just visually
 3. **Confirm the Chromium vs BrightSign media player choice** is still correct for your final feature set (see ../media-player-selection.md)
-4. **Verify DRM support directly with BrightSign** if your CMS plays protected content - don't ship on an assumption
+4. **Verify DRM support directly with BrightSign** (integrations@brightsign.biz) if your CMS plays protected content - don't ship on an assumption
 5. **Verify the autorun.zip actually launches and renders on a real device** - unzip it locally first and confirm autozip.brs sits at the top level (not autorun.brs), and double-check autorun.brs's roHtmlWidget construction against the docs (rect first, port as an roMessagePort) before burning a boot cycle on hardware - a malformed call here boots fine but shows a black screen with no error
 6. **Load-test 24/7 playback** - Tizen TVs and BrightSign players have different reboot/idle assumptions
 7. **Update internal documentation** to reflect the new single-runtime architecture

@@ -248,9 +248,9 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
       "code_pattern": {
         "brightsign": "// No confirmed EME/Widevine/PlayReady API found in current BrightSign developer docs at the time this guide was written"
       },
-      "notes": "This is the one category in this guide without a verified answer. If your CMS plays DRM-protected content, treat this as an open question for BrightSign rather than assuming Chromium's standard EME surface is fully supported end-to-end.",
+      "notes": "This is the one category in this guide without a verified answer. If your CMS plays DRM-protected content, treat this as an open question for BrightSign rather than assuming Chromium's standard EME surface is fully supported end-to-end - email integrations@brightsign.biz so support can pick it up.",
       "requires_user_decision": true,
-      "ai_question": "AI_QUESTION: This app's DRM/EME support is not documented in current BrightSign developer docs. Does this app play DRM-protected content? If so, this must be verified directly with BrightSign before relying on this migration path."
+      "ai_question": "AI_QUESTION: This app's DRM/EME support is not documented in current BrightSign developer docs. Does this app play DRM-protected content? If so, verify with BrightSign directly - email integrations@brightsign.biz - before relying on this migration path."
     },
     {
       "category": "app_manifest",
@@ -515,7 +515,7 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
         "description": "Check for webapis.avplay and any DRM/license-server wiring",
         "command": "grep -rn \"avplay\\|ondrmevent\\|drm\" --include=\"*.js\" .",
         "validation": "AVPlay/DRM usage identified and DRM dependency flagged for direct verification with BrightSign",
-        "failure_action": "AI_QUESTION: Does this app play DRM-protected content? If so, verify Chromium EME/Widevine/PlayReady support with BrightSign directly."
+        "failure_action": "AI_QUESTION: Does this app play DRM-protected content? If so, verify Chromium EME/Widevine/PlayReady support with BrightSign directly - email integrations@brightsign.biz."
       },
       {
         "check_id": "flag_features_with_no_brightsign_equivalent",
@@ -629,7 +629,7 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
     {
       "pitfall": "Assuming Widevine/PlayReady DRM will just work through Chromium's standard EME",
       "impact": "No confirmed support was found in current BrightSign developer documentation",
-      "solution": "Raise an explicit AI_QUESTION and verify directly with BrightSign before committing a DRM-dependent CMS feature to this migration",
+      "solution": "Raise an explicit AI_QUESTION and verify directly with BrightSign (integrations@brightsign.biz) before committing a DRM-dependent CMS feature to this migration",
       "note": "Don't guess here - this is the one area of this guide without a verified answer"
     },
     {
@@ -778,7 +778,7 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
           "Test in Chrome/Edge locally with tizen and webapis genuinely undefined",
           "Test on actual BrightSign hardware and confirm the roHtmlWidget actually renders content, not just that autorun.zip unpacked",
           "Verify all remaining playback, input, and device-info features work",
-          "Confirm DRM-dependent features (if any) have been verified directly with BrightSign, not assumed"
+          "Confirm DRM-dependent features (if any) have been verified directly with BrightSign (integrations@brightsign.biz), not assumed"
         ]
       },
       {
@@ -814,7 +814,7 @@ Only stop to ask a general question if there's genuinely no Tizen project in the
       ],
       "examples": [
         "AI_QUESTION: This app registers Tizen remote color/channel buttons, which have no built-in BrightSign equivalent. Is this functionality required? If so: does this deployment have (or can it add) a USB HID remote/RF receiver or GPIO-wired IR receiver, or should it be redesigned as an on-screen control?",
-        "AI_QUESTION: Does this app play DRM-protected content? BrightSign's DRM/EME support is not confirmed in current docs - this must be verified directly with BrightSign.",
+        "AI_QUESTION: Does this app play DRM-protected content? BrightSign's DRM/EME support is not confirmed in current docs - email integrations@brightsign.biz to verify directly with BrightSign.",
         "AI_QUESTION: This app calls Tizen screensaver/idle-suppression APIs, which have no BrightSign equivalent. Confirm it's safe to simply remove these calls.",
         "AI_QUESTION: This app uses a separate Tizen Service app with no direct BrightSign equivalent. Describe what it does and propose a redesign before implementing it.",
         "AI_QUESTION: Does this BrightSign deployment have interactive hardware (touchscreen, GPIO buttons/sensors, etc.)? The Tizen source uses remote-control input, but that has no BrightSign equivalent and isn't evidence either way - without confirmed interactive hardware, media playback will default to looping continuously rather than stopping after one playthrough.",
