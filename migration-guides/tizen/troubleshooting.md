@@ -233,5 +233,4 @@ Note: the `use-brightsign-media-player` write above is only valid on Series 5+. 
 1. Check [BrightSign's developer documentation](https://docs.brightsign.biz/) for the latest on the specific API you're replacing
 2. Review [../media-player-selection.md](../media-player-selection.md) if you're unsure whether Chromium or the BrightSign media player is the right choice
 3. Search the [BrightSign Developer Cookbook](https://github.com/brightsign/dev-cookbook) for worked examples
-4. Ask in the BrightSign Partners support community
-5. Email **integrations@brightsign.biz** for anything not covered in current documentation (notably DRM/EME support, which this guide could not confirm) - this is the right address for BrightSign to pick up partner integration questions
+4. Email **integrations@brightsign.biz** for anything not covered in current documentation (notably DRM/EME support, which this guide could not confirm) - this is the right address for BrightSign to pick up partner integration questions
