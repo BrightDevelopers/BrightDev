@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-09",
+  "uniqueVisits": 45,
+  "uniqueClones": 15,
+  "conversionRate": 33.33,
+  "stars": 17,
+  "forks": 0,
+  "issuesOpenedThisWeek": 0,
+  "externalPrsThisWeek": 0,
+  "topReferrers": [
+    {
+      "referrer": "Google",
+      "uniques": 16
+    },
+    {
+      "referrer": "github.com",
+      "uniques": 5
+    },
+    {
+      "referrer": "Bing",
+      "uniques": 1
+    },
+    {
+      "referrer": "canva.com",
+      "uniques": 1
+    },
+    {
+      "referrer": "intuilab.atlassian.net",
+      "uniques": 1
+    }
+  ],
+  "topPaths": [
+    {
+      "path": "/BrightDevelopers/BrightDev",
+      "uniques": 25
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/README.md",
+      "uniques": 10
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/migration-guides",
+      "uniques": 9
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main",
+      "uniques": 7
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/examples",
+      "uniques": 5
+    }
+  ]
+}
