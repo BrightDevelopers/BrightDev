@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-23",
+  "uniqueVisits": 24,
+  "uniqueClones": 31,
+  "conversionRate": 129.17,
+  "stars": 17,
+  "forks": 0,
+  "issuesOpenedThisWeek": 0,
+  "externalPrsThisWeek": 0,
+  "topReferrers": [
+    {
+      "referrer": "Google",
+      "uniques": 4
+    },
+    {
+      "referrer": "github.com",
+      "uniques": 2
+    },
+    {
+      "referrer": "Bing",
+      "uniques": 1
+    }
+  ],
+  "topPaths": [
+    {
+      "path": "/BrightDevelopers/BrightDev",
+      "uniques": 14
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/examples/hello-brightsign",
+      "uniques": 7
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/examples/README.md",
+      "uniques": 4
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/actions/runs/37936137038",
+      "uniques": 1
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/actions/workflows/weekly-traffic-report.yml",
+      "uniques": 1
+    }
+  ]
+}
