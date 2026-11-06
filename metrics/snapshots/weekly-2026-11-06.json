@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-06",
+  "uniqueVisits": 41,
+  "uniqueClones": 26,
+  "conversionRate": 63.41,
+  "stars": 17,
+  "forks": 0,
+  "issuesOpenedThisWeek": 0,
+  "externalPrsThisWeek": 0,
+  "topReferrers": [
+    {
+      "referrer": "aocr.org",
+      "uniques": 12
+    },
+    {
+      "referrer": "github.com",
+      "uniques": 2
+    },
+    {
+      "referrer": "DuckDuckGo",
+      "uniques": 1
+    }
+  ],
+  "topPaths": [
+    {
+      "path": "/BrightDevelopers/BrightDev",
+      "uniques": 15
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/migration-guides/progressive-web-app",
+      "uniques": 3
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/examples/hello-brightsign",
+      "uniques": 9
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/README.md",
+      "uniques": 8
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/migration-guides/electron",
+      "uniques": 2
+    }
+  ]
+}
