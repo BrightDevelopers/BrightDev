@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-20",
+  "uniqueVisits": 52,
+  "uniqueClones": 45,
+  "conversionRate": 86.54,
+  "stars": 18,
+  "forks": 0,
+  "issuesOpenedThisWeek": 0,
+  "externalPrsThisWeek": 0,
+  "topReferrers": [
+    {
+      "referrer": "Google",
+      "uniques": 7
+    },
+    {
+      "referrer": "github.com",
+      "uniques": 5
+    },
+    {
+      "referrer": "teams.public.onecdn.static.microsoft",
+      "uniques": 4
+    }
+  ],
+  "topPaths": [
+    {
+      "path": "/BrightDevelopers/BrightDev",
+      "uniques": 20
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/blob/main/README.md",
+      "uniques": 11
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/examples/01-hello-brightsign",
+      "uniques": 9
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/examples",
+      "uniques": 8
+    },
+    {
+      "path": "/BrightDevelopers/BrightDev/tree/main/migration-guides/progressive-web-app",
+      "uniques": 3
+    }
+  ]
+}
